@@ -1,8 +1,6 @@
 package ru.yandex.practicum.filmorate.model;
 
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Positive;
-import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,21 +10,20 @@ import java.time.LocalDate;
 
 @Data
 @Builder
-@NoArgsConstructor
 @AllArgsConstructor
-public class Film {
+@NoArgsConstructor
+public class User {
 
     private Long id;
 
     @NotBlank
-    private String name;
+    private String email;
 
     @NotBlank
-    @Size(max = 200)
-    private String description;
+    private String login;
 
-    private LocalDate releaseDate;
+    @NotBlank
+    private String name;
 
-    @Positive
-    private Integer duration;
+    private LocalDate birthday;
 }
