@@ -18,8 +18,6 @@ public record UserRecord(
 
         String name,
 
-        @Past @JsonFormat(pattern = "yyyy-MM-dd")
-
-        LocalDate birthday) {
+        @Past @JsonFormat(pattern = "yyyy-MM-dd") LocalDate birthday) {
 
 }
