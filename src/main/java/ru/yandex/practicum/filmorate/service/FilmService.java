@@ -19,25 +19,16 @@ public class FilmService implements IFilmService {
         this.filmRepo = filmRepo;
     }
 
-    private Long idx = 0L;
-
-    private Long updIdx() {
-        return ++idx;
-    }
-
     @Override
     public Film postFilm(FilmRecord filmRecord) {
         Film film = Film.builder()
-                .id(updIdx())
                 .name(filmRecord.name())
                 .description(filmRecord.description())
                 .releaseDate(filmRecord.releaseDate())
                 .duration(filmRecord.duration())
                 .build();
 
-        log.debug("postUser {} {}", film.getId(), film.getName());
-
-        return filmRepo.createFilm(film.getId(), film);
+        return filmRepo.createFilm(film);
     }
 
     @Override

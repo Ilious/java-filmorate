@@ -8,9 +8,9 @@ public interface IUserRepo {
 
     Collection<User> getAll();
 
-    User createUser(Long id, User user);
+    User createUser(User user);
 
-    User updateUser(Long id, User user);
+    User updateUser(User user);
 
     User getUserById(Long id);
 }

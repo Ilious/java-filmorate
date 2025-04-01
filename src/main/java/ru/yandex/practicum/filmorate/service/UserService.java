@@ -20,25 +20,16 @@ public class UserService implements IUserService {
         this.userRepo = userRepo;
     }
 
-    private Long idx = 0L;
-
-    private Long updIdx() {
-        return ++idx;
-    }
-
     @Override
     public User postUser(UserRecord user) {
         User createdUser = User.builder()
-                .id(updIdx())
                 .name(getName(user.name(), user.login()))
                 .email(user.email())
                 .login(user.login())
                 .birthday(user.birthday())
                 .build();
 
-        log.debug("postUser {} {}", createdUser.getId(), createdUser.getLogin());
-
-        return userRepo.createUser(createdUser.getId(), createdUser);
+        return userRepo.createUser(createdUser);
     }
 
     @Override
@@ -63,7 +54,7 @@ public class UserService implements IUserService {
         if (user.email() != null && !user.email().isBlank())
             userById.setEmail(user.email());
 
-        return userRepo.updateUser(user.id(), userById);
+        return userRepo.updateUser(userById);
     }
 
     @Override

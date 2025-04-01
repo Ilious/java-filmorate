@@ -8,9 +8,9 @@ public interface IFilmRepo {
 
     Collection<Film> getAll();
 
-    Film createFilm(Long id, Film film);
+    Film createFilm(Film film);
 
-    Film updateFilm(Long id, Film film);
+    Film updateFilm(Film film);
 
     Film getFilmById(Long id);
 }
