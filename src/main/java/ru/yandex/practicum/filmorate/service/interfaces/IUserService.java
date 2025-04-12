@@ -12,4 +12,12 @@ public interface IUserService {
     User postUser(UserRecord userRecord);
 
     Collection<User> getAll();
+
+    User addFriend(Long id, Long friendId);
+
+    Collection<User> getFriends(Long id);
+
+    User removeUserFromFriends(Long id, Long friendId);
+
+    Collection<User> getFriendsInCommon(Long id, Long friendId);
 }

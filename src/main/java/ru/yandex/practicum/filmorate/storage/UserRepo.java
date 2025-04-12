@@ -7,6 +7,7 @@ import ru.yandex.practicum.filmorate.pojo.User;
 import ru.yandex.practicum.filmorate.storage.interfaces.IUserRepo;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Repository

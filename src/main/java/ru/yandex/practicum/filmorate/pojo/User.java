@@ -1,12 +1,11 @@
 package ru.yandex.practicum.filmorate.pojo;
 
 import jakarta.validation.constraints.NotBlank;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
 @Builder
@@ -26,4 +25,8 @@ public class User {
     private String name;
 
     private LocalDate birthday;
+
+    @Setter(AccessLevel.NONE)
+    @Getter(lazy = true)
+    private final Set<Long> friends = new HashSet<>();
 }
