@@ -1,11 +1,10 @@
 package ru.yandex.practicum.filmorate.service;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.logging.log4j.util.PropertySource;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.dto.FilmRecord;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.pojo.Film;
-import ru.yandex.practicum.filmorate.dto.FilmRecord;
 import ru.yandex.practicum.filmorate.pojo.User;
 import ru.yandex.practicum.filmorate.service.interfaces.IFilmService;
 import ru.yandex.practicum.filmorate.storage.UserRepo;
@@ -43,7 +42,7 @@ public class FilmService implements IFilmService {
     public Film putFilm(FilmRecord filmRecord) {
         if (filmRecord.id() == null) {
             log.warn("updateFilm: Id is not correct");
-            throw new ValidationException("updateFilm: Id is not correct");
+            throw new ValidationException("updateFilm: is not correct", "id", null);
         }
 
         Film filmById = filmRepo.getFilmById(filmRecord.id());
@@ -51,8 +50,7 @@ public class FilmService implements IFilmService {
         if (filmRecord.releaseDate() != null)
             filmById.setReleaseDate(filmRecord.releaseDate());
 
-        if (filmRecord.duration() > 0)
-            filmById.setDuration(filmRecord.duration());
+        filmById.setDuration(filmRecord.duration());
 
         if (filmRecord.description() != null)
             filmById.setDescription(filmRecord.description());
@@ -84,16 +82,18 @@ public class FilmService implements IFilmService {
     public Film deleteLikeOnFilm(Long userId, Long filmId) {
         Film filmById = filmRepo.getFilmById(filmId);
 
-        filmById.getLikedId().remove(userId);
+        User userById = userRepo.getUserById(userId);
+
+        filmById.getLikedId().remove(userById.getId());
         return filmById;
     }
 
     @Override
-    public Collection<Film> getMostLikedFilms() {
-        return filmRepo.getAll()
+    public Collection<Film> getMostLikedFilms(Long count) {
+        return  filmRepo.getAll()
                         .stream()
-                        .sorted(Comparator.comparingInt(film -> film.getLikedId().size()))
-                        .limit(10)
+                        .sorted(Comparator.comparingInt(film -> -film.getLikedId().size()))
+                        .limit(count)
                         .collect(Collectors.toList());
     }
 }

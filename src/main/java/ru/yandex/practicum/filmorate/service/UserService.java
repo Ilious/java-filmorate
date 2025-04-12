@@ -40,7 +40,7 @@ public class UserService implements IUserService {
     public User putUser(UserRecord user) {
         if (user.id() == null || user.login().contains(" ")) {
             log.warn("updateUser: Id is not correct");
-            throw new ValidationException("updateUser: Id is not correct");
+            throw new ValidationException("updateUser: Id is not correct", "Id", null);
         }
 
         User userById = userRepo.getUserById(user.id());
@@ -50,7 +50,7 @@ public class UserService implements IUserService {
         if (user.birthday() != null)
             userById.setBirthday(user.birthday());
 
-        if (user.login() != null && !user.login().isBlank())
+        if (!user.login().isBlank())
             userById.setLogin(user.login());
 
         userById.setName(getName(user.name(), user.login()));
@@ -74,6 +74,7 @@ public class UserService implements IUserService {
 
         User friendById = userRepo.getUserById(friendId);
 
+        friendById.getFriends().add(userById.getId());
         userById.getFriends().add(friendById.getId());
         return friendById;
     }
@@ -84,6 +85,7 @@ public class UserService implements IUserService {
 
         User friendById = userRepo.getUserById(friendId);
 
+        friendById.getFriends().remove(userById.getId());
         userById.getFriends().remove(friendById.getId());
         return friendById;
     }
