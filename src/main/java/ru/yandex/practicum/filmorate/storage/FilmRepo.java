@@ -40,7 +40,7 @@ public class FilmRepo implements IFilmRepo {
         if (Objects.isNull(storage.get(id))) {
             String errMessage = String.format("Film not found by id %d", id);
             log.warn(errMessage);
-            throw new EntityNotFoundException(errMessage);
+            throw new EntityNotFoundException(errMessage, "Film", String.valueOf(id));
         }
 
         return storage.get(id);
