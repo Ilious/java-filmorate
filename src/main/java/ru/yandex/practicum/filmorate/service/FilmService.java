@@ -1,23 +1,30 @@
 package ru.yandex.practicum.filmorate.service;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.logging.log4j.util.PropertySource;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.pojo.Film;
 import ru.yandex.practicum.filmorate.dto.FilmRecord;
+import ru.yandex.practicum.filmorate.pojo.User;
 import ru.yandex.practicum.filmorate.service.interfaces.IFilmService;
+import ru.yandex.practicum.filmorate.storage.UserRepo;
 import ru.yandex.practicum.filmorate.storage.interfaces.IFilmRepo;
 
 import java.util.Collection;
+import java.util.Comparator;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
 public class FilmService implements IFilmService {
 
     private final IFilmRepo filmRepo;
+    private final UserRepo userRepo;
 
-    public FilmService(IFilmRepo filmRepo) {
+    public FilmService(IFilmRepo filmRepo, UserRepo userRepo) {
         this.filmRepo = filmRepo;
+        this.userRepo = userRepo;
     }
 
     @Override
@@ -61,5 +68,32 @@ public class FilmService implements IFilmService {
         Collection<Film> films = filmRepo.getAll();
         log.debug("Get user collection {}", films.size());
         return films;
+    }
+
+    @Override
+    public Film setLikeOnFilm(Long userId, Long filmId) {
+        Film filmById = filmRepo.getFilmById(filmId);
+
+        User userById = userRepo.getUserById(userId);
+
+        filmById.getLikedId().add(userById.getId());
+        return filmById;
+    }
+
+    @Override
+    public Film deleteLikeOnFilm(Long userId, Long filmId) {
+        Film filmById = filmRepo.getFilmById(filmId);
+
+        filmById.getLikedId().remove(userId);
+        return filmById;
+    }
+
+    @Override
+    public Collection<Film> getMostLikedFilms() {
+        return filmRepo.getAll()
+                        .stream()
+                        .sorted(Comparator.comparingInt(film -> film.getLikedId().size()))
+                        .limit(10)
+                        .collect(Collectors.toList());
     }
 }

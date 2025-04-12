@@ -12,4 +12,10 @@ public interface IFilmService {
     Film postFilm(FilmRecord filmRecord);
 
     Collection<Film> getAll();
+
+    Film setLikeOnFilm(Long userId, Long filmId);
+
+    Film deleteLikeOnFilm(Long userId, Long filmId);
+
+    Collection<Film> getMostLikedFilms();
 }
