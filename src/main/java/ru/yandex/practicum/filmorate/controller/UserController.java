@@ -5,9 +5,9 @@ import lombok.NonNull;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.pojo.UserRecord;
-import ru.yandex.practicum.filmorate.service.IUserService;
+import ru.yandex.practicum.filmorate.pojo.User;
+import ru.yandex.practicum.filmorate.dto.UserRecord;
+import ru.yandex.practicum.filmorate.service.interfaces.IUserService;
 
 import java.util.Collection;
 

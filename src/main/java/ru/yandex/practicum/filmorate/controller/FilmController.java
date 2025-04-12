@@ -5,9 +5,9 @@ import lombok.NonNull;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.pojo.FilmRecord;
-import ru.yandex.practicum.filmorate.service.IFilmService;
+import ru.yandex.practicum.filmorate.pojo.Film;
+import ru.yandex.practicum.filmorate.dto.FilmRecord;
+import ru.yandex.practicum.filmorate.service.interfaces.IFilmService;
 
 import java.util.Collection;
 

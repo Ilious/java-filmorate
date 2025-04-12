@@ -1,7 +1,7 @@
-package ru.yandex.practicum.filmorate.service;
+package ru.yandex.practicum.filmorate.service.interfaces;
 
-import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.pojo.UserRecord;
+import ru.yandex.practicum.filmorate.pojo.User;
+import ru.yandex.practicum.filmorate.dto.UserRecord;
 
 import java.util.Collection;
 

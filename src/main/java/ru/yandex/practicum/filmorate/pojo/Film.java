@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.model;
+package ru.yandex.practicum.filmorate.pojo;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;

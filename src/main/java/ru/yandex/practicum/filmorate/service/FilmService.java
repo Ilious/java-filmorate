@@ -3,9 +3,10 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
-import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.pojo.FilmRecord;
-import ru.yandex.practicum.filmorate.storage.IFilmRepo;
+import ru.yandex.practicum.filmorate.pojo.Film;
+import ru.yandex.practicum.filmorate.dto.FilmRecord;
+import ru.yandex.practicum.filmorate.service.interfaces.IFilmService;
+import ru.yandex.practicum.filmorate.storage.interfaces.IFilmRepo;
 
 import java.util.Collection;
 
