@@ -7,7 +7,6 @@ import ru.yandex.practicum.filmorate.pojo.User;
 import ru.yandex.practicum.filmorate.storage.interfaces.IUserRepo;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Repository
@@ -48,7 +47,7 @@ public class UserRepo implements IUserRepo {
         if (Objects.isNull(storage.get(id))) {
             String errMessage = String.format("User not found by id %d", id);
             log.warn(errMessage);
-            throw new EntityNotFoundException(errMessage);
+            throw new EntityNotFoundException(errMessage, "User", String.valueOf(id));
         }
 
         return storage.get(id);
