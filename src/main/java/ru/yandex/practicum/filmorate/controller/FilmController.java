@@ -38,4 +38,21 @@ public class FilmController {
     public ResponseEntity<Film> createFilm(@RequestBody @Valid @NonNull FilmRecord filmRecord) {
         return ResponseEntity.status(HttpStatus.CREATED).body(filmService.postFilm(filmRecord));
     }
+
+    @PutMapping("/{id}/like/{userId}")
+    public ResponseEntity<Film> putLikeOnFilm(@PathVariable Long id,
+                                              @PathVariable Long userId) {
+        return ResponseEntity.status(HttpStatus.OK).body(filmService.setLikeOnFilm(userId, id));
+    }
+
+    @DeleteMapping("/{id}/like/{userId}")
+    public ResponseEntity<Film> deleteLikeOnFilm(@PathVariable Long id,
+                                                 @PathVariable Long userId) {
+        return ResponseEntity.status(HttpStatus.OK).body(filmService.deleteLikeOnFilm(userId, id));
+    }
+
+    @GetMapping("/popular")
+    public ResponseEntity<Collection<Film>> getPopularFilms(@RequestParam(defaultValue = "10") Long count) {
+        return ResponseEntity.status(HttpStatus.OK).body(filmService.getMostLikedFilms(count));
+    }
 }
