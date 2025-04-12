@@ -2,12 +2,11 @@ package ru.yandex.practicum.filmorate.storage;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
-import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.exception.EntityNotFoundException;
+import ru.yandex.practicum.filmorate.pojo.Film;
+import ru.yandex.practicum.filmorate.storage.interfaces.IFilmRepo;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @Slf4j
 @Repository
@@ -38,6 +37,12 @@ public class FilmRepo implements IFilmRepo {
 
     @Override
     public Film getFilmById(Long id) {
+        if (Objects.isNull(storage.get(id))) {
+            String errMessage = String.format("Film not found by id %d", id);
+            log.warn(errMessage);
+            throw new EntityNotFoundException(errMessage);
+        }
+
         return storage.get(id);
     }
 
