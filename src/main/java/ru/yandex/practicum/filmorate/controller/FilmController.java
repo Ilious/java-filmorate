@@ -1,16 +1,19 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Positive;
 import lombok.NonNull;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.pojo.Film;
 import ru.yandex.practicum.filmorate.dto.FilmRecord;
+import ru.yandex.practicum.filmorate.pojo.Film;
 import ru.yandex.practicum.filmorate.service.interfaces.IFilmService;
 
 import java.util.Collection;
 
+@Validated
 @RestController
 @RequestMapping("/films")
 public class FilmController {
@@ -52,7 +55,9 @@ public class FilmController {
     }
 
     @GetMapping("/popular")
-    public ResponseEntity<Collection<Film>> getPopularFilms(@RequestParam(defaultValue = "10") Long count) {
+    public ResponseEntity<Collection<Film>> getPopularFilms(@RequestParam(defaultValue = "10")
+                                                            @Positive(message = "count should be greater than 0")
+                                                            Long count) {
         return ResponseEntity.status(HttpStatus.OK).body(filmService.getMostLikedFilms(count));
     }
 }

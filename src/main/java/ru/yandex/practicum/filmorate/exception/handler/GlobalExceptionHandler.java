@@ -1,5 +1,7 @@
 package ru.yandex.practicum.filmorate.exception.handler;
 
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.FieldError;
@@ -33,6 +35,21 @@ public class GlobalExceptionHandler {
         StringBuilder errMessage = new StringBuilder("Input fields aren't correct: ");
         String errorFields = exception.getBindingResult().getFieldErrors().stream()
                 .map(FieldError::getField)
+                .collect(Collectors.joining(", "));
+        errMessage.append(errorFields);
+
+        log.warn("{}\n {}", errMessage, exception.getMessage());
+        return ResponseError.builder()
+                .description(errMessage.toString())
+                .code(HttpStatus.BAD_REQUEST.value()).build();
+    }
+
+    @ExceptionHandler(value = {ConstraintViolationException.class})
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseError handleRequestParamsAnnotationsException(ConstraintViolationException exception) {
+        StringBuilder errMessage = new StringBuilder("Input fields aren't correct: ");
+        String errorFields = exception.getConstraintViolations().stream()
+                .map(ConstraintViolation::getMessage)
                 .collect(Collectors.joining(", "));
         errMessage.append(errorFields);
 
