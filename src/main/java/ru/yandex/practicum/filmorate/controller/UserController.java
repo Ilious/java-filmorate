@@ -1,12 +1,11 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import jakarta.validation.Valid;
-import lombok.NonNull;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.pojo.User;
 import ru.yandex.practicum.filmorate.dto.UserRecord;
+import ru.yandex.practicum.filmorate.pojo.User;
 import ru.yandex.practicum.filmorate.service.interfaces.IUserService;
 
 import java.util.Collection;
@@ -30,12 +29,12 @@ public class UserController {
     }
 
     @PutMapping
-    public ResponseEntity<User> updateUser(@RequestBody @Valid @NonNull UserRecord user) {
+    public ResponseEntity<User> updateUser(@RequestBody @Valid UserRecord user) {
         return ResponseEntity.status(HttpStatus.OK).body(userService.putUser(user));
     }
 
     @PostMapping
-    public ResponseEntity<User> createUser(@RequestBody @Valid @NonNull UserRecord userRecord) {
+    public ResponseEntity<User> createUser(@RequestBody @Valid UserRecord userRecord) {
         return ResponseEntity.status(HttpStatus.CREATED).body(userService.postUser(userRecord));
     }
 
