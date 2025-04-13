@@ -7,7 +7,7 @@ import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.pojo.Film;
 import ru.yandex.practicum.filmorate.pojo.User;
 import ru.yandex.practicum.filmorate.service.interfaces.IFilmService;
-import ru.yandex.practicum.filmorate.storage.UserRepo;
+import ru.yandex.practicum.filmorate.storage.interfaces.IUserRepo;
 import ru.yandex.practicum.filmorate.storage.interfaces.IFilmRepo;
 
 import java.util.Collection;
@@ -19,9 +19,9 @@ import java.util.stream.Collectors;
 public class FilmService implements IFilmService {
 
     private final IFilmRepo filmRepo;
-    private final UserRepo userRepo;
+    private final IUserRepo userRepo;
 
-    public FilmService(IFilmRepo filmRepo, UserRepo userRepo) {
+    public FilmService(IFilmRepo filmRepo, IUserRepo userRepo) {
         this.filmRepo = filmRepo;
         this.userRepo = userRepo;
     }
