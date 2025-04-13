@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.pojo;
+package ru.yandex.practicum.filmorate.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.NotBlank;
