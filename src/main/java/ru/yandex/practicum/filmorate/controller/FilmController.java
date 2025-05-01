@@ -2,7 +2,6 @@ package ru.yandex.practicum.filmorate.controller;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
-import lombok.NonNull;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -33,12 +32,12 @@ public class FilmController {
     }
 
     @PutMapping
-    public ResponseEntity<Film> updateFilm(@RequestBody @Valid @NonNull FilmRecord filmRecord) {
+    public ResponseEntity<Film> updateFilm(@RequestBody @Valid FilmRecord filmRecord) {
         return ResponseEntity.status(HttpStatus.OK).body(filmService.putFilm(filmRecord));
     }
 
     @PostMapping
-    public ResponseEntity<Film> createFilm(@RequestBody @Valid @NonNull FilmRecord filmRecord) {
+    public ResponseEntity<Film> createFilm(@RequestBody @Valid FilmRecord filmRecord) {
         return ResponseEntity.status(HttpStatus.CREATED).body(filmService.postFilm(filmRecord));
     }
 

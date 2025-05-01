@@ -4,6 +4,7 @@ import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -29,7 +30,7 @@ public class GlobalExceptionHandler {
                 .code(HttpStatus.NOT_FOUND.value()).build();
     }
 
-    @ExceptionHandler(value = {MethodArgumentNotValidException.class})
+    @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseError handleValidationAnnotationException(MethodArgumentNotValidException exception) {
         StringBuilder errMessage = new StringBuilder("Input fields aren't correct: ");
@@ -44,7 +45,18 @@ public class GlobalExceptionHandler {
                 .code(HttpStatus.BAD_REQUEST.value()).build();
     }
 
-    @ExceptionHandler(value = {ConstraintViolationException.class})
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseError handleRequestBodyIsMissedException(HttpMessageNotReadableException exception) {
+        String errMessage = "Input fields are null";
+
+        log.warn("{}\n {}", errMessage, exception.getMessage());
+        return ResponseError.builder()
+                .description(errMessage)
+                .code(HttpStatus.BAD_REQUEST.value()).build();
+    }
+
+    @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseError handleRequestParamsAnnotationsException(ConstraintViolationException exception) {
         StringBuilder errMessage = new StringBuilder("Input fields aren't correct: ");
@@ -59,7 +71,7 @@ public class GlobalExceptionHandler {
                 .code(HttpStatus.BAD_REQUEST.value()).build();
     }
 
-    @ExceptionHandler(value = {ValidationException.class})
+    @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseError handleMyValidationAnnotationException(ValidationException exception) {
         StringBuilder errMessage = new StringBuilder("Validated fields aren't correct: ");
