@@ -18,18 +18,12 @@ public class Film {
 
     private Long id;
 
-    @NotBlank
     private String name;
 
-    @NotBlank
-    @Size(max = 200)
     private String description;
 
-    @NonNull
-    @DateBefore
     private LocalDate releaseDate;
 
-    @Positive
     private Integer duration;
 
     @Setter(AccessLevel.NONE)

@@ -16,17 +16,12 @@ public class User {
 
     private Long id;
 
-    @NotBlank
     private String email;
 
-    @NotBlank
     private String login;
 
-    @NotBlank
     private String name;
 
-    @NonNull
-    @Past
     private LocalDate birthday;
 
     @Setter(AccessLevel.NONE)
