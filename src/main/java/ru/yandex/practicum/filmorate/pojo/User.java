@@ -1,7 +1,5 @@
 package ru.yandex.practicum.filmorate.pojo;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Past;
 import lombok.*;
 
 import java.time.LocalDate;
