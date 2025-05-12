@@ -11,13 +11,12 @@ import java.util.Objects;
 public class UserMapper {
 
     public static UserDao toUserDao(UserRecord req) {
-        UserDao user = UserDao.builder()
+        return UserDao.builder()
                 .name(getName(req.name(), req.login()))
                 .email(req.email())
                 .login(req.login())
                 .birthday(req.birthday())
                 .build();
-        return user;
     }
 
     public static void updateFields(UserDao user, UserRecord req) {

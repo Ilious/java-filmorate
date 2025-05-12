@@ -7,17 +7,14 @@ import ru.yandex.practicum.filmorate.dto.FilmRecord;
 @RequiredArgsConstructor
 public class FilmMapper {
 
-    private final GenreMapper genreMapper;
-
     public static FilmDao toFilmDao(FilmRecord req) {
-        FilmDao filmDao = FilmDao.builder()
+
+        return FilmDao.builder()
                 .name(req.name())
                 .description(req.description())
                 .releaseDate(req.releaseDate())
                 .duration(req.duration())
                 .build();
-
-        return filmDao;
     }
 
     public static void updateFields(FilmDao film, FilmRecord req) {

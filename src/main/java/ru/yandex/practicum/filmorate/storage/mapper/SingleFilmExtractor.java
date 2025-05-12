@@ -22,49 +22,42 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class SingleFilmExtractor implements ResultSetExtractor<FilmDao> {
 
-    private final GenreMapper genreMapper;
-
     @Override
     public FilmDao extractData(ResultSet rs) throws SQLException, DataAccessException {
 
         if (!rs.next())
             return null;
 
-        FilmDao filmDao = null;
         Map<Long, GenreDao> genres = new HashMap<>();
         long filmId = rs.getLong("film_id");
 
-        if (filmDao == null) {
-            String name = rs.getString("name");
-            String description = rs.getString("description");
-            int duration = rs.getInt("duration");
-            Long rating = rs.getLong("rating_id");
+        String name = rs.getString("name");
+        String description = rs.getString("description");
+        int duration = rs.getInt("duration");
+        long rating = rs.getLong("rating_id");
 
-            Timestamp date = rs.getTimestamp("release_date");
-            LocalDate localDate = date.toLocalDateTime().toLocalDate();
+        Timestamp date = rs.getTimestamp("release_date");
+        LocalDate localDate = date.toLocalDateTime().toLocalDate();
 
-            MpaDao mpaDao = new MpaDao();
-            mpaDao.setId(rating);
-            mpaDao.setName(AgeRating.fromValue(rating));
+        MpaDao mpaDao = new MpaDao();
+        mpaDao.setId(rating);
+        mpaDao.setName(AgeRating.fromValue(rating));
 
+        processRow(genres, rs);
+
+        while (rs.next()) {
             processRow(genres, rs);
-
-            while (rs.next()) {
-                processRow(genres, rs);
-            }
-
-            filmDao = new FilmDao().builder()
-                    .id(filmId)
-                    .name(name)
-                    .description(description)
-                    .duration(duration)
-                    .releaseDate(localDate)
-                    .mpa(mpaDao)
-                    .genres(new ArrayList<>(genres.values()))
-                    .build();
         }
 
-        return filmDao;
+        return FilmDao.builder()
+                .id(filmId)
+                .name(name)
+                .description(description)
+                .duration(duration)
+                .releaseDate(localDate)
+                .mpa(mpaDao)
+                .genres(new ArrayList<>(genres.values()))
+                .build();
     }
 
     private void processRow(Map<Long, GenreDao> map, ResultSet rs) throws SQLException {

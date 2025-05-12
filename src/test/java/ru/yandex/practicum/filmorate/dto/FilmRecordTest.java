@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.dto;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
+import jakarta.validation.ValidatorFactory;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
@@ -25,9 +26,13 @@ class FilmRecordTest {
         filmRecord = new FilmRecord(1L, null, "description", null,
                 LocalDate.of(1905, 11, 1), 20, null);
 
-        Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
-        Set<ConstraintViolation<FilmRecord>> listOnCreate = validator.validate(filmRecord, onCreateValidator);
-        Set<ConstraintViolation<FilmRecord>> listOnUpdate = validator.validate(filmRecord, onUpdateValidator);
+        Set<ConstraintViolation<FilmRecord>> listOnCreate;
+        Set<ConstraintViolation<FilmRecord>> listOnUpdate;
+        try (ValidatorFactory factory = Validation.buildDefaultValidatorFactory()) {
+            Validator validator = factory.getValidator();
+            listOnCreate = validator.validate(filmRecord, onCreateValidator);
+            listOnUpdate = validator.validate(filmRecord, onUpdateValidator);
+        }
 
         assertAll(() -> {
             assertFalse(listOnCreate.isEmpty());
@@ -45,9 +50,13 @@ class FilmRecordTest {
         filmRecord = new FilmRecord(1L, "      ", "description", null,
                 LocalDate.of(1905, 11, 1), 20, null);
 
-        Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
-        Set<ConstraintViolation<FilmRecord>> listOnCreate = validator.validate(filmRecord, onCreateValidator);
-        Set<ConstraintViolation<FilmRecord>> listOnUpdate = validator.validate(filmRecord, onUpdateValidator);
+        Set<ConstraintViolation<FilmRecord>> listOnCreate;
+        Set<ConstraintViolation<FilmRecord>> listOnUpdate;
+        try (ValidatorFactory factory = Validation.buildDefaultValidatorFactory()) {
+            Validator validator = factory.getValidator();
+            listOnCreate = validator.validate(filmRecord, onCreateValidator);
+            listOnUpdate = validator.validate(filmRecord, onUpdateValidator);
+        }
 
         assertAll(() -> {
             assertFalse(listOnCreate.isEmpty());
@@ -65,8 +74,11 @@ class FilmRecordTest {
         filmRecord = new FilmRecord(1L, "name", null, null,
                 LocalDate.of(1905, 11, 1), 20, null);
 
-        Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
-        Set<ConstraintViolation<FilmRecord>> listOnCreate = validator.validate(filmRecord, onCreateValidator);
+        Set<ConstraintViolation<FilmRecord>> listOnCreate;
+        try (ValidatorFactory factory = Validation.buildDefaultValidatorFactory()) {
+            Validator validator = factory.getValidator();
+            listOnCreate = validator.validate(filmRecord, onCreateValidator);
+        }
 
         assertAll(() -> {
             assertFalse(listOnCreate.isEmpty());
@@ -79,8 +91,11 @@ class FilmRecordTest {
         filmRecord = new FilmRecord(1L, "name", "        ", null,
                 LocalDate.of(1905, 11, 1), 20, null);
 
-        Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
-        Set<ConstraintViolation<FilmRecord>> listOnCreate = validator.validate(filmRecord, onCreateValidator);
+        Set<ConstraintViolation<FilmRecord>> listOnCreate;
+        try (ValidatorFactory factory = Validation.buildDefaultValidatorFactory()) {
+            Validator validator = factory.getValidator();
+            listOnCreate = validator.validate(filmRecord, onCreateValidator);
+        }
 
         assertAll(() -> {
             assertFalse(listOnCreate.isEmpty());
@@ -93,9 +108,13 @@ class FilmRecordTest {
         filmRecord = new FilmRecord(1L, "name", "n".repeat(201), null,
                 LocalDate.of(1905, 11, 1), 20, null);
 
-        Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
-        Set<ConstraintViolation<FilmRecord>> listOnCreate = validator.validate(filmRecord, onCreateValidator);
-        Set<ConstraintViolation<FilmRecord>> listOnUpdate = validator.validate(filmRecord, onUpdateValidator);
+        Set<ConstraintViolation<FilmRecord>> listOnCreate;
+        Set<ConstraintViolation<FilmRecord>> listOnUpdate;
+        try (ValidatorFactory factory = Validation.buildDefaultValidatorFactory()) {
+            Validator validator = factory.getValidator();
+            listOnCreate = validator.validate(filmRecord, onCreateValidator);
+            listOnUpdate = validator.validate(filmRecord, onUpdateValidator);
+        }
 
         assertAll(() -> {
             assertFalse(listOnCreate.isEmpty());
@@ -113,9 +132,13 @@ class FilmRecordTest {
         filmRecord = new FilmRecord(1L, "name", "desc", null,
                 LocalDate.of(1805, 11, 1), 20, null);
 
-        Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
-        Set<ConstraintViolation<FilmRecord>> listOnCreate = validator.validate(filmRecord, onCreateValidator);
-        Set<ConstraintViolation<FilmRecord>> listOnUpdate = validator.validate(filmRecord, onUpdateValidator);
+        Set<ConstraintViolation<FilmRecord>> listOnCreate;
+        Set<ConstraintViolation<FilmRecord>> listOnUpdate;
+        try (ValidatorFactory factory = Validation.buildDefaultValidatorFactory()) {
+            Validator validator = factory.getValidator();
+            listOnCreate = validator.validate(filmRecord, onCreateValidator);
+            listOnUpdate = validator.validate(filmRecord, onUpdateValidator);
+        }
 
         assertAll(() -> {
             assertFalse(listOnCreate.isEmpty());
@@ -133,9 +156,13 @@ class FilmRecordTest {
         filmRecord = new FilmRecord(1L, "name", "desc", null,
                 LocalDate.of(1905, 11, 1), 0, null);
 
-        Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
-        Set<ConstraintViolation<FilmRecord>> listOnCreate = validator.validate(filmRecord, onCreateValidator);
-        Set<ConstraintViolation<FilmRecord>> listOnUpdate = validator.validate(filmRecord, onUpdateValidator);
+        Set<ConstraintViolation<FilmRecord>> listOnCreate;
+        Set<ConstraintViolation<FilmRecord>> listOnUpdate;
+        try (ValidatorFactory factory = Validation.buildDefaultValidatorFactory()) {
+            Validator validator = factory.getValidator();
+            listOnCreate = validator.validate(filmRecord, onCreateValidator);
+            listOnUpdate = validator.validate(filmRecord, onUpdateValidator);
+        }
 
         assertAll(() -> {
             assertFalse(listOnCreate.isEmpty());
@@ -153,9 +180,13 @@ class FilmRecordTest {
         filmRecord = new FilmRecord(1L, "name", "desc", null,
                 LocalDate.of(1905, 11, 1), -100, null);
 
-        Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
-        Set<ConstraintViolation<FilmRecord>> listOnCreate = validator.validate(filmRecord, onCreateValidator);
-        Set<ConstraintViolation<FilmRecord>> listOnUpdate = validator.validate(filmRecord, onUpdateValidator);
+        Set<ConstraintViolation<FilmRecord>> listOnCreate;
+        Set<ConstraintViolation<FilmRecord>> listOnUpdate;
+        try (ValidatorFactory factory = Validation.buildDefaultValidatorFactory()) {
+            Validator validator = factory.getValidator();
+            listOnCreate = validator.validate(filmRecord, onCreateValidator);
+            listOnUpdate = validator.validate(filmRecord, onUpdateValidator);
+        }
 
         assertAll(() -> {
             assertFalse(listOnCreate.isEmpty());
@@ -173,9 +204,13 @@ class FilmRecordTest {
         filmRecord = new FilmRecord(1L, "name", "desc", null,
                 LocalDate.of(1905, 11, 1), 20, null);
 
-        Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
-        Set<ConstraintViolation<FilmRecord>> listOnCreate = validator.validate(filmRecord, onCreateValidator);
-        Set<ConstraintViolation<FilmRecord>> listOnUpdate = validator.validate(filmRecord, onUpdateValidator);
+        Set<ConstraintViolation<FilmRecord>> listOnCreate;
+        Set<ConstraintViolation<FilmRecord>> listOnUpdate;
+        try (ValidatorFactory factory = Validation.buildDefaultValidatorFactory()) {
+            Validator validator = factory.getValidator();
+            listOnCreate = validator.validate(filmRecord, onCreateValidator);
+            listOnUpdate = validator.validate(filmRecord, onUpdateValidator);
+        }
 
         assertTrue(listOnCreate.isEmpty());
         assertTrue(listOnUpdate.isEmpty());

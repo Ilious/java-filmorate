@@ -82,7 +82,7 @@ public class FilmService implements IFilmService {
         FilmMapper.updateFields(dao, filmRecord);
 
         return filmRepo.updateFilm(dao);
-    };
+    }
 
     @Override
     public FilmDao getById(Long filmId) {

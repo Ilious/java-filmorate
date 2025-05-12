@@ -51,7 +51,7 @@ class FilmRepoTest {
                 jdbc,
                 filmDaoRowMapper,
                 new FilmExtractor(),
-                new SingleFilmExtractor(new GenreMapper())
+                new SingleFilmExtractor()
         );
         userRepo = new UserRepo(
                 jdbc,
@@ -200,7 +200,7 @@ class FilmRepoTest {
                 .email("email@email.ru")
                 .login("login")
                 .name("user")
-                .birthday(LocalDate.of(2000, 02, 20))
+                .birthday(LocalDate.of(2000, 2, 20))
                 .build();
 
         userRepo.createUser(user);
@@ -240,7 +240,7 @@ class FilmRepoTest {
                 .email("email@email.ru")
                 .login("login")
                 .name("user")
-                .birthday(LocalDate.of(2000, 02, 20))
+                .birthday(LocalDate.of(2000, 2, 20))
                 .build();
 
         userRepo.createUser(user);
@@ -291,19 +291,19 @@ class FilmRepoTest {
                 .email("email@email.ru")
                 .login("login")
                 .name("user")
-                .birthday(LocalDate.of(2000, 02, 20))
+                .birthday(LocalDate.of(2000, 2, 20))
                 .build();
         UserDao user2 = UserDao.builder()
                 .email("imail@email.ru")
                 .login("user2")
                 .name("friend")
-                .birthday(LocalDate.of(2000, 02, 20))
+                .birthday(LocalDate.of(2000, 2, 20))
                 .build();
         UserDao user3 = UserDao.builder()
                 .email("ya@email.ru")
                 .login("user3")
                 .name("anotherFriend")
-                .birthday(LocalDate.of(2000, 02, 20))
+                .birthday(LocalDate.of(2000, 2, 20))
                 .build();
 
         userRepo.createUser(user);
