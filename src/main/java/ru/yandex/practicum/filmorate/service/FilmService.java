@@ -38,9 +38,10 @@ public class FilmService implements IFilmService {
         mpaService.validateId(mpaReq.id());
         MpaDao mpa = MpaMapper.toMpaDao(mpaReq);
 
-        Set<GenreDao> genres = new HashSet<>(
-                GenreMapper.toGenresDao(filmRecord.genres())
+        Set<GenreDao> genres = new TreeSet<>(
+                Comparator.comparing(GenreDao::getId)
         );
+        genres.addAll(GenreMapper.toGenresDao(filmRecord.genres()));
         genres.stream()
                 .map(GenreDao::getId)
                 .forEach(genreService::validateId);
