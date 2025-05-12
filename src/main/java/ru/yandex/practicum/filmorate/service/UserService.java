@@ -12,7 +12,6 @@ import ru.yandex.practicum.filmorate.service.interfaces.IUserService;
 import ru.yandex.practicum.filmorate.storage.interfaces.IUserRepo;
 
 import java.util.Collection;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Slf4j
