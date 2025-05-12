@@ -1,16 +1,23 @@
 package ru.yandex.practicum.filmorate.storage.interfaces;
 
-import ru.yandex.practicum.filmorate.pojo.Film;
+import ru.yandex.practicum.filmorate.dao.FilmDao;
 
 import java.util.Collection;
+import java.util.Optional;
 
 public interface IFilmRepo {
 
-    Collection<Film> getAll();
+    Collection<FilmDao> findAll();
 
-    Film createFilm(Film film);
+    FilmDao createFilm(FilmDao filmDao);
 
-    Film updateFilm(Film film);
+    FilmDao updateFilm(FilmDao filmDao);
 
-    Film getFilmById(Long id);
+    Optional<FilmDao> findFilmById(Long id);
+
+    void setLikeOnFilm(Long filmId, Long userId);
+
+    void deleteLikeFromFilm(Long filmId, Long userId);
+
+    Collection<FilmDao> findNPopular(Long count);
 }
