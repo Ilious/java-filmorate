@@ -1,0 +1,27 @@
+server:
+  port: 8100
+
+spring:
+  datasource:
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;MODE=PostgreSQL
+    username: ${DB_USER:sa}
+    password: ${DB_PASSWORD:password}
+  sql:
+    init:
+      mode: always
+  h2:
+    console:
+      enabled: true
+      path: /h2
+
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.yaml
+    clear-checksums: true
+
+  main:
+    banner-mode: off
+
+
+logging:
+  level:
+    ru.yandex.practicum: TRACE

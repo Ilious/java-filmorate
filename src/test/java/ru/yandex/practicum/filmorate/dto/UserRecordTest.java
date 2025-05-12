@@ -14,6 +14,9 @@ class UserRecordTest {
 
     private UserRecord userRecord;
 
+    private final Class<ru.yandex.practicum.filmorate.validator.Validator.OnCreate> onCreateValidator =
+            ru.yandex.practicum.filmorate.validator.Validator.OnCreate.class;
+
     @Test
     void validate_EmailIsNull_ShouldReturnError() {
         userRecord = new UserRecord(1L, null, "login", "name",
@@ -97,7 +100,7 @@ class UserRecordTest {
                 LocalDate.of(2025, 11, 1));
 
         Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
-        Set<ConstraintViolation<UserRecord>> list = validator.validate(userRecord);
+        Set<ConstraintViolation<UserRecord>> list = validator.validate(userRecord, onCreateValidator);
 
         assertFalse(list.isEmpty());
         assertEquals(1, list.size());

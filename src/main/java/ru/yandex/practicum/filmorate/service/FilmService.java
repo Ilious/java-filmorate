@@ -1,99 +1,122 @@
 package ru.yandex.practicum.filmorate.service;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.dao.FilmDao;
+import ru.yandex.practicum.filmorate.dao.GenreDao;
+import ru.yandex.practicum.filmorate.dao.MpaDao;
 import ru.yandex.practicum.filmorate.dto.FilmRecord;
+import ru.yandex.practicum.filmorate.dto.GenreRecord;
+import ru.yandex.practicum.filmorate.dto.MpaRecord;
+import ru.yandex.practicum.filmorate.exception.EntityNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
-import ru.yandex.practicum.filmorate.pojo.Film;
-import ru.yandex.practicum.filmorate.pojo.User;
+import ru.yandex.practicum.filmorate.mapper.FilmMapper;
+import ru.yandex.practicum.filmorate.mapper.GenreMapper;
+import ru.yandex.practicum.filmorate.mapper.MpaMapper;
 import ru.yandex.practicum.filmorate.service.interfaces.IFilmService;
-import ru.yandex.practicum.filmorate.storage.interfaces.IUserRepo;
+import ru.yandex.practicum.filmorate.service.interfaces.IGenreService;
+import ru.yandex.practicum.filmorate.service.interfaces.IMpaService;
 import ru.yandex.practicum.filmorate.storage.interfaces.IFilmRepo;
 
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.stream.Collectors;
+import java.util.*;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class FilmService implements IFilmService {
 
     private final IFilmRepo filmRepo;
-    private final IUserRepo userRepo;
 
-    public FilmService(IFilmRepo filmRepo, IUserRepo userRepo) {
-        this.filmRepo = filmRepo;
-        this.userRepo = userRepo;
+    private final IGenreService genreService;
+
+    private final IMpaService mpaService;
+
+    @Override
+    public FilmDao postFilm(FilmRecord filmRecord) {
+        MpaRecord mpaReq = filmRecord.mpa();
+        mpaService.validateId(mpaReq.id());
+        MpaDao mpa = MpaMapper.toMpaDao(mpaReq);
+
+        List<GenreDao> dao = GenreMapper.toGenresDao(filmRecord.genres());
+        List<Long> list = dao.stream()
+                .map(GenreDao::getId)
+                .toList();
+        genreService.validateIds(list);
+
+        Set<GenreDao> uniqueGenres = new TreeSet<>(
+                Comparator.comparing(GenreDao::getId)
+        );
+        uniqueGenres.addAll(dao);
+
+        FilmDao filmDao = FilmMapper.toFilmDao(filmRecord);
+        filmDao.setGenres(new ArrayList<>(uniqueGenres));
+        filmDao.setMpa(mpa);
+
+        return filmRepo.createFilm(filmDao);
     }
 
     @Override
-    public Film postFilm(FilmRecord filmRecord) {
-        Film film = Film.builder()
-                .name(filmRecord.name())
-                .description(filmRecord.description())
-                .releaseDate(filmRecord.releaseDate())
-                .duration(filmRecord.duration())
-                .build();
-
-        return filmRepo.createFilm(film);
-    }
-
-    @Override
-    public Film putFilm(FilmRecord filmRecord) {
+    public FilmDao putFilm(FilmRecord filmRecord) {
         if (filmRecord.id() == null) {
             log.warn("updateFilm: Id is not correct");
             throw new ValidationException("updateFilm: is not correct", "id", null);
         }
 
-        Film filmById = filmRepo.getFilmById(filmRecord.id());
+        FilmDao dao = getById(filmRecord.id());
+        log.debug("updateFilm {} {}", filmRecord.id(), filmRecord.name());
 
-        if (filmRecord.releaseDate() != null)
-            filmById.setReleaseDate(filmRecord.releaseDate());
+        if (filmRecord.genres() != null) {
+            List<Long> ids = filmRecord.genres()
+                    .stream()
+                    .map(GenreRecord::id)
+                    .toList();
+            List<GenreDao> genresDao = GenreMapper.toGenresDao(filmRecord.genres());
 
-        filmById.setDuration(filmRecord.duration());
+            genreService.validateIds(ids);
 
-        if (filmRecord.description() != null)
-            filmById.setDescription(filmRecord.description());
+            dao.setGenres(genresDao);
+        }
 
-        if (filmRecord.name() != null)
-            filmById.setName(filmRecord.name());
+        MpaRecord mpaReq = filmRecord.mpa();
+        if (mpaReq != null) {
+            mpaService.validateId(mpaReq.id());
+            dao.setMpa(MpaMapper.toMpaDao(mpaReq));
+        }
 
-        return filmById;
+        FilmMapper.updateFields(dao, filmRecord);
+
+        return filmRepo.updateFilm(dao);
     }
 
     @Override
-    public Collection<Film> getAll() {
-        Collection<Film> films = filmRepo.getAll();
-        log.debug("Get user collection {}", films.size());
-        return films;
+    public FilmDao getById(Long filmId) {
+        return filmRepo.findFilmById(filmId)
+                .orElseThrow(() -> new EntityNotFoundException(
+                                "Entity Film not found", "Film", "Id", String.valueOf(filmId)
+                        )
+                );
     }
 
     @Override
-    public Film setLikeOnFilm(Long userId, Long filmId) {
-        Film filmById = filmRepo.getFilmById(filmId);
-
-        User userById = userRepo.getUserById(userId);
-
-        filmById.getLikedId().add(userById.getId());
-        return filmById;
+    public Collection<FilmDao> getAll() {
+        Collection<FilmDao> filmDaos = filmRepo.findAll();
+        log.debug("Get user collection {}", filmDaos.size());
+        return filmDaos;
     }
 
     @Override
-    public Film deleteLikeOnFilm(Long userId, Long filmId) {
-        Film filmById = filmRepo.getFilmById(filmId);
-
-        User userById = userRepo.getUserById(userId);
-
-        filmById.getLikedId().remove(userById.getId());
-        return filmById;
+    public void setLikeOnFilm(Long userId, Long filmId) {
+        filmRepo.setLikeOnFilm(filmId, userId);
     }
 
     @Override
-    public Collection<Film> getMostLikedFilms(Long count) {
-        return  filmRepo.getAll()
-                        .stream()
-                        .sorted(Comparator.comparingInt(film -> -film.getLikedId().size()))
-                        .limit(count)
-                        .collect(Collectors.toList());
+    public void deleteLikeOnFilm(Long userId, Long filmId) {
+        filmRepo.deleteLikeFromFilm(filmId, userId);
+    }
+
+    @Override
+    public Collection<FilmDao> getMostLikedFilms(Long count) {
+        return filmRepo.findNPopular(count);
     }
 }

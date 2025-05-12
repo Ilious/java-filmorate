@@ -1,125 +1,115 @@
 package ru.yandex.practicum.filmorate.service;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.dao.UserDao;
+import ru.yandex.practicum.filmorate.dto.UserRecord;
 import ru.yandex.practicum.filmorate.exception.EntityNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
-import ru.yandex.practicum.filmorate.pojo.User;
-import ru.yandex.practicum.filmorate.dto.UserRecord;
+import ru.yandex.practicum.filmorate.mapper.UserMapper;
 import ru.yandex.practicum.filmorate.service.interfaces.IUserService;
 import ru.yandex.practicum.filmorate.storage.interfaces.IUserRepo;
 
 import java.util.Collection;
-import java.util.Objects;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class UserService implements IUserService {
 
     private final IUserRepo userRepo;
 
-    public UserService(IUserRepo userRepo) {
-        this.userRepo = userRepo;
+    @Override
+    public UserDao postUser(UserRecord user) {
+        loginValidation(user.login());
+
+        UserDao userDao = UserMapper.toUserDao(user);
+
+        return userRepo.createUser(userDao);
     }
 
     @Override
-    public User postUser(UserRecord user) {
-        User createdUser = User.builder()
-                .name(getName(user.name(), user.login()))
-                .email(user.email())
-                .login(user.login())
-                .birthday(user.birthday())
-                .build();
-
-        return userRepo.createUser(createdUser);
-    }
-
-    @Override
-    public User putUser(UserRecord user) {
-        if (user.id() == null || user.login().contains(" ")) {
-            log.warn("updateUser: Id is not correct");
+    public UserDao putUser(UserRecord user) {
+        loginValidation(user.login());
+        if (user.id() == null) {
+            log.warn("updateUser: Id is not correct: id [null]");
             throw new ValidationException("updateUser: Id is not correct", "Id", null);
         }
 
-        User userById = userRepo.getUserById(user.id());
+        UserDao userDao = getUserById(user.id());
+        UserMapper.updateFields(userDao, user);
+
         log.debug("updateUser {} {}", user.id(), user.login());
 
-
-        if (user.birthday() != null)
-            userById.setBirthday(user.birthday());
-
-        if (!user.login().isBlank())
-            userById.setLogin(user.login());
-
-        userById.setName(getName(user.name(), user.login()));
-
-        if (user.email() != null && !user.email().isBlank())
-            userById.setEmail(user.email());
-
-        return userRepo.updateUser(userById);
+        return userRepo.updateUser(userDao);
     }
 
     @Override
-    public Collection<User> getAll() {
-        Collection<User> users = userRepo.getAll();
-        log.debug("Get user collection {}", users.size());
-        return users;
+    public Collection<UserDao> getAll() {
+        Collection<UserDao> userDaos = userRepo.findAll();
+        log.debug("Get user collection {}", userDaos.size());
+        return userDaos;
     }
 
     @Override
-    public User addFriend(Long id, Long friendId) {
-        User userById = userRepo.getUserById(id);
+    public void addFriend(Long id, Long friendId) {
+        existsUserOrThrowErr(id);
 
-        User friendById = userRepo.getUserById(friendId);
+        existsUserOrThrowErr(friendId);
 
-        friendById.getFriends().add(userById.getId());
-        userById.getFriends().add(friendById.getId());
-        return friendById;
+        userRepo.addFriend(id, friendId);
     }
 
     @Override
-    public User removeUserFromFriends(Long id, Long friendId) {
-        User userById = userRepo.getUserById(id);
+    public void removeUserFromFriends(Long id, Long friendId) {
+        existsUserOrThrowErr(id);
 
-        User friendById = userRepo.getUserById(friendId);
+        existsUserOrThrowErr(friendId);
 
-        friendById.getFriends().remove(userById.getId());
-        userById.getFriends().remove(friendById.getId());
-        return friendById;
+        userRepo.removeFromFriends(id, friendId);
     }
 
     @Override
-    public Collection<User> getFriends(Long id) {
-        Set<Long> friendsIds = userRepo.getUserById(id).getFriends();
+    public UserDao getUserById(Long id) {
+        return userRepo.findUserById(id)
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "Entity user not found", "User", "id", String.valueOf(id)
+                        )
+                );
+    }
 
-        return friendsIds.stream()
-                .map(friendId -> {
-                            try {
-                                return userRepo.getUserById(friendId);
-                            } catch (EntityNotFoundException ex) {
-                                log.warn("User {} get Friend wasn't found id: {}", id, friendId);
-                                return null;
-                            }
-                        }
-                )
-                .filter(Objects::nonNull)
+    @Override
+    public Collection<UserDao> getFriends(Long id) {
+        existsUserOrThrowErr(id);
+
+        return userRepo.findFriends(id);
+    }
+
+    @Override
+    public Collection<UserDao> getFriendsInCommon(Long id, Long friendId) {
+        Collection<UserDao> userDaoFriends = getFriends(id);
+
+        Collection<UserDao> anotherUserDaoFriends = getFriends(friendId);
+
+        return userDaoFriends.stream()
+                .filter(anotherUserDaoFriends::contains)
                 .collect(Collectors.toList());
     }
 
-    @Override
-    public Collection<User> getFriendsInCommon(Long id, Long friendId) {
-        Collection<User> userFriends = getFriends(id);
-
-        Collection<User> anotherUserFriends = getFriends(friendId);
-
-        return userFriends.stream()
-                .filter(anotherUserFriends::contains)
-                .collect(Collectors.toList());
+    private void loginValidation(String login) {
+        if (login.contains(" ")) {
+            log.warn("updateUser: Id is not correct: login [{}]", login);
+            throw new ValidationException("updateUser: login is not correct {}", "login", login);
+        }
     }
 
-    private String getName(String name, String login) {
-        return Objects.nonNull(name) && !name.isBlank() ? name : login;
+    private void existsUserOrThrowErr(Long id) throws EntityNotFoundException {
+        userRepo.findUserById(id)
+                .orElseThrow(() -> new EntityNotFoundException(
+                                "Entity User not found", "User", "Id", String.valueOf(id)
+                        )
+                );
     }
 }

@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.pojo;
+package ru.yandex.practicum.filmorate.dao;
 
 import lombok.Builder;
 import lombok.Data;

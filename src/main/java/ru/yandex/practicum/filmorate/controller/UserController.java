@@ -1,12 +1,13 @@
 package ru.yandex.practicum.filmorate.controller;
 
-import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.dao.UserDao;
 import ru.yandex.practicum.filmorate.dto.UserRecord;
-import ru.yandex.practicum.filmorate.pojo.User;
 import ru.yandex.practicum.filmorate.service.interfaces.IUserService;
+import ru.yandex.practicum.filmorate.validator.Validator;
 
 import java.util.Collection;
 
@@ -21,43 +22,44 @@ public class UserController {
     }
 
     @GetMapping
-    public ResponseEntity<Collection<User>> getUsers() {
-        Collection<User> users = userService.getAll();
-        if (users.isEmpty())
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(users);
-        return ResponseEntity.status(HttpStatus.OK).body(users);
+    public ResponseEntity<Collection<UserDao>> getUsers() {
+        Collection<UserDao> userDaos = userService.getAll();
+        if (userDaos.isEmpty())
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(userDaos);
+        return ResponseEntity.status(HttpStatus.OK).body(userDaos);
     }
 
     @PutMapping
-    public ResponseEntity<User> updateUser(@RequestBody @Valid UserRecord user) {
+    public ResponseEntity<UserDao> updateUser(@RequestBody @Validated(Validator.OnUpdate.class) UserRecord user) {
         return ResponseEntity.status(HttpStatus.OK).body(userService.putUser(user));
     }
 
     @PostMapping
-    public ResponseEntity<User> createUser(@RequestBody @Valid UserRecord userRecord) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(userService.postUser(userRecord));
+    public ResponseEntity<UserDao> createUser(
+            @RequestBody @Validated(Validator.OnCreate.class) UserRecord userRecord
+    ) {
+        return ResponseEntity.status(HttpStatus.OK).body(userService.postUser(userRecord));
     }
 
+    @ResponseStatus(HttpStatus.OK)
     @PutMapping("/{id}/friends/{friendId}")
-    public ResponseEntity<User> putFriend(@PathVariable Long id,
-                                          @PathVariable Long friendId) {
-        return ResponseEntity.status(HttpStatus.OK).body(userService.addFriend(id, friendId));
+    public void putFriend(@PathVariable Long id, @PathVariable Long friendId) {
+        userService.addFriend(id, friendId);
     }
 
+    @ResponseStatus(HttpStatus.OK)
     @DeleteMapping("/{id}/friends/{friendId}")
-    public ResponseEntity<User> deleteFriend(@PathVariable Long id,
-                                             @PathVariable Long friendId) {
-        return ResponseEntity.status(HttpStatus.OK).body(userService.removeUserFromFriends(id, friendId));
+    public void deleteFriend(@PathVariable Long id, @PathVariable Long friendId) {
+        userService.removeUserFromFriends(id, friendId);
     }
 
     @GetMapping("/{id}/friends")
-    public ResponseEntity<Collection<User>> getFriends(@PathVariable Long id) {
+    public ResponseEntity<Collection<UserDao>> getFriends(@PathVariable Long id) {
         return ResponseEntity.status(HttpStatus.OK).body(userService.getFriends(id));
     }
 
     @GetMapping("/{id}/friends/common/{otherId}")
-    public ResponseEntity<Collection<User>> getFriends(@PathVariable Long id,
-                                                       @PathVariable Long otherId) {
+    public ResponseEntity<Collection<UserDao>> getFriends(@PathVariable Long id, @PathVariable Long otherId) {
         return ResponseEntity.status(HttpStatus.OK).body(userService.getFriendsInCommon(id, otherId));
     }
 }

@@ -1,0 +1,22 @@
+databaseChangeLog:
+  - changeSet:
+      id: insert-genres-init
+      author: Ilious
+      runOnChange: true
+      changes:
+        - sql:
+            sql: |
+              MERGE INTO genres g
+              USING (VALUES
+                (1, 'Комедия'),
+                (2, 'Драма'),
+                (3, 'Мультфильм'),
+                (4, 'Триллер'),
+                (5, 'Документальный'),
+                (6, 'Боевик')
+              ) AS source(id, name)
+              ON g.id = source.id
+              WHEN MATCHED THEN
+                UPDATE SET name = source.name
+              WHEN NOT MATCHED THEN
+                INSERT (id, name) VALUES (source.id, source.name);

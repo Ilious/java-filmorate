@@ -12,8 +12,9 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.yandex.practicum.filmorate.exception.EntityNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
-import ru.yandex.practicum.filmorate.pojo.ResponseError;
+import ru.yandex.practicum.filmorate.dao.ResponseError;
 
+import java.sql.SQLException;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -23,7 +24,10 @@ public class GlobalExceptionHandler {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ResponseError handleEntityNotFoundException(EntityNotFoundException exception) {
-        String errMessage = String.format("Entity [%s] not found: %s", exception.getEntityName(), exception.getValue());
+        String errMessage = String.format(
+                "Entity [%s] not found by [%s]: %s",
+                exception.getEntityName(), exception.getFieldName(), exception.getValue()
+        );
         log.warn("{}:\n {}", errMessage, exception.getMessage());
         return ResponseError.builder()
                 .description(errMessage)
@@ -81,6 +85,16 @@ public class GlobalExceptionHandler {
         return ResponseError.builder()
                 .description(errMessage.toString())
                 .code(HttpStatus.BAD_REQUEST.value()).build();
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ResponseError handleUnknownException(SQLException exception) {
+        String errMessage = "Error on server";
+        log.warn("{}:\n {}", errMessage, exception.getMessage());
+        return ResponseError.builder()
+                .description(errMessage)
+                .code(HttpStatus.INTERNAL_SERVER_ERROR.value()).build();
     }
 
     @ExceptionHandler

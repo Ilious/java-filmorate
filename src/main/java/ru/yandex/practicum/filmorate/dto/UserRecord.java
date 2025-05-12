@@ -1,16 +1,14 @@
 package ru.yandex.practicum.filmorate.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Past;
-import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.*;
+import ru.yandex.practicum.filmorate.validator.Validator;
 
 import java.time.LocalDate;
 
 public record UserRecord(
 
-        Long id,
+        @NotNull(groups = Validator.OnUpdate.class) Long id,
 
         @NotBlank @Email String email,
 
@@ -18,6 +16,7 @@ public record UserRecord(
 
         String name,
 
-        @Past @JsonFormat(pattern = "yyyy-MM-dd") LocalDate birthday) {
+        @Past(groups = {Validator.OnCreate.class, Validator.OnUpdate.class})
+        @JsonFormat(pattern = "yyyy-MM-dd") LocalDate birthday) {
 
 }

@@ -1,16 +1,23 @@
 package ru.yandex.practicum.filmorate.storage.interfaces;
 
-import ru.yandex.practicum.filmorate.pojo.User;
+import ru.yandex.practicum.filmorate.dao.UserDao;
 
 import java.util.Collection;
+import java.util.Optional;
 
 public interface IUserRepo {
 
-    Collection<User> getAll();
+    Collection<UserDao> findAll();
 
-    User createUser(User user);
+    UserDao createUser(UserDao userDao);
 
-    User updateUser(User user);
+    UserDao updateUser(UserDao userDao);
 
-    User getUserById(Long id);
+    Optional<UserDao> findUserById(Long id);
+
+    Collection<UserDao> findFriends(Long userId);
+
+    void addFriend(Long userId, Long friendId);
+
+    void removeFromFriends(Long userId, Long friendId);
 }
