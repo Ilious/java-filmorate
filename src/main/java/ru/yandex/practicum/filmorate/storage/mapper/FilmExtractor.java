@@ -46,11 +46,11 @@ public class FilmExtractor implements ResultSetExtractor<List<FilmDao>> {
                 films.put(id, film);
             }
 
-            Long genre_id = rs.getLong("genre_id");
-            String genre_name = rs.getString("genre_name");
+            Long genreId = rs.getLong("genre_id");
+            String genreName = rs.getString("genre_name");
 
-            if (genre_id != 0 && genre_name != null) {
-                GenreDao genreDao = new GenreDao(genre_id, Genre.fromValue(genre_name));
+            if (genreId != 0 && genreName != null) {
+                GenreDao genreDao = new GenreDao(genreId, Genre.fromValue(genreName));
                 film.getGenres().add(genreDao);
             }
         }
