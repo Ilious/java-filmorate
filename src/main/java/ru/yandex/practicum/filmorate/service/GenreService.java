@@ -7,6 +7,10 @@ import ru.yandex.practicum.filmorate.service.interfaces.IGenreService;
 import ru.yandex.practicum.filmorate.storage.interfaces.IGenreRepo;
 
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class GenreService implements IGenreService {
@@ -32,7 +36,16 @@ public class GenreService implements IGenreService {
     }
 
     @Override
-    public void validateId(Long id) {
-        getById(id);
+    public void validateIds(List<Long> ids) {
+        Set<Long> existingIds = new HashSet<>(getAll()).stream()
+                .map(GenreDao::getId)
+                .collect(Collectors.toSet());
+        ids.forEach(genre -> {
+                    if (!existingIds.contains(genre))
+                        throw new EntityNotFoundException(
+                                "Entity Genre not found", "Genre", "genre", String.valueOf(genre)
+                        );
+                }
+        );
     }
 }

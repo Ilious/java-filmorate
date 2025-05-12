@@ -38,16 +38,19 @@ public class FilmService implements IFilmService {
         mpaService.validateId(mpaReq.id());
         MpaDao mpa = MpaMapper.toMpaDao(mpaReq);
 
-        Set<GenreDao> genres = new TreeSet<>(
+        List<GenreDao> dao = GenreMapper.toGenresDao(filmRecord.genres());
+        List<Long> list = dao.stream()
+                .map(GenreDao::getId)
+                .toList();
+        genreService.validateIds(list);
+
+        Set<GenreDao> uniqueGenres = new TreeSet<>(
                 Comparator.comparing(GenreDao::getId)
         );
-        genres.addAll(GenreMapper.toGenresDao(filmRecord.genres()));
-        genres.stream()
-                .map(GenreDao::getId)
-                .forEach(genreService::validateId);
+        uniqueGenres.addAll(dao);
 
         FilmDao filmDao = FilmMapper.toFilmDao(filmRecord);
-        filmDao.setGenres(new ArrayList<>(genres));
+        filmDao.setGenres(new ArrayList<>(uniqueGenres));
         filmDao.setMpa(mpa);
 
         return filmRepo.createFilm(filmDao);
@@ -64,13 +67,15 @@ public class FilmService implements IFilmService {
         log.debug("updateFilm {} {}", filmRecord.id(), filmRecord.name());
 
         if (filmRecord.genres() != null) {
-            List<Long> genreIds = filmRecord.genres().stream()
+            List<Long> ids = filmRecord.genres()
+                    .stream()
                     .map(GenreRecord::id)
                     .toList();
+            List<GenreDao> genresDao = GenreMapper.toGenresDao(filmRecord.genres());
 
-            genreIds.forEach(genreService::validateId);
+            genreService.validateIds(ids);
 
-            dao.setGenres(GenreMapper.toGenresDao(filmRecord.genres()));
+            dao.setGenres(genresDao);
         }
 
         MpaRecord mpaReq = filmRecord.mpa();

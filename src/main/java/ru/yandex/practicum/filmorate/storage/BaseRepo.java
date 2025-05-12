@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.storage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowMapper;
@@ -13,6 +14,7 @@ import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.BiConsumer;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -71,6 +73,20 @@ public abstract class BaseRepo<T> {
             for (int i = 1; i <= params.length; ++i)
                 st.setObject(i, params[i - 1]);
             return st;
+        });
+    }
+
+    protected <T> void insertBatch(String query, List<T> objects, BiConsumer<PreparedStatement, T> setter) {
+        jdbc.batchUpdate(query, new BatchPreparedStatementSetter() {
+            @Override
+            public void setValues(PreparedStatement ps, int i) {
+                setter.accept(ps, objects.get(i));
+            }
+
+            @Override
+            public int getBatchSize() {
+                return objects.size();
+            }
         });
     }
 

@@ -9,6 +9,7 @@ import ru.yandex.practicum.filmorate.dao.FilmDao;
 import ru.yandex.practicum.filmorate.dao.GenreDao;
 import ru.yandex.practicum.filmorate.storage.interfaces.IFilmRepo;
 
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -166,12 +167,17 @@ public class FilmRepo extends BaseRepo<FilmDao> implements IFilmRepo {
         if (genres == null || genres.isEmpty())
             return;
 
-        genres.forEach(genre ->
-                insertNoKey(
-                        INSERT_FILM_GENRE_QUERY,
-                        filmId,
-                        genre.getId()
-                        )
+        insertBatch(
+                INSERT_FILM_GENRE_QUERY,
+                genres,
+                (ps, genre) -> {
+                    try {
+                        ps.setLong(1, filmId);
+                        ps.setLong(2, genre.getId());
+                    } catch (SQLException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
         );
     }
 
