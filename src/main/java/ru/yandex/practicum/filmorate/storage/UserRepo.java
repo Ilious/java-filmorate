@@ -120,10 +120,6 @@ public class UserRepo extends BaseRepo<UserDao> implements IUserRepo {
         log.trace("UserRepo.deleteUser: by userId {}", userId);
 
         delete(
-                DELETE_FRIEND_QUERY, userId, userId
-        );
-
-        delete(
                 DELETE_USER_QUERY, userId
         );
     }
