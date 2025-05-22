@@ -1,0 +1,12 @@
+databaseChangeLog:
+  - include:
+      file: changes/filmorate_001_init.sql
+      relativeToChangelogFile: true
+
+  - include:
+      file: changes/filmorate_002_insert_genres.yaml
+      relativeToChangelogFile: true
+
+  - include:
+      file: changes/filmorate_003_insert_ratings.yaml
+      relativeToChangelogFile: true
