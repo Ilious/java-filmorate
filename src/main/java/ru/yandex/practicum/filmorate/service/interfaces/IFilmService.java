@@ -17,7 +17,7 @@ public interface IFilmService {
 
     void deleteLikeOnFilm(Long userId, Long filmId);
 
-    Collection<FilmDao> getMostLikedFilms(Long count);
+    Collection<FilmDao> getMostLikedFilms(Long count, Long genreId, Integer year);
 
     FilmDao getById(Long filmId);
 }
