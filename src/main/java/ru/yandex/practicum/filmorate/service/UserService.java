@@ -112,4 +112,12 @@ public class UserService implements IUserService {
                         )
                 );
     }
+
+    @Override
+    public void deleteUser(Long userId) {
+        existsUserOrThrowErr(userId);
+
+        userRepo.deleteUser(userId);
+
+    }
 }

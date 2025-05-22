@@ -73,6 +73,8 @@ public class FilmRepo extends BaseRepo<FilmDao> implements IFilmRepo {
 
     public static final String DELETE_ALL_FILM_GENRES_QUERY = "DELETE FROM film_genres WHERE film_id = ?";
 
+    private static final String DELETE_FILM_QUERY = "DELETE FROM films WHERE id = ?";
+
     private final ResultSetExtractor<List<FilmDao>> extractor;
 
     private final ResultSetExtractor<FilmDao> singleExtractor;
@@ -188,5 +190,18 @@ public class FilmRepo extends BaseRepo<FilmDao> implements IFilmRepo {
         delete(DELETE_ALL_FILM_GENRES_QUERY, filmId);
 
         addGenresToFilm(filmId, genres);
+    }
+
+    @Override
+    public void deleteFilm(Long filmId) {
+        log.trace("FilmRepo.deleteFilm: by filmId {}", filmId);
+
+        delete(
+                DELETE_ALL_FILM_GENRES_QUERY, filmId
+        );
+
+        delete(
+                DELETE_FILM_QUERY, filmId
+        );
     }
 }

@@ -62,4 +62,10 @@ public class UserController {
     public ResponseEntity<Collection<UserDao>> getFriends(@PathVariable Long id, @PathVariable Long otherId) {
         return ResponseEntity.status(HttpStatus.OK).body(userService.getFriendsInCommon(id, otherId));
     }
+
+    @ResponseStatus(HttpStatus.OK)
+    @DeleteMapping("/{userId}")
+    public void deleteUser(@PathVariable Long userId) {
+        userService.deleteUser(userId);
+    }
 }

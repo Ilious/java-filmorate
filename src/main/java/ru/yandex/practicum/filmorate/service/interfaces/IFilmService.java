@@ -20,4 +20,6 @@ public interface IFilmService {
     Collection<FilmDao> getMostLikedFilms(Long count);
 
     FilmDao getById(Long filmId);
+
+    void deleteFilm(Long filmId);
 }

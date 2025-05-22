@@ -119,4 +119,11 @@ public class FilmService implements IFilmService {
     public Collection<FilmDao> getMostLikedFilms(Long count) {
         return filmRepo.findNPopular(count);
     }
+
+    @Override
+    public void deleteFilm(Long filmId) {
+        getById(filmId);
+
+        filmRepo.deleteFilm(filmId);
+    }
 }
