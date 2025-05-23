@@ -197,10 +197,6 @@ public class FilmRepo extends BaseRepo<FilmDao> implements IFilmRepo {
         log.trace("FilmRepo.deleteFilm: by filmId {}", filmId);
 
         delete(
-                DELETE_ALL_FILM_GENRES_QUERY, filmId
-        );
-
-        delete(
                 DELETE_FILM_QUERY, filmId
         );
     }

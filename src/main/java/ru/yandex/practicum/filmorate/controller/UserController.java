@@ -68,4 +68,10 @@ public class UserController {
     public void deleteUser(@PathVariable Long userId) {
         userService.deleteUser(userId);
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<UserDao> getUser(@PathVariable Long id) {
+        return ResponseEntity.status(HttpStatus.OK).body(userService.getUserById(id));
+    }
+
 }
