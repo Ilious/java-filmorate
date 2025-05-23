@@ -67,4 +67,10 @@ public class FilmController {
                                                                Long count) {
         return ResponseEntity.status(HttpStatus.OK).body(filmService.getMostLikedFilms(count));
     }
+
+    @ResponseStatus(HttpStatus.OK)
+    @DeleteMapping("{filmId}")
+    public void deleteFilm(@PathVariable Long filmId) {
+        filmService.deleteFilm(filmId);
+    }
 }
