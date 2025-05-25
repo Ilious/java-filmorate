@@ -138,10 +138,10 @@ public class FilmRepo extends BaseRepo<FilmDao> implements IFilmRepo {
 
     private final ResultSetExtractor<FilmDao> singleExtractor;
 
-    public FilmRepo(JdbcTemplate jdbc, RowMapper<FilmDao> mapper,
+    public FilmRepo(JdbcTemplate jdbc,
                     ResultSetExtractor<List<FilmDao>> extractor,
                     ResultSetExtractor<FilmDao> singleExtractor) {
-        super(jdbc, mapper);
+        super(jdbc);
         this.extractor = extractor;
         this.singleExtractor = singleExtractor;
     }

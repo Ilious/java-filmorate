@@ -37,9 +37,11 @@ public class UserRepo extends BaseRepo<UserDao> implements IUserRepo {
     private static final String DELETE_FRIEND_QUERY = "DELETE FROM user_friends " +
             "WHERE user_id = ? AND friend_id = ?";
 
+    private final RowMapper<UserDao> mapper;
 
     public UserRepo(JdbcTemplate jdbc, RowMapper<UserDao> mapper) {
-        super(jdbc, mapper);
+        super(jdbc);
+        this.mapper = mapper;
     }
 
 
@@ -47,7 +49,7 @@ public class UserRepo extends BaseRepo<UserDao> implements IUserRepo {
     public List<UserDao> findAll() {
         log.trace("UserRepo.findAll: findAll");
 
-        return findMany(FIND_ALL_QUERY);
+        return findMany(FIND_ALL_QUERY, mapper);
     }
 
     @Override
@@ -85,14 +87,14 @@ public class UserRepo extends BaseRepo<UserDao> implements IUserRepo {
     public Optional<UserDao> findUserById(Long id) {
         log.trace("UserRepo.findUserById: by id {}", id);
 
-        return findOne(FIND_BY_ID_QUERY, id);
+        return findOne(FIND_BY_ID_QUERY, mapper, id);
     }
 
     @Override
     public Collection<UserDao> findFriends(Long userId) {
         log.trace("UserRepo.findFriends: by userId {}", userId);
 
-        return findMany(FIND_FRIENDS_BY_USER_ID_QUERY, userId);
+        return findMany(FIND_FRIENDS_BY_USER_ID_QUERY, mapper, userId);
     }
 
     @Override

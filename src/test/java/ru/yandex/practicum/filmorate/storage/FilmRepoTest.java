@@ -29,13 +29,10 @@ import static org.junit.jupiter.api.Assertions.*;
 @ActiveProfiles("test")
 @AutoConfigureTestDatabase
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
-@Import({FilmMapper.class, UserMapper.class})
+@Import({UserMapper.class})
 class FilmRepoTest {
 
     private FilmRepo filmRepo;
-
-    @Autowired
-    private RowMapper<FilmDao> filmDaoRowMapper;
 
     @Autowired
     private RowMapper<UserDao> userDaoRowMapper;
@@ -49,7 +46,6 @@ class FilmRepoTest {
     void init() {
         filmRepo = new FilmRepo(
                 jdbc,
-                filmDaoRowMapper,
                 new FilmExtractor(),
                 new SingleFilmExtractor()
         );

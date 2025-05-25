@@ -35,8 +35,11 @@ public class DirectorRepo extends BaseRepo<DirectorDao> implements IDirectorRepo
             DELETE FROM directors WHERE id = ?
             """;
 
+    private final RowMapper<DirectorDao> mapper;
+
     public DirectorRepo(JdbcTemplate jdbc, RowMapper<DirectorDao> mapper) {
-        super(jdbc, mapper);
+        super(jdbc);
+        this.mapper = mapper;
     }
 
     @Override
@@ -54,14 +57,14 @@ public class DirectorRepo extends BaseRepo<DirectorDao> implements IDirectorRepo
     public Collection<DirectorDao> findAll() {
         log.trace("DirectorDao.findAll: findAll");
 
-        return findMany(FIND_ALL_QUERY);
+        return findMany(FIND_ALL_QUERY, mapper);
     }
 
     @Override
     public Optional<DirectorDao> findDirectorById(Long id) {
         log.trace("DirectorDao.findDirectorById: by id {}", id);
 
-        return findOne(FIND_BY_ID_QUERY, id);
+        return findOne(FIND_BY_ID_QUERY, mapper, id);
     }
 
     @Override
