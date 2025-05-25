@@ -75,7 +75,7 @@ public class UserService implements IUserService {
     public UserDao getUserById(Long id) {
         return userRepo.findUserById(id)
                 .orElseThrow(() -> new EntityNotFoundException(
-                        "Entity user not found", "User", "id", String.valueOf(id)
+                                "Entity user not found", "User", "id", String.valueOf(id)
                         )
                 );
     }

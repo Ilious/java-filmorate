@@ -12,6 +12,7 @@ import ru.yandex.practicum.filmorate.service.interfaces.IFilmService;
 import ru.yandex.practicum.filmorate.validator.Validator;
 
 import java.util.Collection;
+import java.util.List;
 
 @Validated
 @RestController
@@ -38,12 +39,16 @@ public class FilmController {
     }
 
     @PutMapping
-    public ResponseEntity<FilmDao> updateFilm(@RequestBody @NotNull @Validated(Validator.OnUpdate.class) FilmRecord filmRecord) {
+    public ResponseEntity<FilmDao> updateFilm(@RequestBody
+                                              @NotNull
+                                              @Validated(Validator.OnUpdate.class) FilmRecord filmRecord) {
         return ResponseEntity.status(HttpStatus.OK).body(filmService.putFilm(filmRecord));
     }
 
     @PostMapping
-    public ResponseEntity<FilmDao> createFilm(@RequestBody @NotNull @Validated(Validator.OnCreate.class) FilmRecord filmRecord) {
+    public ResponseEntity<FilmDao> createFilm(@RequestBody
+                                              @NotNull
+                                              @Validated(Validator.OnCreate.class) FilmRecord filmRecord) {
         return ResponseEntity.status(HttpStatus.CREATED).body(filmService.postFilm(filmRecord));
     }
 
@@ -66,5 +71,12 @@ public class FilmController {
                                                                @Positive(message = "count should be greater than 0")
                                                                Long count) {
         return ResponseEntity.status(HttpStatus.OK).body(filmService.getMostLikedFilms(count));
+    }
+
+    @GetMapping("/director/{directorId}")
+    public ResponseEntity<List<FilmDao>> getFilmsByDirector(
+            @PathVariable Long directorId,
+            @RequestParam(defaultValue = "year") String sortBy) {
+        return ResponseEntity.ok(filmService.getFilmsByDirector(directorId, sortBy));
     }
 }
