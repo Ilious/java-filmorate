@@ -32,6 +32,7 @@ public class FilmMapper implements RowMapper<FilmDao> {
         mpa.setId(rating);
         mpa.setName(AgeRating.fromValue(rating));
 
-        return new FilmDao(id, name, description, localDate, duration, mpa, new ArrayList<>());
+        return new FilmDao(id, name, description, localDate, duration, mpa,
+                new ArrayList<>(), new ArrayList<>());
     }
 }

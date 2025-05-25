@@ -119,4 +119,9 @@ public class FilmService implements IFilmService {
     public Collection<FilmDao> getMostLikedFilms(Long count) {
         return filmRepo.findNPopular(count);
     }
+
+    @Override
+    public List<FilmDao> getFilmsByDirector(Long directorId, String sortBy) {
+        return filmRepo.getFilmsByDirector(directorId, sortBy);
+    }
 }

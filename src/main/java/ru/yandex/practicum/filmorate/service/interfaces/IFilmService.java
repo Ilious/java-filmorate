@@ -4,6 +4,7 @@ import ru.yandex.practicum.filmorate.dao.FilmDao;
 import ru.yandex.practicum.filmorate.dto.FilmRecord;
 
 import java.util.Collection;
+import java.util.List;
 
 public interface IFilmService {
 
@@ -20,4 +21,7 @@ public interface IFilmService {
     Collection<FilmDao> getMostLikedFilms(Long count);
 
     FilmDao getById(Long filmId);
+
+    List<FilmDao> getFilmsByDirector(Long directorId, String sortBy);
+
 }
