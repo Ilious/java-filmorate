@@ -9,5 +9,5 @@ public class ResponseError {
 
     private final int code;
 
-    private final String description;
+    private final String error;
 }
