@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.storage.interfaces;
 
+import ru.yandex.practicum.filmorate.component.SearchCriteria;
 import ru.yandex.practicum.filmorate.dao.FilmDao;
 
 import java.util.Collection;
@@ -11,6 +12,8 @@ public interface IFilmRepo {
 
     FilmDao createFilm(FilmDao filmDao);
 
+    Collection<FilmDao> findFilmsBySearchQuery(SearchCriteria searchObj);
+
     FilmDao updateFilm(FilmDao filmDao);
 
     Optional<FilmDao> findFilmById(Long id);
@@ -20,4 +23,6 @@ public interface IFilmRepo {
     void deleteLikeFromFilm(Long filmId, Long userId);
 
     Collection<FilmDao> findNPopular(Long count);
+
+    Collection<FilmDao> findByDirectorId(Long id, SearchCriteria criteria);
 }

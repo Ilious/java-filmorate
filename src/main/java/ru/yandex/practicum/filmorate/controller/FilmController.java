@@ -2,6 +2,9 @@ package ru.yandex.practicum.filmorate.controller;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -11,9 +14,11 @@ import ru.yandex.practicum.filmorate.dto.FilmRecord;
 import ru.yandex.practicum.filmorate.service.interfaces.IFilmService;
 import ru.yandex.practicum.filmorate.validator.Validator;
 
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Objects;
 
-@Validated
+@Slf4j
 @RestController
 @RequestMapping("/films")
 public class FilmController {
@@ -38,12 +43,16 @@ public class FilmController {
     }
 
     @PutMapping
-    public ResponseEntity<FilmDao> updateFilm(@RequestBody @NotNull @Validated(Validator.OnUpdate.class) FilmRecord filmRecord) {
+    public ResponseEntity<FilmDao> updateFilm(
+            @RequestBody @NotNull @Validated(Validator.OnUpdate.class) FilmRecord filmRecord
+    ) {
         return ResponseEntity.status(HttpStatus.OK).body(filmService.putFilm(filmRecord));
     }
 
     @PostMapping
-    public ResponseEntity<FilmDao> createFilm(@RequestBody @NotNull @Validated(Validator.OnCreate.class) FilmRecord filmRecord) {
+    public ResponseEntity<FilmDao> createFilm(
+            @RequestBody @NotNull @Validated(Validator.OnCreate.class) FilmRecord filmRecord
+    ) {
         return ResponseEntity.status(HttpStatus.CREATED).body(filmService.postFilm(filmRecord));
     }
 
@@ -66,5 +75,23 @@ public class FilmController {
                                                                @Positive(message = "count should be greater than 0")
                                                                Long count) {
         return ResponseEntity.status(HttpStatus.OK).body(filmService.getMostLikedFilms(count));
+    }
+
+    @GetMapping("/search")
+    @ResponseStatus(HttpStatus.OK)
+    public Collection<FilmDao> searchFilm(
+            @RequestParam String query,
+            @RequestParam String[] by
+    ) {
+        return filmService.search(query, by);
+    }
+
+    @GetMapping("/director/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public Collection<FilmDao> getByDirectorId(
+            @PathVariable Long id,
+            @RequestParam String sortBy
+    ) {
+        return filmService.getByDirectorId(id, sortBy);
     }
 }

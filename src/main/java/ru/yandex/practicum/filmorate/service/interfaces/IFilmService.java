@@ -20,4 +20,8 @@ public interface IFilmService {
     Collection<FilmDao> getMostLikedFilms(Long count);
 
     FilmDao getById(Long filmId);
+
+    Collection<FilmDao> search(String query, String[] by);
+
+    Collection<FilmDao> getByDirectorId(Long id, String sortBy);
 }

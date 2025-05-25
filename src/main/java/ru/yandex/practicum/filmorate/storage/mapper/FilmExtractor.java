@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.storage.mapper;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.stereotype.Component;
+import ru.yandex.practicum.filmorate.dao.DirectorDao;
 import ru.yandex.practicum.filmorate.dao.FilmDao;
 import ru.yandex.practicum.filmorate.dao.GenreDao;
 import ru.yandex.practicum.filmorate.dao.MpaDao;
@@ -13,10 +14,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Component
 public class FilmExtractor implements ResultSetExtractor<List<FilmDao>> {
@@ -24,7 +22,7 @@ public class FilmExtractor implements ResultSetExtractor<List<FilmDao>> {
     @Override
     public List<FilmDao> extractData(ResultSet rs) throws SQLException, DataAccessException {
 
-        Map<Long, FilmDao> films = new HashMap<>();
+        Map<Long, FilmDao> films = new LinkedHashMap<>();
         while (rs.next()) {
             Long id = rs.getLong("film_id");
             FilmDao film = films.get(id);
@@ -42,7 +40,16 @@ public class FilmExtractor implements ResultSetExtractor<List<FilmDao>> {
                 mpa.setId(rating);
                 mpa.setName(AgeRating.fromValue(rating));
 
-                film = new FilmDao(id, name, description, localDate, duration, mpa, new ArrayList<>());
+                film = FilmDao.builder()
+                        .id(id)
+                        .name(name)
+                        .directors(new ArrayList<>())
+                        .description(description)
+                        .releaseDate(localDate)
+                        .duration(duration)
+                        .mpa(mpa)
+                        .genres(new ArrayList<>())
+                        .build();
                 films.put(id, film);
             }
 
@@ -52,6 +59,14 @@ public class FilmExtractor implements ResultSetExtractor<List<FilmDao>> {
             if (genreId != 0 && genreName != null) {
                 GenreDao genreDao = new GenreDao(genreId, Genre.fromValue(genreName));
                 film.getGenres().add(genreDao);
+            }
+
+            Long directorId = rs.getLong("director_id");
+            String directorName = rs.getString("director_name");
+
+            if (directorId != 0 && directorName != null) {
+                DirectorDao directorDao = new DirectorDao(directorId, directorName);
+                film.getDirectors().add(directorDao);
             }
         }
 
