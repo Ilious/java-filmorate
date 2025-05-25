@@ -16,6 +16,8 @@ public record FilmRecord(
 
         @NotBlank(groups = {Validator.OnUpdate.class, Validator.OnCreate.class}) String name,
 
+        List<DirectorRecord> directors,
+
         @NotBlank(groups = Validator.OnCreate.class)
         @Size(max = 200, groups = {Validator.OnUpdate.class, Validator.OnCreate.class}) String description,
 
