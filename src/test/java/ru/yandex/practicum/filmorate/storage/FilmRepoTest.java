@@ -178,6 +178,7 @@ class FilmRepoTest {
         MpaDao mpaDao = new MpaDao(1L, AgeRating.fromValue("G"));
         FilmDao film = FilmDao.builder()
                 .name("film1")
+                .directors(new ArrayList<>())
                 .description("super-film1")
                 .releaseDate(LocalDate.now())
                 .duration(120)
@@ -186,6 +187,7 @@ class FilmRepoTest {
                 .build();
         FilmDao film2 = FilmDao.builder()
                 .name("film2")
+                .directors(new ArrayList<>())
                 .description("super-film2")
                 .releaseDate(LocalDate.now())
                 .duration(120)
@@ -218,6 +220,7 @@ class FilmRepoTest {
         MpaDao mpaDao = new MpaDao(1L, AgeRating.fromValue("G"));
         FilmDao film = FilmDao.builder()
                 .name("film1")
+                .directors(new ArrayList<>())
                 .description("super-film1")
                 .releaseDate(LocalDate.now())
                 .duration(120)
@@ -226,6 +229,7 @@ class FilmRepoTest {
                 .build();
         FilmDao film2 = FilmDao.builder()
                 .name("film2")
+                .directors(new ArrayList<>())
                 .description("super-film2")
                 .releaseDate(LocalDate.now())
                 .duration(120)
@@ -260,6 +264,7 @@ class FilmRepoTest {
         MpaDao mpaDao = new MpaDao(1L, AgeRating.fromValue("G"));
         FilmDao film = FilmDao.builder()
                 .name("film1")
+                .directors(new ArrayList<>())
                 .description("super-film1")
                 .releaseDate(LocalDate.now())
                 .duration(120)
@@ -268,6 +273,7 @@ class FilmRepoTest {
                 .build();
         FilmDao film2 = FilmDao.builder()
                 .name("film2")
+                .directors(new ArrayList<>())
                 .description("super-film2")
                 .releaseDate(LocalDate.now())
                 .duration(120)
@@ -276,6 +282,7 @@ class FilmRepoTest {
                 .build();
         FilmDao film3 = FilmDao.builder()
                 .name("film3")
+                .directors(new ArrayList<>())
                 .description("super-film3")
                 .releaseDate(LocalDate.now())
                 .duration(120)
