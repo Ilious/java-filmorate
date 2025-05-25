@@ -12,7 +12,7 @@ import java.util.Optional;
 
 @Slf4j
 @Repository
-public class DirectorRepo extends BaseRepo<DirectorDao> implements IDirectorRepo{
+public class DirectorRepo extends BaseRepo<DirectorDao> implements IDirectorRepo {
 
     private static final String FIND_ALL_QUERY = """
             SELECT * FROM directors
