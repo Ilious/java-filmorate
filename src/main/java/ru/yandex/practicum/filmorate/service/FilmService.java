@@ -24,6 +24,7 @@ import ru.yandex.practicum.filmorate.storage.interfaces.IFilmRepo;
 import ru.yandex.practicum.filmorate.storage.mapper.DirectorMapper;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -153,39 +154,36 @@ public class FilmService implements IFilmService {
 
     @Override
     public Collection<FilmDao> getByDirectorId(Long id, String sortBy) {
-        if (sortBy.equals("year"))
-            return filmRepo.findByDirectorId(id, new SearchCriteria("ORDER BY f.release_date"));
-        else if (sortBy.equals("likes"))
-            return getMostLikedFilms(Long.MAX_VALUE).stream()
+        directorService.validateIds(List.of(id));
+
+        SortBy sort = SortBy.fromValue(sortBy);
+
+        return switch (sort) {
+            case Year -> filmRepo.findByDirectorId(id, new SearchCriteria("ORDER BY f.release_date"));
+            case Likes -> getMostLikedFilms(Long.MAX_VALUE).stream()
                     .filter(film -> film.getDirectors()
                             .stream()
                             .anyMatch(f -> f.getId().equals(id))
                     ).toList();
-        throw new ValidationException("Not found such sort param", "sortBy", sortBy);
+        };
     }
 
     private SearchCriteria defineSearchBy(String[] by, String query) {
-        boolean byTitle = Arrays.stream(by)
-                .anyMatch(f -> f.equalsIgnoreCase("title"));
-        boolean byDirector = Arrays.stream(by)
-                .anyMatch(f -> f.equalsIgnoreCase("director"));
+        Set<String> criteria = Arrays.stream(by)
+                .map(String::toLowerCase)
+                .collect(Collectors.toSet());
 
-        if (by.length == 2)
+        String queryParam = "%" + query + "%";
+        if (criteria.contains("title") && criteria.contains("director"))
             return new SearchCriteria(
                     " WHERE LOWER(f.name) LIKE LOWER(?) OR LOWER(d.name) LIKE LOWER(?)",
-                    "%" + query + "%",
-                    "%" + query + "%"
+                    queryParam, queryParam
             );
-        else if (byTitle)
-                return new SearchCriteria(
-                        " WHERE LOWER(f.name) LIKE LOWER(?)",
-                        "%" + query + "%"
-                );
-        else if (byDirector)
-            return new SearchCriteria(
-                    " WHERE LOWER(d.name) LIKE LOWER(?)",
-                    "%" + query + "%"
-                );
+        else if (criteria.contains("title"))
+                return new SearchCriteria(" WHERE LOWER(f.name) LIKE LOWER(?)", queryParam);
+        else if (criteria.contains("director"))
+            return new SearchCriteria(" WHERE LOWER(d.name) LIKE LOWER(?)", queryParam);
+
         throw new ValidationException("Search query is not valid", "search", Arrays.toString(by));
     }
 }
