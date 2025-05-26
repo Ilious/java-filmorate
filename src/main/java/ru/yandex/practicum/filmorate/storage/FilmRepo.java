@@ -68,6 +68,50 @@ public class FilmRepo extends BaseRepo<FilmDao> implements IFilmRepo {
     private static final String UPDATE_QUERY = "UPDATE films " +
             "SET name = ?, description = ?, release_date = ?, duration = ?, rating_id = ? WHERE id = ?";
 
+    private static final String SHOW_COMMON_FILMS_QUERY = """
+        SELECT f.id AS film_id,
+               f.name,
+               f.description,
+               f.release_date,
+               f.duration,
+               f.rating_id,
+               g.id AS genre_id,
+               g.name AS genre_name
+        FROM films f
+        JOIN liked_films lf1 ON f.id = lf1.film_id AND lf1.user_id = ?
+        JOIN liked_films lf2 ON f.id = lf2.film_id AND lf2.user_id = ?
+        LEFT JOIN film_genres fg ON f.id = fg.film_id
+        LEFT JOIN genres g ON fg.genre_id = g.id
+        GROUP BY f.id, f.name, f.description, f.release_date, f.duration, f.rating_id, g.id, g.name
+        ORDER BY (
+            SELECT COUNT(*) FROM liked_films lf WHERE lf.film_id = f.id
+        ) DESC
+        """;
+
+    private static final String RECOMMENDATION_QUERY = """
+        WITH user_likes AS (
+            SELECT film_id FROM liked_films WHERE user_id = ?
+        ),
+        similar_users AS (
+            SELECT user_id,
+                   COUNT(*) AS common_likes
+            FROM liked_films
+            WHERE film_id IN (SELECT film_id FROM user_likes)
+              AND user_id <> ?
+            GROUP BY user_id
+            ORDER BY common_likes DESC
+            LIMIT 1
+        ),
+        recommended_films AS (
+            SELECT film_id FROM liked_films
+            WHERE user_id = (SELECT user_id FROM similar_users)
+              AND film_id NOT IN (SELECT film_id FROM user_likes)
+        )
+        SELECT f.id, f.name, f.description, f.release_date, f.duration, f.rating_id
+        FROM films f
+        WHERE f.id IN (SELECT film_id FROM recommended_films)
+        """;
+
     public static final String INSERT_FILM_GENRE_QUERY = "INSERT INTO film_genres (film_id, genre_id) " +
             "VALUES (?, ?)";
 
@@ -188,5 +232,12 @@ public class FilmRepo extends BaseRepo<FilmDao> implements IFilmRepo {
         delete(DELETE_ALL_FILM_GENRES_QUERY, filmId);
 
         addGenresToFilm(filmId, genres);
+    }
+
+    @Override
+    public Collection<FilmDao> showCommonFilms(Long userId, Long friendId) {
+        log.trace("UserRepo.showCommonFilms: userId {}, friendId{}", userId, friendId);
+
+        return extract(SHOW_COMMON_FILMS_QUERY, extractor, userId, friendId);
     }
 }

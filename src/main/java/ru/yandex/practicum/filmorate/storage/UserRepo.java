@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
+import ru.yandex.practicum.filmorate.dao.FilmDao;
 import ru.yandex.practicum.filmorate.dao.UserDao;
 import ru.yandex.practicum.filmorate.storage.interfaces.IUserRepo;
 
@@ -37,11 +38,9 @@ public class UserRepo extends BaseRepo<UserDao> implements IUserRepo {
     private static final String DELETE_FRIEND_QUERY = "DELETE FROM user_friends " +
             "WHERE user_id = ? AND friend_id = ?";
 
-
     public UserRepo(JdbcTemplate jdbc, RowMapper<UserDao> mapper) {
         super(jdbc, mapper);
     }
-
 
     @Override
     public List<UserDao> findAll() {

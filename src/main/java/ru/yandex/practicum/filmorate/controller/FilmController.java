@@ -67,4 +67,9 @@ public class FilmController {
                                                                Long count) {
         return ResponseEntity.status(HttpStatus.OK).body(filmService.getMostLikedFilms(count));
     }
+
+    @GetMapping("/common")
+    public ResponseEntity<Collection<FilmDao>> showCommonFilms(@RequestParam Long userId, @RequestParam Long friendId) {
+        return ResponseEntity.status(HttpStatus.OK).body(filmService.showCommonFilms(userId, friendId));
+    }
 }
