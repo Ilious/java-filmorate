@@ -53,16 +53,15 @@ public class FilmRepo extends BaseRepo<FilmDao> implements IFilmRepo {
     private static final String DELETE_LIKE_QUERY = "DELETE FROM liked_films WHERE film_id = ? AND user_id = ?";
 
     private static final String GET_N_POPULAR =
-            "SELECT f.id, f.name, f.description, f.release_date, f.duration, f.rating_id  " +
-                    "FROM ( " +
-                    "SELECT lf.film_id, COUNT(*) as count_likes  " +
-                    "FROM liked_films lf " +
-                    "GROUP BY lf.film_id " +
-                    "ORDER BY count_likes desc " +
-                    "LIMIT ? " +
-                    ") AS top_films " +
-                    "JOIN films f ON f.id = top_films.film_id " +
-                    "ORDER BY top_films.count_likes DESC";
+            "SELECT f.id, f.name, f.description, f.release_date, f.duration, f.rating_id " +
+                    "FROM films f" +
+                    "LEFT JOIN (" +
+                    "SELECT lf.film_id, COUNT(*) as count_likes" +
+                    "FROM liked_films lf" +
+                    "GROUP BY lf.film_id" +
+                    ") AS top_films ON f.id = top_films.film_id" +
+                    "ORDER BY COALESCE(top_films.count_likes, 0) DESC" +
+                    "LIMIT ?";
 
 
     private static final String UPDATE_QUERY = "UPDATE films " +
