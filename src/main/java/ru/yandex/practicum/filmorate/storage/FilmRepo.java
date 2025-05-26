@@ -73,6 +73,24 @@ public class FilmRepo extends BaseRepo<FilmDao> implements IFilmRepo {
 
     public static final String DELETE_ALL_FILM_GENRES_QUERY = "DELETE FROM film_genres WHERE film_id = ?";
 
+    public static final String GET_RECOMMENDATION_QUERY = "SELECT " +
+            "f.id AS film_id, f.name, f.description, f.release_date, f.duration, f.rating_id, " +
+            "g.id AS genre_id, " +
+            "g.name AS genre_name, " +
+            "COUNT(lf2.user_id) AS recommendation_weight " +
+            "FROM films f " +
+            "LEFT JOIN film_genres fg ON fg.film_id = f.id " +
+            "LEFT JOIN genres g ON g.id = fg.genre_id " +
+            "JOIN liked_films lf2 ON lf2.film_id = f.id " +
+            "WHERE lf2.user_id IN ( " +
+            "SELECT DISTINCT lf.user_id " +
+            "FROM liked_films lf " +
+            "WHERE lf.user_id != ? " +
+            "AND lf.film_id IN (SELECT film_id FROM liked_films WHERE user_id = ?)) " +
+            "AND f.id NOT IN (SELECT film_id FROM liked_films WHERE user_id = ?) " +
+            "GROUP BY f.id, f.name, f.description, f.release_date, f.duration, f.rating_id, g.id, g.name " +
+            "ORDER BY recommendation_weight DESC;";
+
     private final ResultSetExtractor<List<FilmDao>> extractor;
 
     private final ResultSetExtractor<FilmDao> singleExtractor;
@@ -188,5 +206,9 @@ public class FilmRepo extends BaseRepo<FilmDao> implements IFilmRepo {
         delete(DELETE_ALL_FILM_GENRES_QUERY, filmId);
 
         addGenresToFilm(filmId, genres);
+    }
+
+    public Collection<FilmDao> getRecommendations(Long userId) {
+        return extract(GET_RECOMMENDATION_QUERY, extractor, userId, userId, userId);
     }
 }
