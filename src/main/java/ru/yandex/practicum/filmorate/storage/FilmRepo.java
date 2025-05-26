@@ -198,5 +198,6 @@ public class FilmRepo extends BaseRepo<FilmDao> implements IFilmRepo {
         delete(
                 DELETE_FILM_QUERY, filmId
         );
+
     }
 }
