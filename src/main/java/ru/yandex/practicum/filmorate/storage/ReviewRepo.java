@@ -12,7 +12,7 @@ import java.util.Optional;
 
 @Slf4j
 @Component
-public class ReviewRepo extends BaseRepo<ReviewDao> implements IReviewRepo{
+public class ReviewRepo extends BaseRepo<ReviewDao> implements IReviewRepo {
 
     public ReviewRepo(JdbcTemplate jdbc, RowMapper<ReviewDao> mapper) {
         super(jdbc, mapper);
