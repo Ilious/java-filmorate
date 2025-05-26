@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class DirectorDao {
+public class DirectorDao implements HasId {
 
     private Long id;
 

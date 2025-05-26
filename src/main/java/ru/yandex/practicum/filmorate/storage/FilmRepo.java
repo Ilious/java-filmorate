@@ -8,6 +8,7 @@ import ru.yandex.practicum.filmorate.component.SearchCriteria;
 import ru.yandex.practicum.filmorate.dao.DirectorDao;
 import ru.yandex.practicum.filmorate.dao.FilmDao;
 import ru.yandex.practicum.filmorate.dao.GenreDao;
+import ru.yandex.practicum.filmorate.dao.HasId;
 import ru.yandex.practicum.filmorate.exception.InternalServerException;
 import ru.yandex.practicum.filmorate.storage.interfaces.IFilmRepo;
 
@@ -132,6 +133,8 @@ public class FilmRepo extends BaseRepo<FilmDao> implements IFilmRepo {
             INSERT INTO film_directors (film_id, director_id)
             VALUES (?, ?)
             """;
+    public static final String GENRES_ISN_T_ADDED = "Genres isn't added";
+    public static final String DIRECTORS_ISN_T_ADDED = "Directors isn't added";
 
     private final ResultSetExtractor<List<FilmDao>> extractor;
 
@@ -166,9 +169,13 @@ public class FilmRepo extends BaseRepo<FilmDao> implements IFilmRepo {
         );
         filmDao.setId(id);
 
-        addGenresToFilm(filmDao.getId(), filmDao.getGenres());
+        addSubEntitiesToFilm(
+                filmDao.getId(), filmDao.getGenres(), INSERT_FILM_GENRE_QUERY, GENRES_ISN_T_ADDED
+        );
 
-        addDirectorsToFilm(filmDao.getId(), filmDao.getDirectors());
+        addSubEntitiesToFilm(
+                filmDao.getId(), filmDao.getDirectors(), INSERT_FILM_DIRECTOR_QUERY, DIRECTORS_ISN_T_ADDED
+        );
 
         return filmDao;
     }
@@ -216,9 +223,15 @@ public class FilmRepo extends BaseRepo<FilmDao> implements IFilmRepo {
                 filmDao.getId()
         );
 
-        updateFilmGenres(filmDao.getId(), filmDao.getGenres());
+        updateSubEntities(
+                filmDao.getId(), filmDao.getGenres(),
+                DELETE_ALL_FILM_GENRES_QUERY, INSERT_FILM_GENRE_QUERY, GENRES_ISN_T_ADDED
+        );
 
-        updateFilmDirectors(filmDao.getId(), filmDao.getDirectors());
+        updateSubEntities(
+                filmDao.getId(), filmDao.getDirectors(),
+                DELETE_ALL_FILM_DIRECTORS_QUERY, INSERT_FILM_DIRECTOR_QUERY, DIRECTORS_ISN_T_ADDED
+        );
 
         return filmDao;
     }
@@ -250,57 +263,32 @@ public class FilmRepo extends BaseRepo<FilmDao> implements IFilmRepo {
         );
     }
 
-    public void addGenresToFilm(Long filmId, List<GenreDao> genres) {
-        if (genres == null || genres.isEmpty())
+    private <T extends HasId> void addSubEntitiesToFilm(Long filmId, List<T> entities, String query, String errMsg) {
+        if (entities == null || entities.isEmpty())
             return;
 
         insertBatch(
-                INSERT_FILM_GENRE_QUERY,
-                genres,
+                query,
+                entities,
                 (ps, genre) -> {
                     try {
                         ps.setLong(1, filmId);
                         ps.setLong(2, genre.getId());
                     } catch (SQLException e) {
-                        throw new InternalServerException("Genres isn't added");
+                        throw new InternalServerException(errMsg);
                     }
                 }
         );
     }
 
-    public void addDirectorsToFilm(Long filmId, List<DirectorDao> directors) {
-        if (directors == null || directors.isEmpty())
+    private <T extends HasId> void updateSubEntities(
+            Long filmId, List<T> entities, String delQuery, String insertQuery, String errMsg
+    ) {
+        if (entities == null || entities.isEmpty())
             return;
 
-        insertBatch(
-                INSERT_FILM_DIRECTOR_QUERY,
-                directors,
-                (ps, director) -> {
-                    try {
-                        ps.setLong(1, filmId);
-                        ps.setLong(2, director.getId());
-                    } catch (SQLException e) {
-                        throw new InternalServerException("Directors isn't added");
-                    }
-                }
-        );
-    }
+        delete(delQuery, filmId);
 
-    public void updateFilmGenres(Long filmId, List<GenreDao> genres) {
-        if (genres == null || genres.isEmpty())
-            return;
-
-        delete(DELETE_ALL_FILM_GENRES_QUERY, filmId);
-
-        addGenresToFilm(filmId, genres);
-    }
-
-    public void updateFilmDirectors(Long filmId, List<DirectorDao> directors) {
-        if (directors == null || directors.isEmpty())
-            return;
-
-        delete(DELETE_ALL_FILM_DIRECTORS_QUERY, filmId);
-
-        addDirectorsToFilm(filmId, directors);
+        addSubEntitiesToFilm(filmId, entities, insertQuery, errMsg);
     }
 }
