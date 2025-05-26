@@ -1,7 +1,6 @@
 package ru.yandex.practicum.filmorate.storage.interfaces;
 
 import ru.yandex.practicum.filmorate.dao.ReviewDao;
-import ru.yandex.practicum.filmorate.dto.ReviewRecord;
 
 import java.util.Collection;
 import java.util.Optional;

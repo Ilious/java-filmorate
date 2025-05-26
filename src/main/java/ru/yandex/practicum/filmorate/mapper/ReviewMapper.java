@@ -29,7 +29,8 @@ public class ReviewMapper {
         }
 
         if (req.isPositive() != null) {
-            review.setIsPositive(req.isPositive());}
+            review.setIsPositive(req.isPositive());
+        }
 
         if (req.filmId() != null) {
             review.setFilmId(req.filmId());
