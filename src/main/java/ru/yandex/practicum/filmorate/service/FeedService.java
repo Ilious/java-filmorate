@@ -31,4 +31,9 @@ public class FeedService implements IFeedService {
 
         feedRepo.createFeed(feedDao);
     }
+
+    @Override
+    public Collection<FeedDao> getByUserId(Long userId) {
+        return feedRepo.getByUserId(userId);
+    }
 }

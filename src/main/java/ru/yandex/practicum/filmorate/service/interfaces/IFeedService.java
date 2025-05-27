@@ -10,4 +10,6 @@ public interface IFeedService {
     Collection<FeedDao> getAll();
 
     void postFeed(FeedRecord feed);
+
+    Collection<FeedDao> getByUserId(Long userId);
 }

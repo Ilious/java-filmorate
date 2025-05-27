@@ -62,4 +62,9 @@ public class UserController {
     public ResponseEntity<Collection<UserDao>> getFriends(@PathVariable Long id, @PathVariable Long otherId) {
         return ResponseEntity.status(HttpStatus.OK).body(userService.getFriendsInCommon(id, otherId));
     }
+
+    @GetMapping("/user/{id}/feed")
+    public ResponseEntity<Collection<UserDao>> getFeed(@PathVariable Long id) {
+        return ResponseEntity.status(HttpStatus.OK).body(userService.getFeed(id));
+    }
 }

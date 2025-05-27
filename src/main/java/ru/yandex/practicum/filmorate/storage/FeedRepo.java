@@ -8,6 +8,7 @@ import ru.yandex.practicum.filmorate.storage.interfaces.IFeedRepo;
 
 import java.time.Instant;
 import java.util.Collection;
+import java.util.List;
 
 @Repository
 public class FeedRepo extends BaseRepo<FeedDao> implements IFeedRepo {
@@ -21,6 +22,19 @@ public class FeedRepo extends BaseRepo<FeedDao> implements IFeedRepo {
             f.event_id,
             FROM feeds f
             """;
+
+    private static final String FIND_BY_USER_ID_QUERY = """
+            SELECT f.id as event_id,
+            f.timestamp,
+            f.event_type,
+            f.operation,
+            f.user_id,
+            f.event_id,
+            FROM feeds f
+            WHERE f.user_id = ?
+            ORDER BY event_id ASC
+            """;
+
 
     private static final String INSERT_QUERY = """
             INSERT INTO feeds(timestamp, event_type, operation, user_id,  entity_id)
@@ -37,7 +51,7 @@ public class FeedRepo extends BaseRepo<FeedDao> implements IFeedRepo {
     }
 
     @Override
-    public FeedDao createFeed(FeedDao feed) {
+    public void createFeed(FeedDao feed) {
         long id = insert(INSERT_QUERY,
                 Instant.now(),
                 feed.getEventType(),
@@ -46,6 +60,10 @@ public class FeedRepo extends BaseRepo<FeedDao> implements IFeedRepo {
                 feed.getEntityId());
 
         feed.setId(id);
-        return feed;
+    }
+
+    @Override
+    public Collection<FeedDao> getByUserId(Long userId) {
+        return findMany(FIND_BY_USER_ID_QUERY, userId);
     }
 }

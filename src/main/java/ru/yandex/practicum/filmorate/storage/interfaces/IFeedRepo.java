@@ -12,4 +12,6 @@ public interface IFeedRepo {
     Collection<FeedDao> findAll();
 
     void createFeed(FeedDao feed);
+
+    Collection<FeedDao> getByUserId(Long userId);
 }
