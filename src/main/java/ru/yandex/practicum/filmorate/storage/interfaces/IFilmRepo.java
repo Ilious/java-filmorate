@@ -20,8 +20,6 @@ public interface IFilmRepo {
 
     void deleteLikeFromFilm(Long filmId, Long userId);
 
-    Collection<FilmDao> findNPopular(Long count);
-
     List<FilmDao> getFilmsByDirector(Long directorId, String sortBy);
 
     Collection<FilmDao> findNPopular(Long count, Long genreId, Integer year);
