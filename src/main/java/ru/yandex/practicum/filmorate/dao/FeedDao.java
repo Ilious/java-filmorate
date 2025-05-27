@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.dao;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -21,6 +22,7 @@ public class FeedDao {
 
     private Operation operation;
 
+    @JsonFormat(shape = JsonFormat.Shape.NUMBER_INT)
     private Instant timestamp;
 
     private Long userId;

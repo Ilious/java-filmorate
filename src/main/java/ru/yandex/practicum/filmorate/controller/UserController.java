@@ -4,6 +4,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.dao.FeedDao;
 import ru.yandex.practicum.filmorate.dao.UserDao;
 import ru.yandex.practicum.filmorate.dto.UserRecord;
 import ru.yandex.practicum.filmorate.service.interfaces.IUserService;
@@ -63,8 +64,8 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(userService.getFriendsInCommon(id, otherId));
     }
 
-    @GetMapping("/user/{id}/feed")
-    public ResponseEntity<Collection<UserDao>> getFeed(@PathVariable Long id) {
+    @GetMapping("/{id}/feed")
+    public ResponseEntity<Collection<FeedDao>> getFeed(@PathVariable Long id) {
         return ResponseEntity.status(HttpStatus.OK).body(userService.getFeed(id));
     }
 }

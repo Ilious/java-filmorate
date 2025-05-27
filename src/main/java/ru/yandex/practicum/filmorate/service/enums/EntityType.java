@@ -19,7 +19,7 @@ public enum EntityType {
 
     public static EntityType fromValue(String value) {
         return Arrays.stream(EntityType.values())
-                .filter(v -> value.equalsIgnoreCase(v.toString()))
+                .filter(v -> value.equalsIgnoreCase(v.getValue()))
                 .findFirst()
                 .orElseThrow(
                         () -> new ValidationException("Rating doesn't match any type", "Operation", value)

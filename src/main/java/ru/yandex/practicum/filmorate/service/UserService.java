@@ -66,7 +66,7 @@ public class UserService implements IUserService {
 
         existsUserOrThrowErr(friendId);
 
-        feedService.postFeed(new FeedRecord(id, id, EntityType.FRIEND, Operation.ADD));
+        feedService.postFeed(new FeedRecord(id, friendId, EntityType.FRIEND, Operation.ADD));
 
         userRepo.addFriend(id, friendId);
     }
@@ -77,7 +77,7 @@ public class UserService implements IUserService {
 
         existsUserOrThrowErr(friendId);
 
-        feedService.postFeed(new FeedRecord(id, id, EntityType.FRIEND, Operation.REMOVE));
+        feedService.postFeed(new FeedRecord(id, friendId, EntityType.FRIEND, Operation.REMOVE));
 
         userRepo.removeFromFriends(id, friendId);
     }

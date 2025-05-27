@@ -39,6 +39,10 @@ public class ReviewRepo extends BaseRepo<ReviewDao> implements IReviewRepo {
 
     private static final String DELETE_DISLIKE_QUERY = "DELETE FROM liked_reviews WHERE review_id = ? AND user_id = ? AND estimation = -1";
 
+    private static final String DELETE_USER_REVIEW_QUERY = """
+    DELETE liked_reviews WHERE user_id = ? AND review_id = ?
+    """;
+
     private static final String UPDATE_USEFUL_QUERY = "UPDATE review SET useful = ( select SUM(estimation) " +
             "FROM liked_reviews WHERE review_id = ?) WHERE review_id = ?";
 
@@ -100,6 +104,8 @@ public class ReviewRepo extends BaseRepo<ReviewDao> implements IReviewRepo {
     public void addLikeReview(Long id, Long userId) {
         log.trace("ReviewRepo.addLikeReview: by id {}, userId {}", id, userId);
 
+        delete(DELETE_USER_REVIEW_QUERY, userId, id);
+
         update(
                 INSERT_LIKE_QUERY, id, userId
         );
@@ -113,6 +119,8 @@ public class ReviewRepo extends BaseRepo<ReviewDao> implements IReviewRepo {
     @Override
     public void addDislikeReview(Long id, Long userId) {
         log.trace("ReviewRepo.addDislikeReview: by id {}, userId {}", id, userId);
+
+        delete(DELETE_USER_REVIEW_QUERY, userId, id);
 
         update(
                 INSERT_DISLIKE_QUERY, id, userId

@@ -6,9 +6,8 @@ import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.dao.FeedDao;
 import ru.yandex.practicum.filmorate.storage.interfaces.IFeedRepo;
 
-import java.time.Instant;
+import java.sql.Timestamp;
 import java.util.Collection;
-import java.util.List;
 
 @Repository
 public class FeedRepo extends BaseRepo<FeedDao> implements IFeedRepo {
@@ -17,9 +16,9 @@ public class FeedRepo extends BaseRepo<FeedDao> implements IFeedRepo {
             SELECT f.id as event_id,
             f.timestamp,
             f.event_type,
+            f.entity_id,
             f.operation,
             f.user_id,
-            f.event_id,
             FROM feeds f
             """;
 
@@ -27,9 +26,9 @@ public class FeedRepo extends BaseRepo<FeedDao> implements IFeedRepo {
             SELECT f.id as event_id,
             f.timestamp,
             f.event_type,
+            f.entity_id,
             f.operation,
             f.user_id,
-            f.event_id,
             FROM feeds f
             WHERE f.user_id = ?
             ORDER BY event_id ASC
@@ -53,9 +52,9 @@ public class FeedRepo extends BaseRepo<FeedDao> implements IFeedRepo {
     @Override
     public void createFeed(FeedDao feed) {
         long id = insert(INSERT_QUERY,
-                Instant.now(),
-                feed.getEventType(),
-                feed.getOperation(),
+                Timestamp.from(feed.getTimestamp()),
+                feed.getEventType().getValue(),
+                feed.getOperation().getValue(),
                 feed.getUserId(),
                 feed.getEntityId());
 
