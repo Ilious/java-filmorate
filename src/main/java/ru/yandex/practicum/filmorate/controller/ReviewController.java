@@ -55,30 +55,29 @@ public class ReviewController {
             @Positive(message = "Count should be greater than 0") Integer count) {
 
         return ResponseEntity.status(HttpStatus.OK).body(reviewService.getReviewByFilmId(filmId, count));
-
     }
 
     @ResponseStatus(HttpStatus.OK)
     @PutMapping("/{id}/like/{userId}")
-    public ReviewDao addLikeReview(@PathVariable Long id, @PathVariable Long userId) {
-        return reviewService.addLikeReview(id, userId);
+    public void addLikeReview(@PathVariable Long id, @PathVariable Long userId) {
+        reviewService.addLikeReview(id, userId);
     }
 
     @ResponseStatus(HttpStatus.OK)
     @PutMapping("/{id}/dislike/{userId}")
-    public ReviewDao addDislikeReview(@PathVariable Long id, @PathVariable Long userId) {
-        return reviewService.addDislikeReview(id, userId);
+    public void addDislikeReview(@PathVariable Long id, @PathVariable Long userId) {
+       reviewService.addDislikeReview(id, userId);
     }
 
     @ResponseStatus(HttpStatus.OK)
     @DeleteMapping("/{id}/like/{userId}")
-    public ReviewDao deleteLikeReview(@PathVariable Long id, @PathVariable Long userId) {
-        return reviewService.deleteLikeReview(id, userId);
+    public void deleteLikeReview(@PathVariable Long id, @PathVariable Long userId) {
+        reviewService.deleteLikeReview(id, userId);
     }
 
     @ResponseStatus(HttpStatus.OK)
     @DeleteMapping("/{id}/dislike/{userId}")
-    public ReviewDao deleteDislikeReview(@PathVariable Long id, @PathVariable Long userId) {
-        return reviewService.deleteDislikeReview(id, userId);
+    public void deleteDislikeReview(@PathVariable Long id, @PathVariable Long userId) {
+        reviewService.deleteDislikeReview(id, userId);
     }
 }

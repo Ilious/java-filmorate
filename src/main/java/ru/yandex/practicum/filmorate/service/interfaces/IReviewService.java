@@ -17,11 +17,11 @@ public interface IReviewService {
 
     Collection<ReviewDao> getReviewByFilmId(Long id, Integer count);
 
-    ReviewDao addLikeReview(Long id, Long userId);
+    void addLikeReview(Long id, Long userId);
 
-    ReviewDao addDislikeReview(Long id, Long userId);
+    void addDislikeReview(Long id, Long userId);
 
-    ReviewDao deleteLikeReview(Long id, Long userId);
+    void deleteLikeReview(Long id, Long userId);
 
-    ReviewDao deleteDislikeReview(Long id, Long userId);
+    void deleteDislikeReview(Long id, Long userId);
 }

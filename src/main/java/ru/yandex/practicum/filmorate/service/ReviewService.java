@@ -75,47 +75,40 @@ public class ReviewService implements IReviewService {
     }
 
     @Override
-    public ReviewDao addLikeReview(Long id, Long userId) {
+    public void addLikeReview(Long id, Long userId) {
         getReviewById(id);
 
         userRepo.findUserById(userId);
 
         reviewRepo.addLikeReview(id, userId);
-
-        return getReviewById(id);
     }
 
     @Override
-    public ReviewDao addDislikeReview(Long id, Long userId) {
+    public void addDislikeReview(Long id, Long userId) {
         getReviewById(id);
 
         userRepo.findUserById(userId);
 
         reviewRepo.addDislikeReview(id, userId);
-
-        return getReviewById(id);
     }
 
     @Override
-    public ReviewDao deleteLikeReview(Long id, Long userId) {
+    public void deleteLikeReview(Long id, Long userId) {
         getReviewById(id);
 
         userRepo.findUserById(userId);
 
         reviewRepo.deleteLikeReview(id, userId);
 
-        return getReviewById(id);
     }
 
     @Override
-    public ReviewDao deleteDislikeReview(Long id, Long userId) {
+    public void deleteDislikeReview(Long id, Long userId) {
         getReviewById(id);
 
         userRepo.findUserById(userId);
 
         reviewRepo.deleteDislikeReview(id, userId);
-
-        return getReviewById(id);
     }
 }
 

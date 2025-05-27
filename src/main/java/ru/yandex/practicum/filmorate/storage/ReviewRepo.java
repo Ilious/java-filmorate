@@ -93,12 +93,18 @@ public class ReviewRepo extends BaseRepo<ReviewDao> implements IReviewRepo {
     public Collection<ReviewDao> getReviewByFilmId(Long id, Integer count) {
         log.trace("ReviewRepo.getReviewByFilmId: by id {}", id);
 
-        return findMany(SELECT_REVIEW_BY_FILM_ID_QUERY, id, count);
+        return findMany(
+                SELECT_REVIEW_BY_FILM_ID_QUERY, id, count
+        );
     }
 
     @Override
     public void addLikeReview(Long id, Long userId) {
         log.trace("ReviewRepo.addLikeReview: by id {}, userId {}", id, userId);
+
+        delete(
+                DELETE_DISLIKE_QUERY, id, userId
+        );
 
         update(
                 INSERT_LIKE_QUERY, id, userId
@@ -113,6 +119,10 @@ public class ReviewRepo extends BaseRepo<ReviewDao> implements IReviewRepo {
     @Override
     public void addDislikeReview(Long id, Long userId) {
         log.trace("ReviewRepo.addDislikeReview: by id {}, userId {}", id, userId);
+
+        delete(
+                DELETE_LIKE_QUERY, id, userId
+        );
 
         update(
                 INSERT_DISLIKE_QUERY, id, userId
