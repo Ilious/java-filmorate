@@ -103,8 +103,8 @@ public class FilmRepo extends BaseRepo<FilmDao> implements IFilmRepo {
                     "WHERE fd.director_id = ? " +
                     "GROUP BY f.id, d.id, g.id " +
                     "ORDER BY " +
-                    "CASE WHEN ? = 'year' THEN f.release_date END ASC, " +
-                    "likes_count DESC";
+                    "CASE WHEN ? = 'year' THEN f.release_date end ASC, " +
+                    "CASE WHEN ? = 'likes' THEN COUNT(l.user_id) end DESC ";
     private final ResultSetExtractor<List<FilmDao>> extractor;
 
     private final ResultSetExtractor<FilmDao> singleExtractor;
@@ -250,7 +250,7 @@ public class FilmRepo extends BaseRepo<FilmDao> implements IFilmRepo {
 
     @Override
     public List<FilmDao> getFilmsByDirector(Long directorId, String sortBy) {
-        return extract(FIND_FILMS_BY_DIRECTOR_QUERY, extractor, directorId, sortBy);
+        return extract(FIND_FILMS_BY_DIRECTOR_QUERY, extractor, directorId, sortBy, sortBy);
     }
 
 }

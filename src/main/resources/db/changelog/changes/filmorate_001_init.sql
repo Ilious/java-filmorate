@@ -58,18 +58,12 @@ CREATE TABLE IF NOT EXISTS directors
 
 CREATE TABLE IF NOT EXISTS film_directors
 (
-    director_id int,
-    film_id     int,
+    director_id BIGINT,
+    film_id     BIGINT,
     PRIMARY KEY (director_id, film_id),
     foreign key (director_id) references directors (id) on delete cascade,
     foreign key (film_id) references films (id) on delete cascade
 );
-
-ALTER TABLE film_directors
-    ADD FOREIGN KEY (director_id) REFERENCES directors (id);
-
-ALTER TABLE film_directors
-    ADD FOREIGN KEY (film_id) REFERENCES films (id);
 
 ALTER TABLE user_friends
     ADD FOREIGN KEY (user_id) REFERENCES users (id);
