@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.controller;
 
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Positive;
@@ -70,8 +71,14 @@ public class FilmController {
     @GetMapping("/popular")
     public ResponseEntity<Collection<FilmDao>> getPopularFilms(@RequestParam(defaultValue = "10")
                                                                @Positive(message = "count should be greater than 0")
-                                                               Long count) {
-        return ResponseEntity.status(HttpStatus.OK).body(filmService.getMostLikedFilms(count));
+                                                               Long count,
+                                                               @RequestParam(required = false)
+                                                               @Positive(message = "Genre ID must be a positive number")
+                                                               Long genreId,
+                                                               @RequestParam(required = false)
+                                                               @Min(value = 1895, message = "Year must be at least 1895")
+                                                               Integer year) {
+        return ResponseEntity.status(HttpStatus.OK).body(filmService.getMostLikedFilms(count, genreId, year));
     }
 
     @GetMapping("/director/{directorId}")

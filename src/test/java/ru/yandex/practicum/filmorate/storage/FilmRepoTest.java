@@ -177,12 +177,15 @@ class FilmRepoTest {
     @Test
     void setLikeOnFilmTest() {
         MpaDao mpaDao = new MpaDao(1L, AgeRating.fromValue("G"));
+        GenreDao genreDao = new GenreDao(1L, Genre.COMEDY);
+        ArrayList<GenreDao> genre = new ArrayList<>();
+        genre.add(genreDao);
         FilmDao film = FilmDao.builder()
                 .name("film1")
                 .description("super-film1")
                 .releaseDate(LocalDate.now())
                 .duration(120)
-                .genres(new ArrayList<>())
+                .genres(genre)
                 .mpa(mpaDao)
                 .directors(new ArrayList<>())
                 .build();
@@ -191,7 +194,7 @@ class FilmRepoTest {
                 .description("super-film2")
                 .releaseDate(LocalDate.now())
                 .duration(120)
-                .genres(new ArrayList<>())
+                .genres(genre)
                 .mpa(mpaDao)
                 .directors(new ArrayList<>())
                 .build();
@@ -209,7 +212,7 @@ class FilmRepoTest {
         userRepo.createUser(user);
         filmRepo.setLikeOnFilm(film2.getId(), user.getId());
 
-        List<FilmDao> list = new ArrayList<>(filmRepo.findNPopular(1L));
+        List<FilmDao> list = new ArrayList<>(filmRepo.findNPopular(1L, 1L, 2025));
         assertAll(() -> {
             assertFalse(list.isEmpty());
             assertEquals(film2, list.getFirst());
@@ -219,12 +222,15 @@ class FilmRepoTest {
     @Test
     void deleteLikeFromFilmTest() {
         MpaDao mpaDao = new MpaDao(1L, AgeRating.fromValue("G"));
+        GenreDao genreDao = new GenreDao(1L, Genre.COMEDY);
+        ArrayList<GenreDao> genre = new ArrayList<>();
+        genre.add(genreDao);
         FilmDao film = FilmDao.builder()
                 .name("film1")
                 .description("super-film1")
                 .releaseDate(LocalDate.now())
                 .duration(120)
-                .genres(new ArrayList<>())
+                .genres(genre)
                 .mpa(mpaDao)
                 .directors(new ArrayList<>())
                 .build();
@@ -233,7 +239,7 @@ class FilmRepoTest {
                 .description("super-film2")
                 .releaseDate(LocalDate.now())
                 .duration(120)
-                .genres(new ArrayList<>())
+                .genres(genre)
                 .mpa(mpaDao)
                 .directors(new ArrayList<>())
                 .build();
@@ -253,7 +259,7 @@ class FilmRepoTest {
         filmRepo.setLikeOnFilm(film.getId(), user.getId());
         filmRepo.deleteLikeFromFilm(film2.getId(), user.getId());
 
-        List<FilmDao> list = new ArrayList<>(filmRepo.findNPopular(1L));
+        List<FilmDao> list = new ArrayList<>(filmRepo.findNPopular(1L, 1L, 2025));
         assertAll(() -> {
             assertFalse(list.isEmpty());
             assertEquals(film, list.getFirst());
@@ -263,12 +269,15 @@ class FilmRepoTest {
     @Test
     void findNPopularTest() {
         MpaDao mpaDao = new MpaDao(1L, AgeRating.fromValue("G"));
+        GenreDao genreDao = new GenreDao(1L, Genre.COMEDY);
+        ArrayList<GenreDao> genre = new ArrayList<>();
+        genre.add(genreDao);
         FilmDao film = FilmDao.builder()
                 .name("film1")
                 .description("super-film1")
                 .releaseDate(LocalDate.now())
                 .duration(120)
-                .genres(new ArrayList<>())
+                .genres(genre)
                 .mpa(mpaDao)
                 .directors(new ArrayList<>())
                 .build();
@@ -277,7 +286,7 @@ class FilmRepoTest {
                 .description("super-film2")
                 .releaseDate(LocalDate.now())
                 .duration(120)
-                .genres(new ArrayList<>())
+                .genres(genre)
                 .mpa(mpaDao)
                 .directors(new ArrayList<>())
                 .build();
@@ -286,7 +295,7 @@ class FilmRepoTest {
                 .description("super-film3")
                 .releaseDate(LocalDate.now())
                 .duration(120)
-                .genres(new ArrayList<>())
+                .genres(genre)
                 .mpa(mpaDao)
                 .directors(new ArrayList<>())
                 .build();
@@ -327,7 +336,7 @@ class FilmRepoTest {
         filmRepo.setLikeOnFilm(film3.getId(), user2.getId());
         filmRepo.setLikeOnFilm(film3.getId(), user3.getId());
 
-        List<FilmDao> films = new ArrayList<>(filmRepo.findNPopular(2L));
+        List<FilmDao> films = new ArrayList<>(filmRepo.findNPopular(2L, 1L, 2025));
 
         assertAll(() -> {
             assertFalse(films.isEmpty());

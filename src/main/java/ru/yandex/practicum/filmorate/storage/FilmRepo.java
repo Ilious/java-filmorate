@@ -9,8 +9,10 @@ import ru.yandex.practicum.filmorate.dao.DirectorDao;
 import ru.yandex.practicum.filmorate.dao.FilmDao;
 import ru.yandex.practicum.filmorate.dao.GenreDao;
 import ru.yandex.practicum.filmorate.storage.interfaces.IFilmRepo;
+import ru.yandex.practicum.filmorate.storage.mapper.GenreMapper;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -62,19 +64,6 @@ public class FilmRepo extends BaseRepo<FilmDao> implements IFilmRepo {
 
     private static final String DELETE_LIKE_QUERY = "DELETE FROM liked_films WHERE film_id = ? AND user_id = ?";
 
-    private static final String GET_N_POPULAR =
-            "SELECT f.id, f.name, f.description, f.release_date, f.duration, f.rating_id  " +
-                    "FROM ( " +
-                    "SELECT lf.film_id, COUNT(*) as count_likes  " +
-                    "FROM liked_films lf " +
-                    "GROUP BY lf.film_id " +
-                    "ORDER BY count_likes desc " +
-                    "LIMIT ? " +
-                    ") AS top_films " +
-                    "JOIN films f ON f.id = top_films.film_id " +
-                    "ORDER BY top_films.count_likes DESC";
-
-
     private static final String UPDATE_QUERY = "UPDATE films " +
             "SET name = ?, description = ?, release_date = ?, duration = ?, rating_id = ? WHERE id = ?";
 
@@ -105,6 +94,10 @@ public class FilmRepo extends BaseRepo<FilmDao> implements IFilmRepo {
                     "ORDER BY " +
                     "CASE WHEN ? = 'year' THEN f.release_date end ASC, " +
                     "CASE WHEN ? = 'likes' THEN COUNT(l.user_id) end DESC ";
+
+    public static final String LOAD_GENRES_FOR_FILM = "SELECT distinct g.id, g.name " +
+            "FROM genres g JOIN film_genres fg ON g.id = fg.genre_id WHERE fg.film_id = ?";
+
     private final ResultSetExtractor<List<FilmDao>> extractor;
 
     private final ResultSetExtractor<FilmDao> singleExtractor;
@@ -190,11 +183,44 @@ public class FilmRepo extends BaseRepo<FilmDao> implements IFilmRepo {
     }
 
     @Override
-    public Collection<FilmDao> findNPopular(Long count) {
-        return findMany(
-                GET_N_POPULAR,
-                count
+    public Collection<FilmDao> findNPopular(Long count, Long genreId, Integer year) {
+        StringBuilder sqlBuilder = new StringBuilder();
+        List<Object> parameters = new ArrayList<>();
+
+        sqlBuilder.append(
+                "SELECT f.id, f.name, f.description, f.release_date, f.duration, f.rating_id " +
+                        "FROM ( " +
+                        "SELECT lf.film_id, COUNT(*) AS count_likes " +
+                        "FROM liked_films lf " +
+                        "JOIN films f ON lf.film_id = f.id " +
+                        "WHERE 1=1 "
         );
+
+        if (genreId != null) {
+            sqlBuilder.append("AND EXISTS (SELECT * FROM film_genres fg WHERE fg.film_id = f.id AND fg.genre_id = ?) ");
+            parameters.add(genreId);
+        }
+
+        if (year != null) {
+            sqlBuilder.append("AND YEAR(f.release_date) = ? ");
+            parameters.add(year);
+        }
+
+        sqlBuilder.append(
+                "GROUP BY lf.film_id " +
+                        "ORDER BY count_likes DESC " +
+                        "LIMIT ? " +
+                        ") AS top_films " +
+                        "JOIN films f ON f.id = top_films.film_id " +
+                        "ORDER BY top_films.count_likes DESC"
+        );
+
+        parameters.add(count);
+        List<FilmDao> films = findMany(sqlBuilder.toString(), parameters.toArray());
+        films.forEach(film -> {
+            film.setGenres(loadGenresForFilm(film.getId()));
+        });
+        return films;
     }
 
     public void addGenresToFilm(Long filmId, List<GenreDao> genres) {
@@ -253,4 +279,7 @@ public class FilmRepo extends BaseRepo<FilmDao> implements IFilmRepo {
         return extract(FIND_FILMS_BY_DIRECTOR_QUERY, extractor, directorId, sortBy, sortBy);
     }
 
+    private List<GenreDao> loadGenresForFilm(Long filmId) {
+        return jdbc.query(LOAD_GENRES_FOR_FILM, new GenreMapper(), filmId);
+    }
 }
