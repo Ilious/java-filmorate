@@ -116,8 +116,8 @@ public class FilmService implements IFilmService {
     }
 
     @Override
-    public Collection<FilmDao> getMostLikedFilms(Long count) {
-        return filmRepo.findNPopular(count);
+    public Collection<FilmDao> getMostLikedFilms(Long count, Long genreId, Integer year) {
+        return filmRepo.findNPopular(count, genreId, year);
     }
 
     @Override
