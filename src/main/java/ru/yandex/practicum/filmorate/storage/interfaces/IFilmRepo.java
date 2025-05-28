@@ -22,5 +22,7 @@ public interface IFilmRepo {
 
     List<FilmDao> getFilmsByDirector(Long directorId, String sortBy);
 
+    Collection<FilmDao> getRecommendations(Long userId);
+
     Collection<FilmDao> findNPopular(Long count, Long genreId, Integer year);
 }
