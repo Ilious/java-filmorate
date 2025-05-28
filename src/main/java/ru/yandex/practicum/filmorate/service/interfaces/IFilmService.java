@@ -22,4 +22,7 @@ public interface IFilmService {
     FilmDao getById(Long filmId);
 
     void deleteFilm(Long filmId);
+
+    Collection<FilmDao> getRecommendations(Long userId);
+
 }

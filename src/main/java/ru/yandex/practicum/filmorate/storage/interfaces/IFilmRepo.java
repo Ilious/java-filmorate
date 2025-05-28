@@ -21,6 +21,8 @@ public interface IFilmRepo {
 
     void deleteFilm(Long filmId);
 
+    Collection<FilmDao> getRecommendations(Long userId);
+
     Collection<FilmDao> findNPopular(Long count, Long genreId, Integer year);
 
 }
