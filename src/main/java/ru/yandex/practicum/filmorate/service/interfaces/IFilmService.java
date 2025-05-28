@@ -20,4 +20,6 @@ public interface IFilmService {
     Collection<FilmDao> getMostLikedFilms(Long count, Long genreId, Integer year);
 
     FilmDao getById(Long filmId);
+
+    Collection<FilmDao> getRecommendations(Long userId);
 }
