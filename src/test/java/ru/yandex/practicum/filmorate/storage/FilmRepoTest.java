@@ -10,10 +10,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.test.context.ActiveProfiles;
-import ru.yandex.practicum.filmorate.dao.FilmDao;
-import ru.yandex.practicum.filmorate.dao.GenreDao;
-import ru.yandex.practicum.filmorate.dao.MpaDao;
-import ru.yandex.practicum.filmorate.dao.UserDao;
+import ru.yandex.practicum.filmorate.dao.*;
 import ru.yandex.practicum.filmorate.dao.enums.AgeRating;
 import ru.yandex.practicum.filmorate.dao.enums.Genre;
 import ru.yandex.practicum.filmorate.storage.mapper.FilmExtractor;
@@ -128,6 +125,7 @@ class FilmRepoTest {
                 .releaseDate(LocalDate.now())
                 .duration(120)
                 .genres(new ArrayList<>())
+                .directors(new ArrayList<>())
                 .mpa(mpaDao)
                 .build();
         Long id = filmRepo.createFilm(film).getId();
@@ -189,6 +187,7 @@ class FilmRepoTest {
                 .duration(120)
                 .genres(genre)
                 .mpa(mpaDao)
+                .directors(new ArrayList<>())
                 .build();
         FilmDao film2 = FilmDao.builder()
                 .name("film2")
@@ -197,6 +196,7 @@ class FilmRepoTest {
                 .duration(120)
                 .genres(genre)
                 .mpa(mpaDao)
+                .directors(new ArrayList<>())
                 .build();
 
         filmRepo.createFilm(film);
@@ -232,6 +232,7 @@ class FilmRepoTest {
                 .duration(120)
                 .genres(genre)
                 .mpa(mpaDao)
+                .directors(new ArrayList<>())
                 .build();
         FilmDao film2 = FilmDao.builder()
                 .name("film2")
@@ -240,6 +241,7 @@ class FilmRepoTest {
                 .duration(120)
                 .genres(genre)
                 .mpa(mpaDao)
+                .directors(new ArrayList<>())
                 .build();
 
         filmRepo.createFilm(film);
@@ -277,6 +279,7 @@ class FilmRepoTest {
                 .duration(120)
                 .genres(genre)
                 .mpa(mpaDao)
+                .directors(new ArrayList<>())
                 .build();
         FilmDao film2 = FilmDao.builder()
                 .name("film2")
@@ -285,6 +288,7 @@ class FilmRepoTest {
                 .duration(120)
                 .genres(genre)
                 .mpa(mpaDao)
+                .directors(new ArrayList<>())
                 .build();
         FilmDao film3 = FilmDao.builder()
                 .name("film3")
@@ -293,6 +297,7 @@ class FilmRepoTest {
                 .duration(120)
                 .genres(genre)
                 .mpa(mpaDao)
+                .directors(new ArrayList<>())
                 .build();
 
         filmRepo.createFilm(film);
@@ -339,6 +344,86 @@ class FilmRepoTest {
             assertEquals(film3, films.getFirst());
             assertEquals(film2, films.getLast());
         });
+    }
+
+    @Test
+    void getFilmsByDirectorWithInvalidDirectorTest() {
+        List<FilmDao> result = filmRepo.getFilmsByDirector(999L, "year");
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void addDirectorsToFilmTest() {
+        jdbc.update("INSERT INTO directors (name) VALUES ('Director 1')");
+        jdbc.update("INSERT INTO directors (name) VALUES ('Director 2')");
+
+        List<DirectorDao> directors = jdbc.query(
+                "SELECT id, name FROM directors",
+                (rs, rowNum) -> DirectorDao.builder()
+                        .id(rs.getLong("id"))
+                        .name(rs.getString("name"))
+                        .build()
+        );
+
+        MpaDao mpa = new MpaDao(1L, AgeRating.G);
+        FilmDao film = FilmDao.builder()
+                .name("Test Film")
+                .description("Test Description")
+                .releaseDate(LocalDate.now())
+                .duration(120)
+                .mpa(mpa)
+                .genres(new ArrayList<>())
+                .directors(new ArrayList<>())
+                .build();
+        filmRepo.createFilm(film);
+
+        filmRepo.addDirectorsToFilm(film.getId(), directors);
+
+        List<DirectorDao> savedDirectors = jdbc.query(
+                "SELECT d.id, d.name FROM film_directors fd JOIN directors d ON fd.director_id = d.id WHERE film_id = ?",
+                (rs, rowNum) -> DirectorDao.builder()
+                        .id(rs.getLong("id"))
+                        .name(rs.getString("name"))
+                        .build(),
+                film.getId()
+        );
+
+        assertEquals(2, savedDirectors.size());
+        assertTrue(savedDirectors.containsAll(directors));
+    }
+
+    @Test
+    void getFilmsByDirectorTest() {
+        jdbc.update("INSERT INTO directors (name) VALUES ('Test Director')");
+        Long directorId = jdbc.queryForObject(
+                "SELECT id FROM directors WHERE name = 'Test Director'",
+                Long.class
+        );
+
+        MpaDao mpa = new MpaDao(1L, AgeRating.G);
+
+        FilmDao film1 = FilmDao.builder()
+                .name("Film 2020")
+                .description("Desc")
+                .releaseDate(LocalDate.of(2020, 1, 1))
+                .duration(120)
+                .mpa(mpa)
+                .directors(List.of(DirectorDao.builder().id(directorId).name("Test Director").build()))
+                .build();
+        filmRepo.createFilm(film1);
+
+        UserDao user = UserDao.builder()
+                .email("user@test.ru")
+                .name("user")
+                .login("testUser")
+                .birthday(LocalDate.of(2000, 1, 1))
+                .build();
+        userRepo.createUser(user);
+        filmRepo.setLikeOnFilm(film1.getId(), user.getId());
+
+        List<FilmDao> films = filmRepo.getFilmsByDirector(directorId, "year");
+        assertEquals(1, films.size());
+        assertEquals(film1.getName(), films.get(0).getName());
     }
 
     @Test

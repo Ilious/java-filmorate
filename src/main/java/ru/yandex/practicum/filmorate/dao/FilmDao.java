@@ -27,4 +27,6 @@ public class FilmDao {
     private MpaDao mpa;
 
     private List<GenreDao> genres;
+
+    private List<DirectorDao> directors;
 }

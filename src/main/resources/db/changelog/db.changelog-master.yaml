@@ -10,3 +10,6 @@ databaseChangeLog:
   - include:
       file: changes/filmorate_003_insert_ratings.yaml
       relativeToChangelogFile: true
+  - include:
+      file: changes/filmorate_007_init.sql
+      relativeToChangelogFile: true
