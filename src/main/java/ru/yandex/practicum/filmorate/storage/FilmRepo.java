@@ -165,6 +165,12 @@ public class FilmRepo extends BaseRepo<FilmDao> implements IFilmRepo {
         );
     }
 
+
+    private List<GenreDao> loadGenresForFilm(Long filmId) {
+        return jdbc.query(LOAD_GENRES_FOR_FILM, new GenreMapper(), filmId);
+
+    }
+
     @Override
     public Collection<FilmDao> findNPopular(Long count, Long genreId, Integer year) {
         StringBuilder sqlBuilder = new StringBuilder();
@@ -235,9 +241,6 @@ public class FilmRepo extends BaseRepo<FilmDao> implements IFilmRepo {
 
     public Collection<FilmDao> getRecommendations(Long userId) {
         return extract(GET_RECOMMENDATION_QUERY, extractor, userId, userId, userId);
-
-    private List<GenreDao> loadGenresForFilm(Long filmId) {
-        return jdbc.query(LOAD_GENRES_FOR_FILM, new GenreMapper(), filmId);
 
     }
 }
