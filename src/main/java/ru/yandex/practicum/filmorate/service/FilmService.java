@@ -124,7 +124,7 @@ public class FilmService implements IFilmService {
     public List<FilmDao> getFilmsByDirector(Long directorId, String sortBy) {
         return filmRepo.getFilmsByDirector(directorId, sortBy);
     }
-  
+
     @Override
     public Collection<FilmDao> getRecommendations(Long userId) {
         return filmRepo.getRecommendations(userId);

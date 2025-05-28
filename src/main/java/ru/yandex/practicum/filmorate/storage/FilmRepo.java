@@ -99,18 +99,21 @@ public class FilmRepo extends BaseRepo<FilmDao> implements IFilmRepo {
             "f.id AS film_id, f.name, f.description, f.release_date, f.duration, f.rating_id, " +
             "g.id AS genre_id, " +
             "g.name AS genre_name, " +
+            "d.id as director_id, d.name as director_name, " +
             "COUNT(lf2.user_id) AS recommendation_weight " +
             "FROM films f " +
             "LEFT JOIN film_genres fg ON fg.film_id = f.id " +
             "LEFT JOIN genres g ON g.id = fg.genre_id " +
             "JOIN liked_films lf2 ON lf2.film_id = f.id " +
+            "LEFT JOIN film_directors fd ON f.id = fd.film_id " +
+            "LEFT JOIN directors d ON fd.director_id = d.id " +
             "WHERE lf2.user_id IN ( " +
             "SELECT DISTINCT lf.user_id " +
             "FROM liked_films lf " +
             "WHERE lf.user_id != ? " +
             "AND lf.film_id IN (SELECT film_id FROM liked_films WHERE user_id = ?)) " +
             "AND f.id NOT IN (SELECT film_id FROM liked_films WHERE user_id = ?) " +
-            "GROUP BY f.id, f.name, f.description, f.release_date, f.duration, f.rating_id, g.id, g.name " +
+            "GROUP BY f.id, f.name, f.description, f.release_date, f.duration, f.rating_id, g.id, g.name, fd.director_id " +
             "ORDER BY recommendation_weight DESC;";
 
     public static final String LOAD_GENRES_FOR_FILM = "SELECT distinct g.id, g.name " +
@@ -301,10 +304,6 @@ public class FilmRepo extends BaseRepo<FilmDao> implements IFilmRepo {
     @Override
     public List<FilmDao> getFilmsByDirector(Long directorId, String sortBy) {
         return extract(FIND_FILMS_BY_DIRECTOR_QUERY, extractor, directorId, sortBy, sortBy);
-    }
-
-    private List<GenreDao> loadGenresForFilm(Long filmId) {
-        return jdbc.query(LOAD_GENRES_FOR_FILM, new GenreMapper(), filmId);
     }
 
     @Override
