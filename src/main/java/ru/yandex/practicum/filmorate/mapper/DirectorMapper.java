@@ -1,8 +1,11 @@
 package ru.yandex.practicum.filmorate.mapper;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import ru.yandex.practicum.filmorate.dao.DirectorDao;
 import ru.yandex.practicum.filmorate.dto.DirectorRecord;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class DirectorMapper {
 
     public static DirectorDao toDirectorDao(DirectorRecord req) {

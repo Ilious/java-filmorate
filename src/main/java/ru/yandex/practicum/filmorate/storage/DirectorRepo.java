@@ -2,14 +2,14 @@ package ru.yandex.practicum.filmorate.storage;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.dao.DirectorDao;
 import ru.yandex.practicum.filmorate.storage.interfaces.IDirectorRepo;
 
 import java.util.Collection;
 import java.util.Optional;
 
-@Component
+@Repository
 public class DirectorRepo extends BaseRepo<DirectorDao> implements IDirectorRepo {
 
     private static final String FIND_ALL_QUERY = "SELECT * FROM directors";

@@ -11,7 +11,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class DirectorDao {
-    @NotBlank
     private String name;
     private Long id;
 }

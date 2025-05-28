@@ -59,6 +59,6 @@ public class DirectorService implements IDirectorService {
     public void deleteDirector(Long id) {
         getDirectorById(id);
         directorRepo.deleteDirector(id);
-        log.info("Deleted director with id {}", id);
+        log.debug("Deleted director with id {}", id);
     }
 }
