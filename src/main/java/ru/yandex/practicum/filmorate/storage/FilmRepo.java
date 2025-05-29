@@ -241,7 +241,6 @@ public class FilmRepo extends BaseRepo<FilmDao> implements IFilmRepo {
                 """
                         GROUP BY lf.film_id
                         ) AS top_films ON f.id = top_films.film_id
-                        
                         ORDER BY COALESCE(top_films.count_likes, 0) DESC
                         LIMIT ?"""
         );
