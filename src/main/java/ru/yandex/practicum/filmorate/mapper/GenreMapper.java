@@ -8,7 +8,6 @@ import ru.yandex.practicum.filmorate.dto.GenreRecord;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
