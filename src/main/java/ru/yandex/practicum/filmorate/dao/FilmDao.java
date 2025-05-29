@@ -18,6 +18,8 @@ public class FilmDao {
 
     private String name;
 
+    private List<DirectorDao> directors;
+
     private String description;
 
     private LocalDate releaseDate;
@@ -27,6 +29,4 @@ public class FilmDao {
     private MpaDao mpa;
 
     private List<GenreDao> genres;
-
-    private List<DirectorDao> directors;
 }

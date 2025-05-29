@@ -14,7 +14,6 @@ import ru.yandex.practicum.filmorate.dao.*;
 import ru.yandex.practicum.filmorate.dao.enums.AgeRating;
 import ru.yandex.practicum.filmorate.dao.enums.Genre;
 import ru.yandex.practicum.filmorate.storage.mapper.FilmExtractor;
-import ru.yandex.practicum.filmorate.storage.mapper.FilmMapper;
 import ru.yandex.practicum.filmorate.storage.mapper.SingleFilmExtractor;
 import ru.yandex.practicum.filmorate.storage.mapper.UserMapper;
 
@@ -29,13 +28,10 @@ import static org.junit.jupiter.api.Assertions.*;
 @ActiveProfiles("test")
 @AutoConfigureTestDatabase
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
-@Import({FilmMapper.class, UserMapper.class})
+@Import({UserMapper.class})
 class FilmRepoTest {
 
     private FilmRepo filmRepo;
-
-    @Autowired
-    private RowMapper<FilmDao> filmDaoRowMapper;
 
     @Autowired
     private RowMapper<UserDao> userDaoRowMapper;
@@ -49,7 +45,6 @@ class FilmRepoTest {
     void init() {
         filmRepo = new FilmRepo(
                 jdbc,
-                filmDaoRowMapper,
                 new FilmExtractor(),
                 new SingleFilmExtractor()
         );
@@ -182,6 +177,7 @@ class FilmRepoTest {
         genre.add(genreDao);
         FilmDao film = FilmDao.builder()
                 .name("film1")
+                .directors(new ArrayList<>())
                 .description("super-film1")
                 .releaseDate(LocalDate.now())
                 .duration(120)
@@ -191,6 +187,7 @@ class FilmRepoTest {
                 .build();
         FilmDao film2 = FilmDao.builder()
                 .name("film2")
+                .directors(new ArrayList<>())
                 .description("super-film2")
                 .releaseDate(LocalDate.now())
                 .duration(120)
@@ -227,6 +224,7 @@ class FilmRepoTest {
         genre.add(genreDao);
         FilmDao film = FilmDao.builder()
                 .name("film1")
+                .directors(new ArrayList<>())
                 .description("super-film1")
                 .releaseDate(LocalDate.now())
                 .duration(120)
@@ -236,6 +234,7 @@ class FilmRepoTest {
                 .build();
         FilmDao film2 = FilmDao.builder()
                 .name("film2")
+                .directors(new ArrayList<>())
                 .description("super-film2")
                 .releaseDate(LocalDate.now())
                 .duration(120)
@@ -431,6 +430,7 @@ class FilmRepoTest {
         MpaDao mpaDao = new MpaDao(1L, AgeRating.fromValue("G"));
         FilmDao film = FilmDao.builder()
                 .name("film1")
+                .directors(new ArrayList<>())
                 .description("super-film1")
                 .releaseDate(LocalDate.now())
                 .duration(120)
@@ -439,6 +439,7 @@ class FilmRepoTest {
                 .build();
         FilmDao film2 = FilmDao.builder()
                 .name("film2")
+                .directors(new ArrayList<>())
                 .description("super-film2")
                 .releaseDate(LocalDate.now())
                 .duration(120)
@@ -447,6 +448,7 @@ class FilmRepoTest {
                 .build();
         FilmDao film3 = FilmDao.builder()
                 .name("film3")
+                .directors(new ArrayList<>())
                 .description("super-film3")
                 .releaseDate(LocalDate.now())
                 .duration(120)

@@ -3,6 +3,8 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.component.SearchCriteria;
+import ru.yandex.practicum.filmorate.dao.DirectorDao;
 import ru.yandex.practicum.filmorate.dao.FilmDao;
 import ru.yandex.practicum.filmorate.dao.GenreDao;
 import ru.yandex.practicum.filmorate.dao.MpaDao;
@@ -18,12 +20,15 @@ import ru.yandex.practicum.filmorate.mapper.MpaMapper;
 import ru.yandex.practicum.filmorate.service.enums.EntityType;
 import ru.yandex.practicum.filmorate.service.enums.Operation;
 import ru.yandex.practicum.filmorate.service.interfaces.IFeedService;
+import ru.yandex.practicum.filmorate.service.interfaces.IDirectorService;
 import ru.yandex.practicum.filmorate.service.interfaces.IFilmService;
 import ru.yandex.practicum.filmorate.service.interfaces.IGenreService;
 import ru.yandex.practicum.filmorate.service.interfaces.IMpaService;
 import ru.yandex.practicum.filmorate.storage.interfaces.IFilmRepo;
+import ru.yandex.practicum.filmorate.storage.mapper.DirectorMapper;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -38,25 +43,34 @@ public class FilmService implements IFilmService {
 
     private final IFeedService feedService;
 
+    private final IDirectorService directorService;
+
     @Override
     public FilmDao postFilm(FilmRecord filmRecord) {
         MpaRecord mpaReq = filmRecord.mpa();
         mpaService.validateId(mpaReq.id());
         MpaDao mpa = MpaMapper.toMpaDao(mpaReq);
 
-        List<GenreDao> dao = GenreMapper.toGenresDao(filmRecord.genres());
-        List<Long> list = dao.stream()
+        List<GenreDao> genreDaos = GenreMapper.toGenresDao(filmRecord.genres());
+        List<Long> listGenresIds = genreDaos.stream()
                 .map(GenreDao::getId)
                 .toList();
-        genreService.validateIds(list);
+        genreService.validateIds(listGenresIds);
 
         Set<GenreDao> uniqueGenres = new TreeSet<>(
                 Comparator.comparing(GenreDao::getId)
         );
-        uniqueGenres.addAll(dao);
+        uniqueGenres.addAll(genreDaos);
+
+        List<DirectorDao> directors = DirectorMapper.toDirectorsDaos(filmRecord.directors());
+        List<Long> listDirectors = directors.stream()
+                .map(DirectorDao::getId)
+                .toList();
+        directorService.validateIds(listDirectors);
 
         FilmDao filmDao = FilmMapper.toFilmDao(filmRecord);
         filmDao.setGenres(new ArrayList<>(uniqueGenres));
+        filmDao.setDirectors(new ArrayList<>(directors));
         filmDao.setMpa(mpa);
 
         return filmRepo.createFilm(filmDao);
@@ -82,6 +96,17 @@ public class FilmService implements IFilmService {
             genreService.validateIds(ids);
 
             dao.setGenres(genresDao);
+        }
+
+        if (filmRecord.directors() != null) {
+            List<DirectorDao> directors = DirectorMapper.toDirectorsDaos(filmRecord.directors());
+            List<Long> listDirectors = directors.stream()
+                    .map(DirectorDao::getId)
+                    .toList();
+
+            directorService.validateIds(listDirectors);
+
+            dao.setDirectors(directors);
         }
 
         MpaRecord mpaReq = filmRecord.mpa();
@@ -151,5 +176,31 @@ public class FilmService implements IFilmService {
     @Override
     public Collection<FilmDao> showCommonFilms(Long userId, Long friendId) {
         return filmRepo.showCommonFilms(userId, friendId);
+    }
+
+    @Override
+    public Collection<FilmDao> search(String query, String[] by) {
+        SearchCriteria searchObj = defineSearchBy(by, query);
+
+        return filmRepo.findFilmsBySearchQuery(searchObj);
+    }
+
+    private SearchCriteria defineSearchBy(String[] by, String query) {
+        Set<String> criteria = Arrays.stream(by)
+                .map(String::toLowerCase)
+                .collect(Collectors.toSet());
+
+        String queryParam = "%" + query + "%";
+        if (criteria.contains("title") && criteria.contains("director"))
+            return new SearchCriteria(
+                    " WHERE LOWER(f.name) LIKE LOWER(?) OR LOWER(d.name) LIKE LOWER(?)",
+                    queryParam, queryParam
+            );
+        else if (criteria.contains("title"))
+                return new SearchCriteria(" WHERE LOWER(f.name) LIKE LOWER(?)", queryParam);
+        else if (criteria.contains("director"))
+            return new SearchCriteria(" WHERE LOWER(d.name) LIKE LOWER(?)", queryParam);
+
+        throw new ValidationException("Search query is not valid", "search", Arrays.toString(by));
     }
 }

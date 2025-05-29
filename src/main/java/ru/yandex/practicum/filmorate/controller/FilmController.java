@@ -41,16 +41,16 @@ public class FilmController {
     }
 
     @PutMapping
-    public ResponseEntity<FilmDao> updateFilm(@RequestBody
-                                              @NotNull
-                                              @Validated(Validator.OnUpdate.class) FilmRecord filmRecord) {
+    public ResponseEntity<FilmDao> updateFilm(
+            @RequestBody @NotNull @Validated(Validator.OnUpdate.class) FilmRecord filmRecord
+    ) {
         return ResponseEntity.status(HttpStatus.OK).body(filmService.putFilm(filmRecord));
     }
 
     @PostMapping
-    public ResponseEntity<FilmDao> createFilm(@RequestBody
-                                              @NotNull
-                                              @Validated(Validator.OnCreate.class) FilmRecord filmRecord) {
+    public ResponseEntity<FilmDao> createFilm(
+            @RequestBody @NotNull @Validated(Validator.OnCreate.class) FilmRecord filmRecord
+    ) {
         return ResponseEntity.status(HttpStatus.CREATED).body(filmService.postFilm(filmRecord));
     }
 
@@ -100,5 +100,14 @@ public class FilmController {
     @GetMapping("/common")
     public ResponseEntity<Collection<FilmDao>> showCommonFilms(@RequestParam(name = "userId") Long userId, @RequestParam(name = "friendId") Long friendId) {
         return ResponseEntity.status(HttpStatus.OK).body(filmService.showCommonFilms(userId, friendId));
+    }
+
+    @GetMapping("/search")
+    @ResponseStatus(HttpStatus.OK)
+    public Collection<FilmDao> searchFilm(
+            @RequestParam String query,
+            @RequestParam String[] by
+    ) {
+        return filmService.search(query, by);
     }
 }

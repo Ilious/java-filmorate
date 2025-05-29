@@ -1,6 +1,5 @@
 package ru.yandex.practicum.filmorate.service;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.dao.DirectorDao;
@@ -12,13 +11,17 @@ import ru.yandex.practicum.filmorate.service.interfaces.IDirectorService;
 import ru.yandex.practicum.filmorate.storage.interfaces.IDirectorRepo;
 
 import java.util.Collection;
+import java.util.List;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor
 public class DirectorService implements IDirectorService {
 
     private final IDirectorRepo directorRepo;
+
+    public DirectorService(IDirectorRepo directorRepo) {
+        this.directorRepo = directorRepo;
+    }
 
     @Override
     public DirectorDao postDirector(DirectorRecord directorRecord) {
@@ -60,5 +63,10 @@ public class DirectorService implements IDirectorService {
         getDirectorById(id);
         directorRepo.deleteDirector(id);
         log.debug("Deleted director with id {}", id);
+    }
+
+    @Override
+    public void validateIds(List<Long> listIds) {
+        listIds.forEach(this::getDirectorById);
     }
 }

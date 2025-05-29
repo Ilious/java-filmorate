@@ -29,5 +29,6 @@ public record FilmRecord(
         int duration,
 
         List<GenreRecord> genres,
+
         List<DirectorRecord> directors) {
 }

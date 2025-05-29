@@ -16,6 +16,7 @@ import ru.yandex.practicum.filmorate.dao.MpaDao;
 import ru.yandex.practicum.filmorate.dao.ReviewDao;
 import ru.yandex.practicum.filmorate.dao.UserDao;
 import ru.yandex.practicum.filmorate.dao.enums.AgeRating;
+import ru.yandex.practicum.filmorate.mapper.FilmMapper;
 import ru.yandex.practicum.filmorate.service.enums.LikeOnReviewActions;
 import ru.yandex.practicum.filmorate.storage.mapper.*;
 
@@ -44,9 +45,6 @@ public class ReviewRepoTest {
     private RowMapper<ReviewDao> mapper;
 
     @Autowired
-    private RowMapper<FilmDao> filmDaoRowMapper;
-
-    @Autowired
     private RowMapper<UserDao> userDaoRowMapper;
 
     @BeforeEach
@@ -57,7 +55,6 @@ public class ReviewRepoTest {
         );
         filmRepo = new FilmRepo(
                 jdbc,
-                filmDaoRowMapper,
                 new FilmExtractor(),
                 new SingleFilmExtractor()
         );

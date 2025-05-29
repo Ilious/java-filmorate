@@ -14,10 +14,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Component
 public class FilmExtractor implements ResultSetExtractor<List<FilmDao>> {
@@ -25,7 +22,7 @@ public class FilmExtractor implements ResultSetExtractor<List<FilmDao>> {
     @Override
     public List<FilmDao> extractData(ResultSet rs) throws SQLException, DataAccessException {
 
-        Map<Long, FilmDao> films = new HashMap<>();
+        Map<Long, FilmDao> films = new LinkedHashMap<>();
         Map<Long, DirectorDao> directorsMap = new HashMap<>();
         while (rs.next()) {
             Long id = rs.getLong("film_id");
@@ -44,8 +41,16 @@ public class FilmExtractor implements ResultSetExtractor<List<FilmDao>> {
                 mpa.setId(rating);
                 mpa.setName(AgeRating.fromValue(rating));
 
-                film = new FilmDao(id, name, description, localDate, duration,
-                        mpa, new ArrayList<>(), new ArrayList<>());
+                film = FilmDao.builder()
+                        .id(id)
+                        .name(name)
+                        .directors(new ArrayList<>())
+                        .description(description)
+                        .releaseDate(localDate)
+                        .duration(duration)
+                        .mpa(mpa)
+                        .genres(new ArrayList<>())
+                        .build();
                 film.setDirectors(new ArrayList<>());
                 films.put(id, film);
             }
@@ -63,7 +68,7 @@ public class FilmExtractor implements ResultSetExtractor<List<FilmDao>> {
             if (directorId != 0 && directorName != null) {
                 DirectorDao director = directorsMap.computeIfAbsent(
                         directorId,
-                        key -> new DirectorDao(directorName, directorId)
+                        key -> new DirectorDao(directorId, directorName)
                 );
                 if (!film.getDirectors().contains(director)) {
                     film.getDirectors().add(director);

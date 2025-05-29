@@ -7,6 +7,6 @@ import ru.yandex.practicum.filmorate.validator.Validator;
 public record DirectorRecord(
         @NotNull(groups = Validator.OnUpdate.class) Long id,
 
-        @NotBlank(groups = {Validator.OnUpdate.class, Validator.OnCreate.class})
-        String name) {
+        @NotBlank(groups = {Validator.OnUpdate.class, Validator.OnCreate.class}) String name
+) {
 }

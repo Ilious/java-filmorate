@@ -40,13 +40,16 @@ public class FeedRepo extends BaseRepo<FeedDao> implements IFeedRepo {
             VALUES(?, ?, ?, ?, ?)
             """;
 
+    private final RowMapper<FeedDao> mapper;
+
     public FeedRepo(JdbcTemplate jdbc, RowMapper<FeedDao> mapper) {
-        super(jdbc, mapper);
+        super(jdbc);
+        this.mapper = mapper;
     }
 
     @Override
     public Collection<FeedDao> findAll() {
-        return findMany(FIND_ALL_QUERY);
+        return findMany(FIND_ALL_QUERY, mapper);
     }
 
     @Override
@@ -63,6 +66,6 @@ public class FeedRepo extends BaseRepo<FeedDao> implements IFeedRepo {
 
     @Override
     public Collection<FeedDao> getByUserId(Long userId) {
-        return findMany(FIND_BY_USER_ID_QUERY, userId);
+        return findMany(FIND_BY_USER_ID_QUERY, mapper, userId);
     }
 }

@@ -1,6 +1,5 @@
 package ru.yandex.practicum.filmorate.controller;
 
-import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -39,14 +38,14 @@ public class DirectorController {
 
     @PostMapping
     public ResponseEntity<DirectorDao> createDirector(
-            @RequestBody @Valid @Validated(Validator.OnCreate.class) DirectorRecord directorRecord) {
+            @RequestBody @Validated(Validator.OnCreate.class) DirectorRecord directorRecord) {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(directorService.postDirector(directorRecord));
     }
 
     @PutMapping
     public ResponseEntity<DirectorDao> updateDirector(
-            @RequestBody @Valid @Validated(Validator.OnUpdate.class) DirectorRecord directorRecord) {
+            @RequestBody @Validated(Validator.OnUpdate.class) DirectorRecord directorRecord) {
         return ResponseEntity.ok(directorService.putDirector(directorRecord));
     }
 

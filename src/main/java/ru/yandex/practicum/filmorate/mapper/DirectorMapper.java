@@ -9,10 +9,7 @@ import ru.yandex.practicum.filmorate.dto.DirectorRecord;
 public class DirectorMapper {
 
     public static DirectorDao toDirectorDao(DirectorRecord req) {
-        return DirectorDao.builder()
-                .name(req.name())
-                .id(req.id())
-                .build();
+        return new DirectorDao(req.id(), req.name());
     }
 
     public static void updateFields(DirectorDao director, DirectorRecord req) {

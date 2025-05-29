@@ -12,12 +12,11 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.test.context.ActiveProfiles;
 import ru.yandex.practicum.filmorate.dao.FeedDao;
-import ru.yandex.practicum.filmorate.dao.FilmDao;
-import ru.yandex.practicum.filmorate.dao.ReviewDao;
 import ru.yandex.practicum.filmorate.dao.UserDao;
 import ru.yandex.practicum.filmorate.service.enums.EntityType;
 import ru.yandex.practicum.filmorate.service.enums.Operation;
-import ru.yandex.practicum.filmorate.storage.mapper.*;
+import ru.yandex.practicum.filmorate.storage.mapper.FeedMapper;
+import ru.yandex.practicum.filmorate.storage.mapper.UserMapper;
 
 import java.time.Instant;
 import java.time.LocalDate;
@@ -31,28 +30,18 @@ import static org.junit.jupiter.api.Assertions.*;
 @ActiveProfiles("test")
 @AutoConfigureTestDatabase
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
-@Import({FeedMapper.class, ReviewMapper.class, FilmMapper.class, UserMapper.class})
+@Import({FeedMapper.class, UserMapper.class})
 class FeedRepoTest {
 
     private FeedRepo feedRepo;
 
     private UserRepo userRepo;
 
-    private FilmRepo filmRepo;
-
-    private ReviewRepo reviewRepo;
-
     @Autowired
     private RowMapper<FeedDao> feedDaoRowMapper;
 
     @Autowired
-    private RowMapper<FilmDao> filmDaoRowMapper;
-
-    @Autowired
     private RowMapper<UserDao> userDaoRowMapper;
-
-    @Autowired
-    private RowMapper<ReviewDao> reviewDaoRowMapper;
 
     @Autowired
     private JdbcTemplate jdbc;
@@ -69,16 +58,6 @@ class FeedRepoTest {
                 jdbc,
                 userDaoRowMapper
         );
-        filmRepo = new FilmRepo(
-                jdbc,
-                filmDaoRowMapper,
-                new FilmExtractor(),
-                new SingleFilmExtractor()
-        );
-        reviewRepo = new ReviewRepo(
-                jdbc,
-                reviewDaoRowMapper
-        );
 
         userId = userRepo.createUser(UserDao.builder()
                 .name("John")
@@ -91,7 +70,6 @@ class FeedRepoTest {
     @AfterEach
     void cleanupDatabase() {
         jdbc.update("DELETE FROM feeds");
-        jdbc.update("DELETE FROM films");
         jdbc.update("DELETE FROM users");
     }
 

@@ -29,4 +29,6 @@ public interface IFilmService {
     List<FilmDao> getFilmsByDirector(Long directorId, String sortBy);
 
     Collection<FilmDao> getRecommendations(Long userId);
+
+    Collection<FilmDao> search(String query, String[] by);
 }

@@ -4,6 +4,7 @@ import ru.yandex.practicum.filmorate.dao.DirectorDao;
 import ru.yandex.practicum.filmorate.dto.DirectorRecord;
 
 import java.util.Collection;
+import java.util.List;
 
 public interface IDirectorService {
 
@@ -16,4 +17,6 @@ public interface IDirectorService {
     DirectorDao getDirectorById(Long id);
 
     void deleteDirector(Long id);
+
+    void validateIds(List<Long> listIds);
 }

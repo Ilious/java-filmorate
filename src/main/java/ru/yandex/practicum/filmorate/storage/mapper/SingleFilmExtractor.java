@@ -79,7 +79,7 @@ public class SingleFilmExtractor implements ResultSetExtractor<FilmDao> {
         String directorName = rs.getString("director_name");
 
         if (directorId != 0 && directorName != null && !directorName.isEmpty()) {
-            directors.putIfAbsent(directorId, new DirectorDao(directorName, directorId));
+            directors.putIfAbsent(directorId, new DirectorDao(directorId, directorName));
         }
     }
 }

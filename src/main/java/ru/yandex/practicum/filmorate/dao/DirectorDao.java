@@ -9,7 +9,9 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class DirectorDao {
-    private String name;
+public class DirectorDao implements HasId {
+
     private Long id;
+
+    private String name;
 }

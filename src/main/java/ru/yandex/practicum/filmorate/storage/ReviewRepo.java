@@ -15,10 +15,6 @@ import java.util.Optional;
 @Component
 public class ReviewRepo extends BaseRepo<ReviewDao> implements IReviewRepo {
 
-    public ReviewRepo(JdbcTemplate jdbc, RowMapper<ReviewDao> mapper) {
-        super(jdbc, mapper);
-    }
-
     private static final String INSERT_QUERY = "INSERT INTO review (content, is_positive, user_id, film_id, useful)\n" +
             "VALUES (?, ?, ?, ?, ?)";
 
@@ -45,6 +41,13 @@ public class ReviewRepo extends BaseRepo<ReviewDao> implements IReviewRepo {
 
     private static final String GET_ALL_REVIEWS_QUERY = "SELECT * FROM review";
 
+    private final RowMapper<ReviewDao> mapper;
+
+    public ReviewRepo(JdbcTemplate jdbc, RowMapper<ReviewDao> mapper) {
+        super(jdbc);
+        this.mapper = mapper;
+    }
+
     @Override
     public ReviewDao postReview(ReviewDao review) {
         log.info("Posting review {}", review);
@@ -66,7 +69,7 @@ public class ReviewRepo extends BaseRepo<ReviewDao> implements IReviewRepo {
     public Optional<ReviewDao> getReviewById(Long id) {
         log.trace("ReviewRepo.getReviewById: by id {}", id);
 
-        return findOne(SELECT_QUERY, id);
+        return findOne(SELECT_QUERY, mapper, id);
     }
 
     @Override
@@ -95,7 +98,7 @@ public class ReviewRepo extends BaseRepo<ReviewDao> implements IReviewRepo {
         log.trace("ReviewRepo.getReviewByFilmId: by id {}", id);
 
         return findMany(
-                SELECT_REVIEW_BY_FILM_ID_QUERY, id, count
+                SELECT_REVIEW_BY_FILM_ID_QUERY, mapper,  id, count
         );
     }
 
@@ -122,7 +125,7 @@ public class ReviewRepo extends BaseRepo<ReviewDao> implements IReviewRepo {
     public Collection<ReviewDao> getAll() {
         return
                 findMany(
-                GET_ALL_REVIEWS_QUERY
+                GET_ALL_REVIEWS_QUERY, mapper
         );
     }
 }
