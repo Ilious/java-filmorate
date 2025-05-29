@@ -39,6 +39,8 @@ public class ReviewRepo extends BaseRepo<ReviewDao> implements IReviewRepo {
     private static final String UPDATE_USEFUL_QUERY = "UPDATE review SET useful = ( select SUM(estimation) " +
             "FROM liked_reviews WHERE review_id = ?) WHERE review_id = ?";
 
+    private static final String GET_ALL_REVIEWS_QUERY = "SELECT * FROM review";
+
     private final RowMapper<ReviewDao> mapper;
 
     public ReviewRepo(JdbcTemplate jdbc, RowMapper<ReviewDao> mapper) {
@@ -119,6 +121,14 @@ public class ReviewRepo extends BaseRepo<ReviewDao> implements IReviewRepo {
         }
 
         update(UPDATE_USEFUL_QUERY, id, id);
+    }
+
+    @Override
+    public Collection<ReviewDao> getAll() {
+        return
+                findMany(
+                GET_ALL_REVIEWS_QUERY, mapper
+        );
     }
 }
 

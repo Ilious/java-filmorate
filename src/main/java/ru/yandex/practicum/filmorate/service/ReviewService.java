@@ -107,5 +107,10 @@ public class ReviewService implements IReviewService {
 
         reviewRepo.reviewActions(id, userId, action);
     }
+
+    @Override
+    public Collection<ReviewDao> getAll() {
+        return reviewRepo.getAll();
+    }
 }
 

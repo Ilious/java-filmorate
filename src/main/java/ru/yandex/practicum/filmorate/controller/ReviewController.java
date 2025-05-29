@@ -39,6 +39,11 @@ public class ReviewController {
         return ResponseEntity.status(HttpStatus.OK).body(reviewService.putReview(reviewRecord));
     }
 
+    @GetMapping
+    public ResponseEntity<Collection<ReviewDao>> getAllReviews() {
+        return ResponseEntity.status(HttpStatus.OK).body(reviewService.getAll());
+    }
+
     @ResponseStatus(HttpStatus.OK)
     @DeleteMapping("/{id}")
     public void deleteReview(@PathVariable Long id) {
