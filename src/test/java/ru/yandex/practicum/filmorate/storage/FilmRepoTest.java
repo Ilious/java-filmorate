@@ -13,7 +13,6 @@ import org.springframework.test.context.ActiveProfiles;
 import ru.yandex.practicum.filmorate.dao.*;
 import ru.yandex.practicum.filmorate.dao.enums.AgeRating;
 import ru.yandex.practicum.filmorate.dao.enums.Genre;
-import ru.yandex.practicum.filmorate.exception.EntityNotFoundException;
 import ru.yandex.practicum.filmorate.storage.mapper.FilmExtractor;
 import ru.yandex.practicum.filmorate.storage.mapper.FilmMapper;
 import ru.yandex.practicum.filmorate.storage.mapper.SingleFilmExtractor;
