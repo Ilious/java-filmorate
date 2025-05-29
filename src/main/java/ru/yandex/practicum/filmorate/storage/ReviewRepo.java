@@ -101,8 +101,12 @@ public class ReviewRepo extends BaseRepo<ReviewDao> implements IReviewRepo {
 
     private void reviewActions(Long id, Long userId, ReviewService.LikeOnReviewActions action) {
         switch (action) {
-            case ADD_LIKE -> { delete(DELETE_DISLIKE_QUERY, id, userId); update( INSERT_LIKE_QUERY, id, userId); }
-            case ADD_DISLIKE -> { delete(DELETE_LIKE_QUERY, id, userId); update(INSERT_DISLIKE_QUERY, id, userId); }
+            case ADD_LIKE -> {
+                delete(DELETE_DISLIKE_QUERY, id, userId); update( INSERT_LIKE_QUERY, id, userId);
+            }
+            case ADD_DISLIKE -> {
+                delete(DELETE_LIKE_QUERY, id, userId); update(INSERT_DISLIKE_QUERY, id, userId);
+            }
             case DELETE_LIKE -> delete(DELETE_LIKE_QUERY, id, userId);
             case DELETE_DISLIKE -> delete(DELETE_DISLIKE_QUERY, id, userId);
         }
