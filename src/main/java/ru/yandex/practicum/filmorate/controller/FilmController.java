@@ -85,6 +85,7 @@ public class FilmController {
     @DeleteMapping("{filmId}")
     public void deleteFilm(@PathVariable Long filmId) {
         filmService.deleteFilm(filmId);
+    }
 
     @GetMapping("/director/{directorId}")
     public ResponseEntity<List<FilmDao>> getFilmsByDirector(
