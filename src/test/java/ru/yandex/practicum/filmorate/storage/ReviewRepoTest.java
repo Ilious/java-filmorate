@@ -22,8 +22,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 @JdbcTest
 @ActiveProfiles("test")
@@ -118,6 +117,13 @@ public class ReviewRepoTest {
 
         assertDoesNotThrow(() -> reviewRepo.postReview(reviewDao));
         Assertions.assertEquals(reviewDao, reviewRepo.getReviewById(reviewDao.getReviewId()).get());
+        assertAll(() -> {
+            assertEquals("Test content", reviewDao.getContent());
+            assertEquals(true, reviewDao.getIsPositive());
+            assertEquals(user.getId(), reviewDao.getUserId());
+            assertEquals(film.getId(), reviewDao.getFilmId());
+            assertEquals(0, reviewDao.getUseful());
+        });
     }
 
     @Test

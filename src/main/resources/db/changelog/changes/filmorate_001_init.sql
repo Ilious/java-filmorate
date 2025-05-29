@@ -57,17 +57,14 @@ CREATE TABLE IF NOT EXISTS review
     is_positive BOOLEAN NOT NULL,
     user_id BIGINT NOT NULL,
     film_id BIGINT NOT NULL,
-    useful INTEGER,
-    FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
-    FOREIGN KEY (film_id) REFERENCES films (id) ON DELETE CASCADE
+    useful INTEGER
 );
 
 CREATE TABLE IF NOT EXISTS liked_reviews
 (
     review_id BIGINT NOT NULL,
     user_id BIGINT NOT NULL,
-    estimation INTEGER NOT NULL,
-    FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
+    estimation INTEGER NOT NULL
 );
 
 ALTER TABLE user_friends
@@ -90,3 +87,12 @@ ALTER TABLE liked_films
 
 ALTER TABLE liked_films
     ADD FOREIGN KEY (film_id) REFERENCES films (id);
+
+ALTER TABLE review
+    ADD FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE;
+
+ALTER TABLE review
+    ADD FOREIGN KEY (film_id) REFERENCES films (id) ON DELETE CASCADE;
+
+ALTER TABLE liked_reviews
+    ADD FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE;

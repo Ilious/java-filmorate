@@ -25,6 +25,13 @@ public class ReviewService implements IReviewService {
 
     private final FilmRepo filmRepo;
 
+    public enum LikeOnReviewActions {
+        ADD_LIKE,
+        ADD_DISLIKE,
+        DELETE_LIKE,
+        DELETE_DISLIKE
+    }
+
     @Override
     public ReviewDao postReview(ReviewRecord reviewRecord) {
         userRepo.findUserById(reviewRecord.userId()).orElseThrow(() -> new EntityNotFoundException(
@@ -74,41 +81,37 @@ public class ReviewService implements IReviewService {
         return reviewRepo.getReviewByFilmId(filmId, count);
     }
 
-    @Override
-    public void addLikeReview(Long id, Long userId) {
+    public void reviewActions(Long id, Long userId, LikeOnReviewActions action) {
         getReviewById(id);
-
         userRepo.findUserById(userId);
 
-        reviewRepo.addLikeReview(id, userId);
+        switch (action) {
+            case ADD_LIKE -> reviewRepo.addLikeReview(id, userId);
+            case ADD_DISLIKE -> reviewRepo.addDislikeReview(id, userId);
+            case DELETE_LIKE -> reviewRepo.deleteLikeReview(id, userId);
+            case DELETE_DISLIKE -> reviewRepo.deleteDislikeReview(id, userId);
+        }
+    }
+
+    @Override
+    public void addLikeReview(Long id, Long userId) {
+        reviewActions(id, userId, LikeOnReviewActions.ADD_LIKE);
     }
 
     @Override
     public void addDislikeReview(Long id, Long userId) {
-        getReviewById(id);
-
-        userRepo.findUserById(userId);
-
-        reviewRepo.addDislikeReview(id, userId);
+        reviewActions(id, userId, LikeOnReviewActions.ADD_DISLIKE);
     }
 
     @Override
     public void deleteLikeReview(Long id, Long userId) {
-        getReviewById(id);
-
-        userRepo.findUserById(userId);
-
-        reviewRepo.deleteLikeReview(id, userId);
+        reviewActions(id, userId, LikeOnReviewActions.DELETE_LIKE);
 
     }
 
     @Override
     public void deleteDislikeReview(Long id, Long userId) {
-        getReviewById(id);
-
-        userRepo.findUserById(userId);
-
-        reviewRepo.deleteDislikeReview(id, userId);
+        reviewActions(id, userId, LikeOnReviewActions.DELETE_DISLIKE);
     }
 }
 

@@ -5,6 +5,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.dao.ReviewDao;
+import ru.yandex.practicum.filmorate.service.ReviewService;
 import ru.yandex.practicum.filmorate.storage.interfaces.IReviewRepo;
 
 import java.util.Collection;
@@ -98,68 +99,43 @@ public class ReviewRepo extends BaseRepo<ReviewDao> implements IReviewRepo {
         );
     }
 
+    private void reviewActions(Long id, Long userId, ReviewService.LikeOnReviewActions action) {
+        switch (action) {
+            case ADD_LIKE -> { delete(DELETE_DISLIKE_QUERY, id, userId); update( INSERT_LIKE_QUERY, id, userId); }
+            case ADD_DISLIKE -> { delete(DELETE_LIKE_QUERY, id, userId); update(INSERT_DISLIKE_QUERY, id, userId); }
+            case DELETE_LIKE -> delete(DELETE_LIKE_QUERY, id, userId);
+            case DELETE_DISLIKE -> delete(DELETE_DISLIKE_QUERY, id, userId);
+        }
+
+        update(UPDATE_USEFUL_QUERY, id, id);
+    }
+
     @Override
     public void addLikeReview(Long id, Long userId) {
         log.trace("ReviewRepo.addLikeReview: by id {}, userId {}", id, userId);
 
-        delete(
-                DELETE_DISLIKE_QUERY, id, userId
-        );
-
-        update(
-                INSERT_LIKE_QUERY, id, userId
-        );
-
-        update(
-                UPDATE_USEFUL_QUERY, id, id
-        );
-
+        reviewActions(id, userId, ReviewService.LikeOnReviewActions.ADD_LIKE);
     }
 
     @Override
     public void addDislikeReview(Long id, Long userId) {
         log.trace("ReviewRepo.addDislikeReview: by id {}, userId {}", id, userId);
 
-        delete(
-                DELETE_LIKE_QUERY, id, userId
-        );
-
-        update(
-                INSERT_DISLIKE_QUERY, id, userId
-        );
-
-        update(
-                UPDATE_USEFUL_QUERY, id, id
-        );
-
+        reviewActions(id, userId, ReviewService.LikeOnReviewActions.ADD_DISLIKE);
     }
 
     @Override
     public void deleteLikeReview(Long id, Long userId) {
         log.trace("ReviewRepo.deleteLikeReview: by id {}, userId {}", id, userId);
 
-        delete(
-                DELETE_LIKE_QUERY, id, userId
-        );
-
-        update(
-                UPDATE_USEFUL_QUERY, id, id
-        );
-
+      reviewActions(id, userId, ReviewService.LikeOnReviewActions.DELETE_LIKE);
     }
 
     @Override
     public void deleteDislikeReview(Long id, Long userId) {
         log.trace("ReviewRepo.deleteDislikeReview: by id {}, userId {}", id, userId);
 
-        delete(
-                DELETE_DISLIKE_QUERY, id, userId
-        );
-
-        update(
-                UPDATE_USEFUL_QUERY, id, id
-        );
-
+       reviewActions(id, userId, ReviewService.LikeOnReviewActions.DELETE_DISLIKE);
     }
 }
 
