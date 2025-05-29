@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.storage.interfaces;
 import ru.yandex.practicum.filmorate.dao.FilmDao;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 public interface IFilmRepo {
@@ -20,6 +21,8 @@ public interface IFilmRepo {
     void deleteLikeFromFilm(Long filmId, Long userId);
 
     void deleteFilm(Long filmId);
+
+    List<FilmDao> getFilmsByDirector(Long directorId, String sortBy);
 
     Collection<FilmDao> getRecommendations(Long userId);
 

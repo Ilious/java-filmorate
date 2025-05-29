@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.controller;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Positive;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +14,7 @@ import ru.yandex.practicum.filmorate.service.interfaces.IFilmService;
 import ru.yandex.practicum.filmorate.validator.Validator;
 
 import java.util.Collection;
+import java.util.List;
 
 @Validated
 @RestController
@@ -39,12 +41,16 @@ public class FilmController {
     }
 
     @PutMapping
-    public ResponseEntity<FilmDao> updateFilm(@RequestBody @NotNull @Validated(Validator.OnUpdate.class) FilmRecord filmRecord) {
+    public ResponseEntity<FilmDao> updateFilm(@RequestBody
+                                              @NotNull
+                                              @Validated(Validator.OnUpdate.class) FilmRecord filmRecord) {
         return ResponseEntity.status(HttpStatus.OK).body(filmService.putFilm(filmRecord));
     }
 
     @PostMapping
-    public ResponseEntity<FilmDao> createFilm(@RequestBody @NotNull @Validated(Validator.OnCreate.class) FilmRecord filmRecord) {
+    public ResponseEntity<FilmDao> createFilm(@RequestBody
+                                              @NotNull
+                                              @Validated(Validator.OnCreate.class) FilmRecord filmRecord) {
         return ResponseEntity.status(HttpStatus.CREATED).body(filmService.postFilm(filmRecord));
     }
 
@@ -79,5 +85,14 @@ public class FilmController {
     @DeleteMapping("{filmId}")
     public void deleteFilm(@PathVariable Long filmId) {
         filmService.deleteFilm(filmId);
+
+    @GetMapping("/director/{directorId}")
+    public ResponseEntity<List<FilmDao>> getFilmsByDirector(
+            @PathVariable Long directorId,
+            @RequestParam(defaultValue = "year")
+            @Pattern(regexp = "year|likes", message = "Invalid sortBy parameter")
+            String sortBy) {
+        return ResponseEntity.ok(filmService.getFilmsByDirector(directorId, sortBy));
+
     }
 }
