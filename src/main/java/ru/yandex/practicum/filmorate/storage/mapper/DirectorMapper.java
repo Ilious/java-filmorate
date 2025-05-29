@@ -22,7 +22,7 @@ public class DirectorMapper implements RowMapper<DirectorDao> {
         return new DirectorDao(id, name);
     }
 
-    public static List<DirectorDao> toDirectorsDaos(Set<DirectorRecord> directorRecords) {
+    public static List<DirectorDao> toDirectorsDaos(List<DirectorRecord> directorRecords) {
         List<DirectorDao> directors = new ArrayList<>();
         if (directorRecords != null) {
             directors = directorRecords.stream()

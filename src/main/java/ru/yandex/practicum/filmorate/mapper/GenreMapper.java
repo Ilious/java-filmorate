@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class GenreMapper {
 
-    public static List<GenreDao> toGenresDao(Set<GenreRecord> req) {
+    public static List<GenreDao> toGenresDao(List<GenreRecord> req) {
         List<GenreDao> genres = new ArrayList<>();
         if (req != null) {
             genres = req
