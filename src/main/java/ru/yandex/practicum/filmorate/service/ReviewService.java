@@ -77,7 +77,13 @@ public class ReviewService implements IReviewService {
 
     @Override
     public void deleteReview(Long id) {
+        ReviewDao reviewById = getReviewById(id);
+
         reviewRepo.deleteReview(id);
+
+        feedService.postFeed(
+                new FeedRecord(reviewById.getUserId(), id, EntityType.REVIEW, Operation.REMOVE)
+        );
     }
 
     @Override
