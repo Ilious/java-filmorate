@@ -20,4 +20,6 @@ public interface IUserRepo {
     void addFriend(Long userId, Long friendId);
 
     void removeFromFriends(Long userId, Long friendId);
+
+    void deleteUser(Long userId);
 }

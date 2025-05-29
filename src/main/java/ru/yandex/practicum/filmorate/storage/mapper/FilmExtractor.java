@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.storage.mapper;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.stereotype.Component;
+import ru.yandex.practicum.filmorate.dao.DirectorDao;
 import ru.yandex.practicum.filmorate.dao.FilmDao;
 import ru.yandex.practicum.filmorate.dao.GenreDao;
 import ru.yandex.practicum.filmorate.dao.MpaDao;
@@ -25,6 +26,7 @@ public class FilmExtractor implements ResultSetExtractor<List<FilmDao>> {
     public List<FilmDao> extractData(ResultSet rs) throws SQLException, DataAccessException {
 
         Map<Long, FilmDao> films = new HashMap<>();
+        Map<Long, DirectorDao> directorsMap = new HashMap<>();
         while (rs.next()) {
             Long id = rs.getLong("film_id");
             FilmDao film = films.get(id);
@@ -42,7 +44,9 @@ public class FilmExtractor implements ResultSetExtractor<List<FilmDao>> {
                 mpa.setId(rating);
                 mpa.setName(AgeRating.fromValue(rating));
 
-                film = new FilmDao(id, name, description, localDate, duration, mpa, new ArrayList<>());
+                film = new FilmDao(id, name, description, localDate, duration,
+                        mpa, new ArrayList<>(), new ArrayList<>());
+                film.setDirectors(new ArrayList<>());
                 films.put(id, film);
             }
 
@@ -52,6 +56,18 @@ public class FilmExtractor implements ResultSetExtractor<List<FilmDao>> {
             if (genreId != 0 && genreName != null) {
                 GenreDao genreDao = new GenreDao(genreId, Genre.fromValue(genreName));
                 film.getGenres().add(genreDao);
+            }
+
+            Long directorId = rs.getLong("director_id");
+            String directorName = rs.getString("director_name");
+            if (directorId != 0 && directorName != null) {
+                DirectorDao director = directorsMap.computeIfAbsent(
+                        directorId,
+                        key -> new DirectorDao(directorName, directorId)
+                );
+                if (!film.getDirectors().contains(director)) {
+                    film.getDirectors().add(director);
+                }
             }
         }
 

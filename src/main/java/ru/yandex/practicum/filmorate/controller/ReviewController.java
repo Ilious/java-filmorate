@@ -8,6 +8,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.dao.ReviewDao;
 import ru.yandex.practicum.filmorate.dto.ReviewRecord;
+import ru.yandex.practicum.filmorate.service.enums.LikeOnReviewActions;
 import ru.yandex.practicum.filmorate.service.interfaces.IReviewService;
 import ru.yandex.practicum.filmorate.validator.Validator;
 
@@ -55,30 +56,29 @@ public class ReviewController {
             @Positive(message = "Count should be greater than 0") Integer count) {
 
         return ResponseEntity.status(HttpStatus.OK).body(reviewService.getReviewByFilmId(filmId, count));
-
     }
 
     @ResponseStatus(HttpStatus.OK)
     @PutMapping("/{id}/like/{userId}")
-    public ReviewDao addLikeReview(@PathVariable Long id, @PathVariable Long userId) {
-        return reviewService.addLikeReview(id, userId);
+    public void addLikeReview(@PathVariable Long id, @PathVariable Long userId) {
+        reviewService.reviewActions(id, userId, LikeOnReviewActions.ADD_LIKE);
     }
 
     @ResponseStatus(HttpStatus.OK)
     @PutMapping("/{id}/dislike/{userId}")
-    public ReviewDao addDislikeReview(@PathVariable Long id, @PathVariable Long userId) {
-        return reviewService.addDislikeReview(id, userId);
+    public void addDislikeReview(@PathVariable Long id, @PathVariable Long userId) {
+       reviewService.reviewActions(id, userId, LikeOnReviewActions.ADD_DISLIKE);
     }
 
     @ResponseStatus(HttpStatus.OK)
     @DeleteMapping("/{id}/like/{userId}")
-    public ReviewDao deleteLikeReview(@PathVariable Long id, @PathVariable Long userId) {
-        return reviewService.deleteLikeReview(id, userId);
+    public void deleteLikeReview(@PathVariable Long id, @PathVariable Long userId) {
+        reviewService.reviewActions(id, userId, LikeOnReviewActions.DELETE_LIKE);
     }
 
     @ResponseStatus(HttpStatus.OK)
     @DeleteMapping("/{id}/dislike/{userId}")
-    public ReviewDao deleteDislikeReview(@PathVariable Long id, @PathVariable Long userId) {
-        return reviewService.deleteDislikeReview(id, userId);
+    public void deleteDislikeReview(@PathVariable Long id, @PathVariable Long userId) {
+        reviewService.reviewActions(id, userId, LikeOnReviewActions.DELETE_DISLIKE);
     }
 }

@@ -5,6 +5,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.dao.ReviewDao;
+import ru.yandex.practicum.filmorate.service.enums.LikeOnReviewActions;
 import ru.yandex.practicum.filmorate.storage.interfaces.IReviewRepo;
 
 import java.util.Collection;
@@ -38,10 +39,6 @@ public class ReviewRepo extends BaseRepo<ReviewDao> implements IReviewRepo {
     private static final String DELETE_LIKE_QUERY = "DELETE FROM liked_reviews WHERE review_id = ? AND user_id = ? AND estimation = 1";
 
     private static final String DELETE_DISLIKE_QUERY = "DELETE FROM liked_reviews WHERE review_id = ? AND user_id = ? AND estimation = -1";
-
-    private static final String DELETE_USER_REVIEW_QUERY = """
-    DELETE liked_reviews WHERE user_id = ? AND review_id = ?
-    """;
 
     private static final String UPDATE_USEFUL_QUERY = "UPDATE review SET useful = ( select SUM(estimation) " +
             "FROM liked_reviews WHERE review_id = ?) WHERE review_id = ?";
@@ -97,67 +94,28 @@ public class ReviewRepo extends BaseRepo<ReviewDao> implements IReviewRepo {
     public Collection<ReviewDao> getReviewByFilmId(Long id, Integer count) {
         log.trace("ReviewRepo.getReviewByFilmId: by id {}", id);
 
-        return findMany(SELECT_REVIEW_BY_FILM_ID_QUERY, id, count);
+        return findMany(
+                SELECT_REVIEW_BY_FILM_ID_QUERY, id, count
+        );
     }
 
     @Override
-    public void addLikeReview(Long id, Long userId) {
-        log.trace("ReviewRepo.addLikeReview: by id {}, userId {}", id, userId);
+    public void reviewActions(Long id, Long userId, LikeOnReviewActions action) {
+        log.trace("ReviewRepo.{}: by id {}, userId {}", action, id, userId);
+        switch (action) {
+            case ADD_LIKE -> {
+                delete(DELETE_DISLIKE_QUERY, id, userId);
+                update(INSERT_LIKE_QUERY, id, userId);
+            }
+            case ADD_DISLIKE -> {
+                delete(DELETE_LIKE_QUERY, id, userId);
+                update(INSERT_DISLIKE_QUERY, id, userId);
+            }
+            case DELETE_LIKE -> delete(DELETE_LIKE_QUERY, id, userId);
+            case DELETE_DISLIKE -> delete(DELETE_DISLIKE_QUERY, id, userId);
+        }
 
-        delete(DELETE_USER_REVIEW_QUERY, userId, id);
-
-        update(
-                INSERT_LIKE_QUERY, id, userId
-        );
-
-        update(
-                UPDATE_USEFUL_QUERY, id, id
-        );
-
-    }
-
-    @Override
-    public void addDislikeReview(Long id, Long userId) {
-        log.trace("ReviewRepo.addDislikeReview: by id {}, userId {}", id, userId);
-
-        delete(DELETE_USER_REVIEW_QUERY, userId, id);
-
-        update(
-                INSERT_DISLIKE_QUERY, id, userId
-        );
-
-        update(
-                UPDATE_USEFUL_QUERY, id, id
-        );
-
-    }
-
-    @Override
-    public void deleteLikeReview(Long id, Long userId) {
-        log.trace("ReviewRepo.deleteLikeReview: by id {}, userId {}", id, userId);
-
-        delete(
-                DELETE_LIKE_QUERY, id, userId
-        );
-
-        update(
-                UPDATE_USEFUL_QUERY, id, id
-        );
-
-    }
-
-    @Override
-    public void deleteDislikeReview(Long id, Long userId) {
-        log.trace("ReviewRepo.deleteDislikeReview: by id {}, userId {}", id, userId);
-
-        delete(
-                DELETE_DISLIKE_QUERY, id, userId
-        );
-
-        update(
-                UPDATE_USEFUL_QUERY, id, id
-        );
-
+        update(UPDATE_USEFUL_QUERY, id, id);
     }
 }
 

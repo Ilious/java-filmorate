@@ -24,5 +24,7 @@ public interface IUserService {
 
     Collection<UserDao> getFriendsInCommon(Long id, Long friendId);
 
+    void deleteUser(Long userId);
+
     Collection<FeedDao> getFeed(Long userId);
 }

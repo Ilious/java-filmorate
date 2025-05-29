@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotNull;
 import ru.yandex.practicum.filmorate.validator.Validator;
 
 public record ReviewRecord(
+
         @NotNull(groups = Validator.OnUpdate.class) Long reviewId,
 
         @NotBlank(groups = {Validator.OnUpdate.class, Validator.OnCreate.class}) String content,

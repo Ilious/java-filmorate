@@ -86,7 +86,7 @@ public class UserService implements IUserService {
     public UserDao getUserById(Long id) {
         return userRepo.findUserById(id)
                 .orElseThrow(() -> new EntityNotFoundException(
-                        "Entity user not found", "User", "id", String.valueOf(id)
+                                "Entity user not found", "User", "id", String.valueOf(id)
                         )
                 );
     }
@@ -127,5 +127,13 @@ public class UserService implements IUserService {
                                 "Entity User not found", "User", "Id", String.valueOf(id)
                         )
                 );
+    }
+
+    @Override
+    public void deleteUser(Long userId) {
+        existsUserOrThrowErr(userId);
+
+        userRepo.deleteUser(userId);
+
     }
 }

@@ -4,6 +4,7 @@ import ru.yandex.practicum.filmorate.dao.FilmDao;
 import ru.yandex.practicum.filmorate.dto.FilmRecord;
 
 import java.util.Collection;
+import java.util.List;
 
 public interface IFilmService {
 
@@ -17,7 +18,15 @@ public interface IFilmService {
 
     void deleteLikeOnFilm(Long userId, Long filmId);
 
-    Collection<FilmDao> getMostLikedFilms(Long count);
+    Collection<FilmDao> getMostLikedFilms(Long count, Long genreId, Integer year);
 
     FilmDao getById(Long filmId);
+
+    void deleteFilm(Long filmId);
+
+    Collection<FilmDao> showCommonFilms(Long userId, Long friendId);
+
+    List<FilmDao> getFilmsByDirector(Long directorId, String sortBy);
+
+    Collection<FilmDao> getRecommendations(Long userId);
 }

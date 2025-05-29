@@ -9,6 +9,7 @@ import ru.yandex.practicum.filmorate.dto.ReviewRecord;
 import ru.yandex.practicum.filmorate.exception.EntityNotFoundException;
 import ru.yandex.practicum.filmorate.mapper.ReviewMapper;
 import ru.yandex.practicum.filmorate.service.enums.EntityType;
+import ru.yandex.practicum.filmorate.service.enums.LikeOnReviewActions;
 import ru.yandex.practicum.filmorate.service.enums.Operation;
 import ru.yandex.practicum.filmorate.service.interfaces.IFeedService;
 import ru.yandex.practicum.filmorate.service.interfaces.IReviewService;
@@ -17,6 +18,7 @@ import ru.yandex.practicum.filmorate.storage.ReviewRepo;
 import ru.yandex.practicum.filmorate.storage.UserRepo;
 
 import java.util.Collection;
+
 
 @Slf4j
 @Service
@@ -75,13 +77,7 @@ public class ReviewService implements IReviewService {
 
     @Override
     public void deleteReview(Long id) {
-        ReviewDao reviewById = getReviewById(id);
-
         reviewRepo.deleteReview(id);
-
-        feedService.postFeed(
-                new FeedRecord(reviewById.getUserId(), reviewById.getReviewId(), EntityType.REVIEW, Operation.REMOVE)
-        );
     }
 
     @Override
@@ -99,47 +95,11 @@ public class ReviewService implements IReviewService {
     }
 
     @Override
-    public ReviewDao addLikeReview(Long id, Long userId) {
+    public void reviewActions(Long id, Long userId, LikeOnReviewActions action) {
         getReviewById(id);
-
         userRepo.findUserById(userId);
 
-        reviewRepo.addLikeReview(id, userId);
-
-        return getReviewById(id);
-    }
-
-    @Override
-    public ReviewDao addDislikeReview(Long id, Long userId) {
-        getReviewById(id);
-
-        userRepo.findUserById(userId);
-
-        reviewRepo.addDislikeReview(id, userId);
-
-        return getReviewById(id);
-    }
-
-    @Override
-    public ReviewDao deleteLikeReview(Long id, Long userId) {
-        getReviewById(id);
-
-        userRepo.findUserById(userId);
-
-        reviewRepo.deleteLikeReview(id, userId);
-
-        return getReviewById(id);
-    }
-
-    @Override
-    public ReviewDao deleteDislikeReview(Long id, Long userId) {
-        getReviewById(id);
-
-        userRepo.findUserById(userId);
-
-        reviewRepo.deleteDislikeReview(id, userId);
-
-        return getReviewById(id);
+        reviewRepo.reviewActions(id, userId, action);
     }
 }
 
