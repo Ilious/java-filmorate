@@ -125,6 +125,7 @@ public class FilmService implements IFilmService {
         getById(filmId);
 
         filmRepo.deleteFilm(filmId);
+    }
 
     public Collection<FilmDao> getRecommendations(Long userId) {
         return filmRepo.getRecommendations(userId);

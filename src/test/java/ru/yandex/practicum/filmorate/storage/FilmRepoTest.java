@@ -16,6 +16,7 @@ import ru.yandex.practicum.filmorate.dao.MpaDao;
 import ru.yandex.practicum.filmorate.dao.UserDao;
 import ru.yandex.practicum.filmorate.dao.enums.AgeRating;
 import ru.yandex.practicum.filmorate.dao.enums.Genre;
+import ru.yandex.practicum.filmorate.exception.EntityNotFoundException;
 import ru.yandex.practicum.filmorate.storage.mapper.FilmExtractor;
 import ru.yandex.practicum.filmorate.storage.mapper.FilmMapper;
 import ru.yandex.practicum.filmorate.storage.mapper.SingleFilmExtractor;
@@ -547,4 +548,105 @@ class FilmRepoTest {
         System.out.println(recommendations);
         assertTrue(recommendations.isEmpty());
     }
+
+    @Test
+    void deleteFilmTest() {
+        MpaDao mpaDao = new MpaDao(1L, AgeRating.fromValue("G"));
+        GenreDao genreDao = new GenreDao(1L, Genre.COMEDY);
+        ArrayList<GenreDao> genre = new ArrayList<>();
+        genre.add(genreDao);
+        FilmDao film = FilmDao.builder()
+                .name("film1")
+                .description("super-film1")
+                .releaseDate(LocalDate.now())
+                .duration(120)
+                .genres(genre)
+                .mpa(mpaDao)
+                .build();
+        FilmDao film2 = FilmDao.builder()
+                .name("film2")
+                .description("super-film2")
+                .releaseDate(LocalDate.now())
+                .duration(120)
+                .genres(genre)
+                .mpa(mpaDao)
+                .build();
+        FilmDao film3 = FilmDao.builder()
+                .name("film3")
+                .description("super-film3")
+                .releaseDate(LocalDate.now())
+                .duration(120)
+                .genres(genre)
+                .mpa(mpaDao)
+                .build();
+
+        Long id = filmRepo.createFilm(film).getId();
+        filmRepo.createFilm(film2);
+        filmRepo.createFilm(film3);
+
+        assertEquals(3, filmRepo.findAll().size());
+        filmRepo.deleteFilm(id);
+        assertEquals(2, filmRepo.findAll().size());
+    }
+
+    @Test
+    void filmShouldBeRemovedFromLikedFilmsAfterDelete() {
+        MpaDao mpaDao = new MpaDao(1L, AgeRating.fromValue("G"));
+        GenreDao genreDao = new GenreDao(1L, Genre.COMEDY);
+        ArrayList<GenreDao> genre = new ArrayList<>();
+        genre.add(genreDao);
+        FilmDao film = FilmDao.builder()
+                .name("film1")
+                .description("super-film1")
+                .releaseDate(LocalDate.now())
+                .duration(120)
+                .genres(genre)
+                .mpa(mpaDao)
+                .build();
+
+        Long id = filmRepo.createFilm(film).getId();
+
+        UserDao user = UserDao.builder()
+                .email("email@email.ru")
+                .login("login")
+                .name("user")
+                .birthday(LocalDate.of(2000, 2, 20))
+                .build();
+
+        userRepo.createUser(user);
+
+        List<FilmDao> list = new ArrayList<>(filmRepo.findNPopular(1L, 1L, 2025));
+        assertEquals(1, list.size());
+
+        filmRepo.deleteFilm(id);
+        assertEquals(0, filmRepo.findNPopular(1L, 1L, 2025).size());
+    }
+
+    @Test
+    void filmShouldBeRemovedFromFilmGenresAfterDelete() {
+        MpaDao mpaDao = new MpaDao(1L, AgeRating.fromValue("G"));
+        GenreDao genreDao = new GenreDao(1L, Genre.COMEDY);
+        ArrayList<GenreDao> genre = new ArrayList<>();
+        genre.add(genreDao);
+        FilmDao film = FilmDao.builder()
+                .name("film1")
+                .description("super-film1")
+                .releaseDate(LocalDate.now())
+                .duration(120)
+                .genres(genre)
+                .mpa(mpaDao)
+                .build();
+
+        Long id = filmRepo.createFilm(film).getId();
+
+        String SQL = "SELECT COUNT(genre_id) FROM film_genres WHERE film_id = ?";
+
+        Long genreId = jdbc.queryForObject(SQL, Long.class, id);
+        assertEquals(1, genreId);
+
+        filmRepo.deleteFilm(id);
+        Long genreId1 = jdbc.queryForObject(SQL, Long.class, id);
+        assertEquals(0, genreId1);
+    }
+
 }
