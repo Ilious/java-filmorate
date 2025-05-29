@@ -634,7 +634,7 @@ class FilmRepoTest {
     }
 
     @Test
-    void getCommonFilmsTest(){
+    void getCommonFilmsTest() {
         MpaDao mpaDao = new MpaDao(1L, AgeRating.fromValue("G"));
         FilmDao film = FilmDao.builder()
                 .name("film1")
@@ -703,7 +703,7 @@ class FilmRepoTest {
     }
 
     @Test
-    void getCommonFilmsWhenAllLikesAreDifferentTest(){
+    void getCommonFilmsWhenAllLikesAreDifferentTest() {
         MpaDao mpaDao = new MpaDao(1L, AgeRating.fromValue("G"));
         FilmDao film = FilmDao.builder()
                 .name("film1")
