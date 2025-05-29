@@ -29,10 +29,7 @@ public class FilmController {
 
     @GetMapping
     public ResponseEntity<Collection<FilmDao>> getFilms() {
-        Collection<FilmDao> filmDaos = filmService.getAll();
-        if (filmDaos.isEmpty())
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(filmDaos);
-        return ResponseEntity.status(HttpStatus.OK).body(filmDaos);
+        return ResponseEntity.status(HttpStatus.OK).body(filmService.getAll());
     }
 
     @GetMapping("/{filmId}")

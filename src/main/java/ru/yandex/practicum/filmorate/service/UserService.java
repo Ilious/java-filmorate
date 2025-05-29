@@ -111,6 +111,8 @@ public class UserService implements IUserService {
 
     @Override
     public Collection<FeedDao> getFeed(Long userId) {
+        getUserById(userId);
+
         return feedService.getByUserId(userId);
     }
 
