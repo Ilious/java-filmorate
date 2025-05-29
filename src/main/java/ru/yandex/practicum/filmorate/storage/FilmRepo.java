@@ -272,34 +272,49 @@ public class FilmRepo extends BaseRepo<FilmDao> implements IFilmRepo {
         StringBuilder sqlBuilder = new StringBuilder();
         List<Object> parameters = new ArrayList<>();
 
-        sqlBuilder.append(
-                """
-                        SELECT f.id, f.name, f.description, f.release_date, f.duration, f.rating_id
-                        FROM films f
-                        LEFT JOIN (
-                        SELECT lf.film_id, COUNT(*) as count_likes
-                        FROM liked_films lf
-                        JOIN films f ON lf.film_id = f.id
-                        WHERE 1=1\s"""
-        );
+        sqlBuilder.append("""
+            SELECT f.id as film_id, f.name, f.description, f.release_date, f.duration, f.rating_id,
+                   d.id AS director_id,
+                   d.name AS director_name,
+                   g.id AS genre_id,
+                   g.name AS genre_name
+            FROM films f
+            LEFT JOIN (
+                SELECT lf.film_id, COUNT(*) AS count_likes
+                FROM liked_films lf
+                WHERE 1=1
+        """);
 
         if (genreId != null) {
-            sqlBuilder.append("AND EXISTS (SELECT * FROM film_genres fg WHERE fg.film_id = f.id AND fg.genre_id = ?) ");
+            sqlBuilder.append("""
+                AND EXISTS (
+                    SELECT 1 FROM film_genres fg
+                    WHERE fg.film_id = lf.film_id AND fg.genre_id = ?
+                )
+        """);
             parameters.add(genreId);
         }
 
         if (year != null) {
-            sqlBuilder.append("AND YEAR(f.release_date) = ? ");
+            sqlBuilder.append("""
+                AND EXISTS (
+                    SELECT 1 FROM films f2
+                    WHERE f2.id = lf.film_id AND YEAR(f2.release_date) = ?
+                )
+        """);
             parameters.add(year);
         }
 
-        sqlBuilder.append(
-                """
-                        GROUP BY lf.film_id
-                        ) AS top_films ON f.id = top_films.film_id
-                        ORDER BY COALESCE(top_films.count_likes, 0) DESC
-                        LIMIT ?"""
-        );
+        sqlBuilder.append("""
+                GROUP BY lf.film_id
+            ) AS top_films ON f.id = top_films.film_id
+            LEFT JOIN film_genres fg ON f.id = fg.film_id
+            LEFT JOIN genres g ON fg.genre_id = g.id
+            LEFT JOIN film_directors fd ON f.id = fd.film_id
+            LEFT JOIN directors d ON d.id = fd.director_id
+            ORDER BY COALESCE(top_films.count_likes, 0) DESC
+            LIMIT ?
+        """);
 
         parameters.add(count);
         List<FilmDao> films = extract(sqlBuilder.toString(), extractor, parameters.toArray());
