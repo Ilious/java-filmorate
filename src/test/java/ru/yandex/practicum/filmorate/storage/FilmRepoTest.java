@@ -723,13 +723,11 @@ class FilmRepoTest {
 
         Long id = filmRepo.createFilm(film).getId();
 
-        String SQL = "SELECT COUNT(genre_id) FROM film_genres WHERE film_id = ?";
-
-        Long genreId = jdbc.queryForObject(SQL, Long.class, id);
+        Long genreId = jdbc.queryForObject("SELECT COUNT(genre_id) FROM film_genres WHERE film_id = 1", Long.class);
         assertEquals(1, genreId);
 
         filmRepo.deleteFilm(id);
-        Long genreId1 = jdbc.queryForObject(SQL, Long.class, id);
+        Long genreId1 = jdbc.queryForObject("SELECT COUNT(genre_id) FROM film_genres WHERE film_id = 1", Long.class);
         assertEquals(0, genreId1);
     }
 
