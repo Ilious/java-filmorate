@@ -5,11 +5,14 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
+import ru.yandex.practicum.filmorate.dao.DirectorDao;
 import ru.yandex.practicum.filmorate.dao.FilmDao;
 import ru.yandex.practicum.filmorate.dao.GenreDao;
 import ru.yandex.practicum.filmorate.storage.interfaces.IFilmRepo;
+import ru.yandex.practicum.filmorate.storage.mapper.GenreMapper;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -82,30 +85,6 @@ public class FilmRepo extends BaseRepo<FilmDao> implements IFilmRepo {
             ORDER BY (
                 SELECT COUNT(*) FROM liked_films lf WHERE lf.film_id = f.id
             ) DESC
-            """;
-
-    private static final String RECOMMENDATION_QUERY = """
-            WITH user_likes AS (
-                SELECT film_id FROM liked_films WHERE user_id = ?
-            ),
-            similar_users AS (
-                SELECT user_id,
-                       COUNT(*) AS common_likes
-                FROM liked_films
-                WHERE film_id IN (SELECT film_id FROM user_likes)
-                  AND user_id <> ?
-                GROUP BY user_id
-                ORDER BY common_likes DESC
-                LIMIT 1
-            ),
-            recommended_films AS (
-                SELECT film_id FROM liked_films
-                WHERE user_id = (SELECT user_id FROM similar_users)
-                  AND film_id NOT IN (SELECT film_id FROM user_likes)
-            )
-            SELECT f.id, f.name, f.description, f.release_date, f.duration, f.rating_id
-            FROM films f
-            WHERE f.id IN (SELECT film_id FROM recommended_films)
             """;
 
     public static final String INSERT_FILM_GENRE_QUERY = "INSERT INTO film_genres (film_id, genre_id) " +
