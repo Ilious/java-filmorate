@@ -16,11 +16,13 @@ import ru.yandex.practicum.filmorate.dao.MpaDao;
 import ru.yandex.practicum.filmorate.dao.ReviewDao;
 import ru.yandex.practicum.filmorate.dao.UserDao;
 import ru.yandex.practicum.filmorate.dao.enums.AgeRating;
+import ru.yandex.practicum.filmorate.service.enums.LikeOnReviewActions;
 import ru.yandex.practicum.filmorate.storage.mapper.*;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -116,6 +118,7 @@ public class ReviewRepoTest {
                 .build();
 
         assertDoesNotThrow(() -> reviewRepo.postReview(reviewDao));
+        Assertions.assertTrue(reviewRepo.getReviewById(reviewDao.getReviewId()).isPresent());
         Assertions.assertEquals(reviewDao, reviewRepo.getReviewById(reviewDao.getReviewId()).get());
         assertAll(() -> {
             assertEquals("Test content", reviewDao.getContent());
@@ -147,7 +150,10 @@ public class ReviewRepoTest {
         reviewDao1.setReviewId(id);
 
         assertDoesNotThrow(() -> reviewRepo.putReview(reviewDao1));
-        ReviewDao reviewFirst = reviewRepo.getReviewById(id).get();
+        Optional<ReviewDao> reviews = reviewRepo.getReviewById(id);
+
+        assertTrue(reviews.isPresent());
+        ReviewDao reviewFirst = reviews.get();
 
         Assertions.assertAll(() -> {
             assertEquals(reviewFirst.getReviewId(), reviewDao1.getReviewId());
@@ -213,9 +219,7 @@ public class ReviewRepoTest {
         List<ReviewDao> reviews = new ArrayList<>(reviewRepo.getReviewByFilmId(film.getId(), 10));
         assertEquals(2, reviews.size());
 
-        assertDoesNotThrow(() -> {
-            reviewRepo.deleteReview(id); }
-        );
+        assertDoesNotThrow(() -> reviewRepo.deleteReview(id));
         List<ReviewDao> reviews1 = new ArrayList<>(reviewRepo.getReviewByFilmId(film.getId(), 10));
         assertEquals(1, reviews1.size());
     }
@@ -240,11 +244,11 @@ public class ReviewRepoTest {
                 .build();
         Long reviewId = reviewRepo.postReview(review).getReviewId();
 
-        assertDoesNotThrow(() -> {
-            reviewRepo.addLikeReview(reviewId, userId); }
-        );
+        assertDoesNotThrow(() -> reviewRepo.reviewActions(reviewId, userId, LikeOnReviewActions.ADD_LIKE));
 
-        ReviewDao reviewDao = reviewRepo.getReviewById(reviewId).get();
+        Optional<ReviewDao> reviewById = reviewRepo.getReviewById(reviewId);
+        assertTrue(reviewById.isPresent());
+        ReviewDao reviewDao = reviewById.get();
 
         assertEquals(1, reviewRepo.getReviewByFilmId(film.getId(), 10).size());
         assertEquals(1, reviewDao.getUseful());
@@ -270,19 +274,21 @@ public class ReviewRepoTest {
                 .build();
         Long reviewId = reviewRepo.postReview(review).getReviewId();
 
-        assertDoesNotThrow(() -> {
-            reviewRepo.addLikeReview(reviewId, userId); }
-        );
+        assertDoesNotThrow(() -> reviewRepo.reviewActions(reviewId, userId, LikeOnReviewActions.ADD_LIKE));
 
-        ReviewDao reviewDao = reviewRepo.getReviewById(reviewId).get();
+        Optional<ReviewDao> reviewById = reviewRepo.getReviewById(reviewId);
+        assertTrue(reviewById.isPresent());
+        ReviewDao reviewDao = reviewById.get();
 
         assertEquals(1, reviewRepo.getReviewByFilmId(film.getId(), 10).size());
         assertEquals(1, reviewDao.getUseful());
 
-        assertDoesNotThrow(() -> {
-            reviewRepo.deleteLikeReview(reviewId, userId); }
-        );
-        ReviewDao reviewDao1 = reviewRepo.getReviewById(reviewId).get();
+        assertDoesNotThrow(() -> reviewRepo.reviewActions(reviewId, userId, LikeOnReviewActions.DELETE_LIKE));
+
+        Optional<ReviewDao> reviewById1 = reviewRepo.getReviewById(reviewId);
+        assertTrue(reviewById1.isPresent());
+        ReviewDao reviewDao1 = reviewById1.get();
+
         assertEquals(0, reviewDao1.getUseful());
     }
 
@@ -306,11 +312,12 @@ public class ReviewRepoTest {
                 .build();
         Long reviewId = reviewRepo.postReview(review).getReviewId();
 
-        assertDoesNotThrow(() -> {
-            reviewRepo.addDislikeReview(reviewId, userId); }
-        );
+        assertDoesNotThrow(() -> reviewRepo.reviewActions(reviewId, userId, LikeOnReviewActions.ADD_DISLIKE));
 
-        ReviewDao reviewDao = reviewRepo.getReviewById(reviewId).get();
+
+        Optional<ReviewDao> reviewById = reviewRepo.getReviewById(reviewId);
+        assertTrue(reviewById.isPresent());
+        ReviewDao reviewDao = reviewById.get();
 
         assertEquals(1, reviewRepo.getReviewByFilmId(film.getId(), 10).size());
         assertEquals(-1, reviewDao.getUseful());
@@ -336,19 +343,19 @@ public class ReviewRepoTest {
                 .build();
         Long reviewId = reviewRepo.postReview(review).getReviewId();
 
-        assertDoesNotThrow(() -> {
-            reviewRepo.addDislikeReview(reviewId, userId); }
-        );
+        assertDoesNotThrow(() -> reviewRepo.reviewActions(reviewId, userId, LikeOnReviewActions.ADD_DISLIKE));
 
-        ReviewDao reviewDao = reviewRepo.getReviewById(reviewId).get();
+        Optional<ReviewDao> reviewById = reviewRepo.getReviewById(reviewId);
+        assertTrue(reviewById.isPresent());
+        ReviewDao reviewDao = reviewById.get();
 
         assertEquals(1, reviewRepo.getReviewByFilmId(film.getId(), 10).size());
         assertEquals(-1, reviewDao.getUseful());
 
-        assertDoesNotThrow(() -> {
-            reviewRepo.deleteDislikeReview(reviewId, userId); }
-        );
-        ReviewDao reviewDao1 = reviewRepo.getReviewById(reviewId).get();
+        assertDoesNotThrow(() -> reviewRepo.reviewActions(reviewId, userId, LikeOnReviewActions.DELETE_DISLIKE));
+        Optional<ReviewDao> reviewById1 = reviewRepo.getReviewById(reviewId);
+        assertTrue(reviewById1.isPresent());
+        ReviewDao reviewDao1 = reviewById1.get();
         assertEquals(0, reviewDao1.getUseful());
     }
 }

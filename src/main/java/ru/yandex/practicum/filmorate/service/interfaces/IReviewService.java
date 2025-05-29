@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.service.interfaces;
 
 import ru.yandex.practicum.filmorate.dao.ReviewDao;
 import ru.yandex.practicum.filmorate.dto.ReviewRecord;
+import ru.yandex.practicum.filmorate.service.enums.LikeOnReviewActions;
 
 import java.util.Collection;
 
@@ -17,11 +18,5 @@ public interface IReviewService {
 
     Collection<ReviewDao> getReviewByFilmId(Long id, Integer count);
 
-    void addLikeReview(Long id, Long userId);
-
-    void addDislikeReview(Long id, Long userId);
-
-    void deleteLikeReview(Long id, Long userId);
-
-    void deleteDislikeReview(Long id, Long userId);
+    void reviewActions(Long id, Long userId, LikeOnReviewActions action);
 }

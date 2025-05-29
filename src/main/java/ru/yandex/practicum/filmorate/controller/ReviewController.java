@@ -8,6 +8,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.dao.ReviewDao;
 import ru.yandex.practicum.filmorate.dto.ReviewRecord;
+import ru.yandex.practicum.filmorate.service.enums.LikeOnReviewActions;
 import ru.yandex.practicum.filmorate.service.interfaces.IReviewService;
 import ru.yandex.practicum.filmorate.validator.Validator;
 
@@ -60,24 +61,24 @@ public class ReviewController {
     @ResponseStatus(HttpStatus.OK)
     @PutMapping("/{id}/like/{userId}")
     public void addLikeReview(@PathVariable Long id, @PathVariable Long userId) {
-        reviewService.addLikeReview(id, userId);
+        reviewService.reviewActions(id, userId, LikeOnReviewActions.ADD_LIKE);
     }
 
     @ResponseStatus(HttpStatus.OK)
     @PutMapping("/{id}/dislike/{userId}")
     public void addDislikeReview(@PathVariable Long id, @PathVariable Long userId) {
-       reviewService.addDislikeReview(id, userId);
+       reviewService.reviewActions(id, userId, LikeOnReviewActions.ADD_DISLIKE);
     }
 
     @ResponseStatus(HttpStatus.OK)
     @DeleteMapping("/{id}/like/{userId}")
     public void deleteLikeReview(@PathVariable Long id, @PathVariable Long userId) {
-        reviewService.deleteLikeReview(id, userId);
+        reviewService.reviewActions(id, userId, LikeOnReviewActions.DELETE_LIKE);
     }
 
     @ResponseStatus(HttpStatus.OK)
     @DeleteMapping("/{id}/dislike/{userId}")
     public void deleteDislikeReview(@PathVariable Long id, @PathVariable Long userId) {
-        reviewService.deleteDislikeReview(id, userId);
+        reviewService.reviewActions(id, userId, LikeOnReviewActions.DELETE_DISLIKE);
     }
 }

@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.service.interfaces;
 
+import ru.yandex.practicum.filmorate.dao.FeedDao;
 import ru.yandex.practicum.filmorate.dao.UserDao;
 import ru.yandex.practicum.filmorate.dto.UserRecord;
 
@@ -24,4 +25,6 @@ public interface IUserService {
     Collection<UserDao> getFriendsInCommon(Long id, Long friendId);
 
     void deleteUser(Long userId);
+
+    Collection<FeedDao> getFeed(Long userId);
 }

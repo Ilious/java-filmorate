@@ -423,7 +423,7 @@ class FilmRepoTest {
 
         List<FilmDao> films = filmRepo.getFilmsByDirector(directorId, "year");
         assertEquals(1, films.size());
-        assertEquals(film1.getName(), films.get(0).getName());
+        assertEquals(film1.getName(), films.getFirst().getName());
     }
 
     @Test
@@ -492,7 +492,7 @@ class FilmRepoTest {
 
         List<FilmDao> recommendations = new ArrayList<>(filmRepo.getRecommendations(user2.getId()));
         System.out.println(recommendations);
-        assertEquals(recommendations.get(0).getName(), "film1");
+        assertEquals("film1", recommendations.getFirst().getName());
     }
 
     @Test

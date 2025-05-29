@@ -32,9 +32,9 @@ public class DirectorService implements IDirectorService {
             log.warn("putDirector: ID must not be null");
             throw new ValidationException("Director ID is required for update", "id", null);
         }
-        getDirectorById(directorRecord.id());
-        DirectorDao updatedDirector = DirectorMapper.toDirectorDao(directorRecord);
-        return directorRepo.updateDirector(updatedDirector);
+        DirectorDao directorById = getDirectorById(directorRecord.id());
+        DirectorMapper.updateFields(directorById, directorRecord);
+        return directorRepo.updateDirector(directorById);
     }
 
     @Override

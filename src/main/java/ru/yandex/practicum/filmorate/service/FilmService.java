@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.dao.FilmDao;
 import ru.yandex.practicum.filmorate.dao.GenreDao;
 import ru.yandex.practicum.filmorate.dao.MpaDao;
+import ru.yandex.practicum.filmorate.dto.FeedRecord;
 import ru.yandex.practicum.filmorate.dto.FilmRecord;
 import ru.yandex.practicum.filmorate.dto.GenreRecord;
 import ru.yandex.practicum.filmorate.dto.MpaRecord;
@@ -14,6 +15,9 @@ import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.mapper.FilmMapper;
 import ru.yandex.practicum.filmorate.mapper.GenreMapper;
 import ru.yandex.practicum.filmorate.mapper.MpaMapper;
+import ru.yandex.practicum.filmorate.service.enums.EntityType;
+import ru.yandex.practicum.filmorate.service.enums.Operation;
+import ru.yandex.practicum.filmorate.service.interfaces.IFeedService;
 import ru.yandex.practicum.filmorate.service.interfaces.IFilmService;
 import ru.yandex.practicum.filmorate.service.interfaces.IGenreService;
 import ru.yandex.practicum.filmorate.service.interfaces.IMpaService;
@@ -31,6 +35,8 @@ public class FilmService implements IFilmService {
     private final IGenreService genreService;
 
     private final IMpaService mpaService;
+
+    private final IFeedService feedService;
 
     @Override
     public FilmDao postFilm(FilmRecord filmRecord) {
@@ -108,11 +114,15 @@ public class FilmService implements IFilmService {
     @Override
     public void setLikeOnFilm(Long userId, Long filmId) {
         filmRepo.setLikeOnFilm(filmId, userId);
+
+        feedService.postFeed(new FeedRecord(userId, filmId, EntityType.LIKE, Operation.ADD));
     }
 
     @Override
     public void deleteLikeOnFilm(Long userId, Long filmId) {
         filmRepo.deleteLikeFromFilm(filmId, userId);
+
+        feedService.postFeed(new FeedRecord(userId, filmId, EntityType.LIKE, Operation.REMOVE));
     }
 
     @Override
