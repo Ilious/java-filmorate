@@ -81,6 +81,12 @@ public class FilmController {
         return ResponseEntity.status(HttpStatus.OK).body(filmService.getMostLikedFilms(count, genreId, year));
     }
 
+    @ResponseStatus(HttpStatus.OK)
+    @DeleteMapping("{filmId}")
+    public void deleteFilm(@PathVariable Long filmId) {
+        filmService.deleteFilm(filmId);
+    }
+
     @GetMapping("/director/{directorId}")
     public ResponseEntity<List<FilmDao>> getFilmsByDirector(
             @PathVariable Long directorId,
@@ -88,6 +94,7 @@ public class FilmController {
             @Pattern(regexp = "year|likes", message = "Invalid sortBy parameter")
             String sortBy) {
         return ResponseEntity.ok(filmService.getFilmsByDirector(directorId, sortBy));
+
     }
 
     @GetMapping("/common")

@@ -37,6 +37,9 @@ public class UserRepo extends BaseRepo<UserDao> implements IUserRepo {
     private static final String DELETE_FRIEND_QUERY = "DELETE FROM user_friends " +
             "WHERE user_id = ? AND friend_id = ?";
 
+
+    private static final String DELETE_USER_QUERY = "DELETE FROM users WHERE id = ?";
+
     public UserRepo(JdbcTemplate jdbc, RowMapper<UserDao> mapper) {
         super(jdbc, mapper);
     }
@@ -108,6 +111,15 @@ public class UserRepo extends BaseRepo<UserDao> implements IUserRepo {
 
         delete(
                 DELETE_FRIEND_QUERY, userId, friendId
+        );
+    }
+
+    @Override
+    public void deleteUser(Long userId) {
+        log.trace("UserRepo.deleteUser: by userId {}", userId);
+
+        delete(
+                DELETE_USER_QUERY, userId
         );
     }
 }

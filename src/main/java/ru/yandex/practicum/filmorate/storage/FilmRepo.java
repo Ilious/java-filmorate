@@ -64,6 +64,7 @@ public class FilmRepo extends BaseRepo<FilmDao> implements IFilmRepo {
 
     private static final String DELETE_LIKE_QUERY = "DELETE FROM liked_films WHERE film_id = ? AND user_id = ?";
 
+
     private static final String UPDATE_QUERY = "UPDATE films " +
             "SET name = ?, description = ?, release_date = ?, duration = ?, rating_id = ? WHERE id = ?";
 
@@ -81,6 +82,9 @@ public class FilmRepo extends BaseRepo<FilmDao> implements IFilmRepo {
             "VALUES (?, ?)";
 
     public static final String DELETE_ALL_FILM_GENRES_QUERY = "DELETE FROM film_genres WHERE film_id = ?";
+
+
+    private static final String DELETE_FILM_QUERY = "DELETE FROM films WHERE id = ?";
 
     private static final String INSERT_FILM_DIRECTOR_QUERY =
             "INSERT INTO film_directors (film_id, director_id) VALUES (?, ?)";
@@ -212,10 +216,8 @@ public class FilmRepo extends BaseRepo<FilmDao> implements IFilmRepo {
         );
     }
 
-
     private List<GenreDao> loadGenresForFilm(Long filmId) {
         return jdbc.query(LOAD_GENRES_FOR_FILM, new GenreMapper(), filmId);
-
     }
 
     @Override
@@ -224,12 +226,14 @@ public class FilmRepo extends BaseRepo<FilmDao> implements IFilmRepo {
         List<Object> parameters = new ArrayList<>();
 
         sqlBuilder.append(
-                "SELECT f.id, f.name, f.description, f.release_date, f.duration, f.rating_id " +
-                        "FROM ( " +
-                        "SELECT lf.film_id, COUNT(*) AS count_likes " +
-                        "FROM liked_films lf " +
-                        "JOIN films f ON lf.film_id = f.id " +
-                        "WHERE 1=1 "
+                """
+                        SELECT f.id, f.name, f.description, f.release_date, f.duration, f.rating_id
+                        FROM films f
+                        LEFT JOIN (
+                        SELECT lf.film_id, COUNT(*) as count_likes
+                        FROM liked_films lf
+                        JOIN films f ON lf.film_id = f.id
+                        WHERE 1=1\s"""
         );
 
         if (genreId != null) {
@@ -243,12 +247,11 @@ public class FilmRepo extends BaseRepo<FilmDao> implements IFilmRepo {
         }
 
         sqlBuilder.append(
-                "GROUP BY lf.film_id " +
-                        "ORDER BY count_likes DESC " +
-                        "LIMIT ? " +
-                        ") AS top_films " +
-                        "JOIN films f ON f.id = top_films.film_id " +
-                        "ORDER BY top_films.count_likes DESC"
+                """
+                        GROUP BY lf.film_id
+                        ) AS top_films ON f.id = top_films.film_id
+                        ORDER BY COALESCE(top_films.count_likes, 0) DESC
+                        LIMIT ?"""
         );
 
         parameters.add(count);
@@ -285,6 +288,17 @@ public class FilmRepo extends BaseRepo<FilmDao> implements IFilmRepo {
 
         addGenresToFilm(filmId, genres);
     }
+
+
+    @Override
+    public void deleteFilm(Long filmId) {
+        log.trace("FilmRepo.deleteFilm: by filmId {}", filmId);
+
+        delete(
+                DELETE_FILM_QUERY, filmId
+        );
+    }
+
 
     public void addDirectorsToFilm(Long filmId, List<DirectorDao> directors) {
         if (directors == null || directors.isEmpty()) {

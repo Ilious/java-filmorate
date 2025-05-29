@@ -121,11 +121,19 @@ public class FilmService implements IFilmService {
     }
 
     @Override
+    public void deleteFilm(Long filmId) {
+        getById(filmId);
+
+        filmRepo.deleteFilm(filmId);
+    }
+
+
     public List<FilmDao> getFilmsByDirector(Long directorId, String sortBy) {
         return filmRepo.getFilmsByDirector(directorId, sortBy);
     }
 
     @Override
+
     public Collection<FilmDao> getRecommendations(Long userId) {
         return filmRepo.getRecommendations(userId);
     }

@@ -22,9 +22,12 @@ public interface IFilmService {
 
     FilmDao getById(Long filmId);
 
+    void deleteFilm(Long filmId);
+
     Collection<FilmDao> showCommonFilms(Long userId, Long friendId);
 
     List<FilmDao> getFilmsByDirector(Long directorId, String sortBy);
 
     Collection<FilmDao> getRecommendations(Long userId);
+
 }
