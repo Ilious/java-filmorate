@@ -19,4 +19,6 @@ public interface IReviewRepo {
     Collection<ReviewDao> getReviewByFilmId(Long id, Integer count);
 
     void reviewActions(Long id, Long userId, LikeOnReviewActions action);
+
+    Collection<ReviewDao> getAll();
 }
