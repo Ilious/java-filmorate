@@ -39,7 +39,7 @@ public class ReviewRepo extends BaseRepo<ReviewDao> implements IReviewRepo {
     private static final String UPDATE_USEFUL_QUERY = "UPDATE review SET useful = ( select SUM(estimation) " +
             "FROM liked_reviews WHERE review_id = ?) WHERE review_id = ?";
 
-    private static final String GET_ALL_REVIEWS_QUERY = "SELECT * FROM review";
+    private static final String GET_ALL_REVIEWS_QUERY = "SELECT * FROM review GROUP BY review_id ORDER BY SUM(USEFUL) DESC";
 
     private final RowMapper<ReviewDao> mapper;
 
