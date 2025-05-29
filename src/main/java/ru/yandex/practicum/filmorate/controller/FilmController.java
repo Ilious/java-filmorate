@@ -110,13 +110,4 @@ public class FilmController {
     ) {
         return filmService.search(query, by);
     }
-
-    @GetMapping("/director/{id}")
-    @ResponseStatus(HttpStatus.OK)
-    public Collection<FilmDao> getByDirectorId(
-            @PathVariable Long id,
-            @RequestParam String sortBy
-    ) {
-        return filmService.getFilmsByDirector(id, sortBy);
-    }
 }
