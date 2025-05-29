@@ -26,8 +26,8 @@ public class ReviewRepo extends BaseRepo<ReviewDao> implements IReviewRepo {
 
     private static final String DELETE_QUERY = "DELETE FROM review WHERE review_id = ?";
 
-    private static final String UPDATE_QUERY = "UPDATE review SET content = ?, is_positive = ?," +
-            "user_id = ?, film_id = ? WHERE review_id = ?";
+    private static final String UPDATE_QUERY = "UPDATE review SET content = ?, is_positive = ? " +
+            " WHERE review_id = ?";
 
     private static final String SELECT_REVIEW_BY_FILM_ID_QUERY = "SELECT * FROM review WHERE film_id = ? " +
             "ORDER BY useful DESC LIMIT ?";
@@ -84,8 +84,6 @@ public class ReviewRepo extends BaseRepo<ReviewDao> implements IReviewRepo {
                 UPDATE_QUERY,
                 review.getContent(),
                 review.getIsPositive(),
-                review.getUserId(),
-                review.getFilmId(),
                 review.getReviewId()
         );
 

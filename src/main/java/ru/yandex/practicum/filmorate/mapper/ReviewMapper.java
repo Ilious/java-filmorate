@@ -32,13 +32,7 @@ public class ReviewMapper {
             review.setIsPositive(req.isPositive());
         }
 
-        if (req.filmId() != null) {
-            review.setFilmId(req.filmId());
-        }
 
-        if (req.userId() != null) {
-            review.setUserId(req.userId());
-        }
 
         if (req.useful() != null) {
             review.setUseful(req.useful());

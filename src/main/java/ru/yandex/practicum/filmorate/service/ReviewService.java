@@ -54,7 +54,7 @@ public class ReviewService implements IReviewService {
 
     @Override
     public ReviewDao putReview(ReviewRecord reviewRecord) {
-        getReviewById(reviewRecord.reviewId());
+        ReviewDao rd = getReviewById(reviewRecord.reviewId());
 
         userRepo.findUserById(reviewRecord.userId()).orElseThrow(() -> new EntityNotFoundException(
                 "Entity user not found", "User", "id", String.valueOf(reviewRecord.userId())));
@@ -65,6 +65,8 @@ public class ReviewService implements IReviewService {
         ReviewDao reviewDao = ReviewMapper.updateFields(reviewRecord);
 
         reviewDao.setReviewId(reviewRecord.reviewId());
+        reviewDao.setUserId(rd.getUserId());
+        reviewDao.setFilmId(rd.getFilmId());
 
         ReviewDao updReviewDao = reviewRepo.putReview(reviewDao);
 
