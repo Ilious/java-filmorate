@@ -16,7 +16,7 @@ public class FilmMapper {
                 .description(req.description())
                 .releaseDate(req.releaseDate())
                 .duration(req.duration())
-                .directors(convertDirectorRecords(req.directors().stream().toList()))
+                .directors(convertDirectorRecords(req.directors()))
                 .build();
     }
 
@@ -40,7 +40,7 @@ public class FilmMapper {
         }
 
         if (req.directors() != null) {
-            film.setDirectors(convertDirectorRecords(req.directors().stream().toList()));
+            film.setDirectors(convertDirectorRecords(req.directors()));
         }
     }
 
