@@ -3,11 +3,16 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.dao.FeedDao;
 import ru.yandex.practicum.filmorate.dao.UserDao;
+import ru.yandex.practicum.filmorate.dto.FeedRecord;
 import ru.yandex.practicum.filmorate.dto.UserRecord;
 import ru.yandex.practicum.filmorate.exception.EntityNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.mapper.UserMapper;
+import ru.yandex.practicum.filmorate.service.enums.EntityType;
+import ru.yandex.practicum.filmorate.service.enums.Operation;
+import ru.yandex.practicum.filmorate.service.interfaces.IFeedService;
 import ru.yandex.practicum.filmorate.service.interfaces.IUserService;
 import ru.yandex.practicum.filmorate.storage.interfaces.IUserRepo;
 
@@ -20,6 +25,8 @@ import java.util.stream.Collectors;
 public class UserService implements IUserService {
 
     private final IUserRepo userRepo;
+
+    private final IFeedService feedService;
 
     @Override
     public UserDao postUser(UserRecord user) {
@@ -59,6 +66,8 @@ public class UserService implements IUserService {
 
         existsUserOrThrowErr(friendId);
 
+        feedService.postFeed(new FeedRecord(id, friendId, EntityType.FRIEND, Operation.ADD));
+
         userRepo.addFriend(id, friendId);
     }
 
@@ -68,6 +77,8 @@ public class UserService implements IUserService {
 
         existsUserOrThrowErr(friendId);
 
+        feedService.postFeed(new FeedRecord(id, friendId, EntityType.FRIEND, Operation.REMOVE));
+
         userRepo.removeFromFriends(id, friendId);
     }
 
@@ -75,7 +86,7 @@ public class UserService implements IUserService {
     public UserDao getUserById(Long id) {
         return userRepo.findUserById(id)
                 .orElseThrow(() -> new EntityNotFoundException(
-                        "Entity user not found", "User", "id", String.valueOf(id)
+                                "Entity user not found", "User", "id", String.valueOf(id)
                         )
                 );
     }
@@ -98,6 +109,11 @@ public class UserService implements IUserService {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public Collection<FeedDao> getFeed(Long userId) {
+        return feedService.getByUserId(userId);
+    }
+
     private void loginValidation(String login) {
         if (login.contains(" ")) {
             log.warn("updateUser: Id is not correct: login [{}]", login);
@@ -111,5 +127,13 @@ public class UserService implements IUserService {
                                 "Entity User not found", "User", "Id", String.valueOf(id)
                         )
                 );
+    }
+
+    @Override
+    public void deleteUser(Long userId) {
+        existsUserOrThrowErr(userId);
+
+        userRepo.deleteUser(userId);
+
     }
 }

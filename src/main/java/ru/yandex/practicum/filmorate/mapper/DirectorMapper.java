@@ -12,8 +12,9 @@ public class DirectorMapper {
         return new DirectorDao(req.id(), req.name());
     }
 
-    public static void updateFields(DirectorDao directorDao, DirectorRecord req) {
-        if (req.name() != null && !req.name().isBlank())
-            directorDao.setName(req.name());
+    public static void updateFields(DirectorDao director, DirectorRecord req) {
+        if (req.name() != null && !req.name().isBlank()) {
+            director.setName(req.name());
+        }
     }
 }

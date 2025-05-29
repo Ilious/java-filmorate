@@ -23,6 +23,7 @@ public class FilmExtractor implements ResultSetExtractor<List<FilmDao>> {
     public List<FilmDao> extractData(ResultSet rs) throws SQLException, DataAccessException {
 
         Map<Long, FilmDao> films = new LinkedHashMap<>();
+        Map<Long, DirectorDao> directorsMap = new HashMap<>();
         while (rs.next()) {
             Long id = rs.getLong("film_id");
             FilmDao film = films.get(id);
@@ -50,6 +51,7 @@ public class FilmExtractor implements ResultSetExtractor<List<FilmDao>> {
                         .mpa(mpa)
                         .genres(new ArrayList<>())
                         .build();
+                film.setDirectors(new ArrayList<>());
                 films.put(id, film);
             }
 
@@ -63,10 +65,14 @@ public class FilmExtractor implements ResultSetExtractor<List<FilmDao>> {
 
             Long directorId = rs.getLong("director_id");
             String directorName = rs.getString("director_name");
-
             if (directorId != 0 && directorName != null) {
-                DirectorDao directorDao = new DirectorDao(directorId, directorName);
-                film.getDirectors().add(directorDao);
+                DirectorDao director = directorsMap.computeIfAbsent(
+                        directorId,
+                        key -> new DirectorDao(directorId, directorName)
+                );
+                if (!film.getDirectors().contains(director)) {
+                    film.getDirectors().add(director);
+                }
             }
         }
 

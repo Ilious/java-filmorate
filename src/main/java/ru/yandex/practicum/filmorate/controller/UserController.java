@@ -1,11 +1,15 @@
 package ru.yandex.practicum.filmorate.controller;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.dao.FeedDao;
+import ru.yandex.practicum.filmorate.dao.FilmDao;
 import ru.yandex.practicum.filmorate.dao.UserDao;
 import ru.yandex.practicum.filmorate.dto.UserRecord;
+import ru.yandex.practicum.filmorate.service.interfaces.IFilmService;
 import ru.yandex.practicum.filmorate.service.interfaces.IUserService;
 import ru.yandex.practicum.filmorate.validator.Validator;
 
@@ -13,13 +17,12 @@ import java.util.Collection;
 
 @RestController
 @RequestMapping("/users")
+@RequiredArgsConstructor
 public class UserController {
 
     private final IUserService userService;
 
-    public UserController(IUserService userService) {
-        this.userService = userService;
-    }
+    private final IFilmService filmService;
 
     @GetMapping
     public ResponseEntity<Collection<UserDao>> getUsers() {
@@ -61,5 +64,27 @@ public class UserController {
     @GetMapping("/{id}/friends/common/{otherId}")
     public ResponseEntity<Collection<UserDao>> getFriends(@PathVariable Long id, @PathVariable Long otherId) {
         return ResponseEntity.status(HttpStatus.OK).body(userService.getFriendsInCommon(id, otherId));
+    }
+
+    @GetMapping("/{id}/feed")
+    public ResponseEntity<Collection<FeedDao>> getFeed(@PathVariable Long id) {
+        return ResponseEntity.status(HttpStatus.OK).body(userService.getFeed(id));
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @DeleteMapping("/{userId}")
+    public void deleteUser(@PathVariable Long userId) {
+        userService.deleteUser(userId);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<UserDao> getUser(@PathVariable Long id) {
+        return ResponseEntity.status(HttpStatus.OK).body(userService.getUserById(id));
+    }
+
+
+    @GetMapping("/{id}/recommendations")
+    public ResponseEntity<Collection<FilmDao>> getRecommendations(@PathVariable("id") Long userId) {
+        return ResponseEntity.status(HttpStatus.OK).body(filmService.getRecommendations(userId));
     }
 }

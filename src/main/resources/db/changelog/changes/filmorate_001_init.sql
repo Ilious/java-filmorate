@@ -50,23 +50,46 @@ CREATE TABLE IF NOT EXISTS liked_films
     PRIMARY KEY (user_id, film_id)
 );
 
-ALTER TABLE user_friends
-    ADD FOREIGN KEY (user_id) REFERENCES users (id);
+CREATE TABLE IF NOT EXISTS review
+(
+    review_id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    content VARCHAR NOT NULL,
+    is_positive BOOLEAN NOT NULL,
+    user_id BIGINT NOT NULL,
+    film_id BIGINT NOT NULL,
+    useful INTEGER
+);
+
+CREATE TABLE IF NOT EXISTS liked_reviews
+(
+    review_id BIGINT NOT NULL,
+    user_id BIGINT NOT NULL,
+    estimation INTEGER NOT NULL
+);
 
 ALTER TABLE user_friends
-    ADD FOREIGN KEY (friend_id) REFERENCES users (id);
+    ADD FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE;
+
+ALTER TABLE user_friends
+    ADD FOREIGN KEY (friend_id) REFERENCES users (id) ON DELETE CASCADE;
 
 ALTER TABLE films
     ADD FOREIGN KEY (rating_id) REFERENCES ratings (id);
 
 ALTER TABLE film_genres
-    ADD FOREIGN KEY (film_id) REFERENCES films (id);
+    ADD FOREIGN KEY (film_id) REFERENCES films (id) ON DELETE CASCADE;
 
 ALTER TABLE film_genres
     ADD FOREIGN KEY (genre_id) REFERENCES genres (id);
 
 ALTER TABLE liked_films
-    ADD FOREIGN KEY (user_id) REFERENCES users (id);
+    ADD FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE;
+    
+ALTER TABLE review
+    ADD FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE;
 
-ALTER TABLE liked_films
-    ADD FOREIGN KEY (film_id) REFERENCES films (id);
+ALTER TABLE review
+    ADD FOREIGN KEY (film_id) REFERENCES films (id) ON DELETE CASCADE;
+
+ALTER TABLE liked_reviews
+    ADD FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE;

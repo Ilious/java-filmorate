@@ -4,13 +4,17 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.stereotype.Component;
+import ru.yandex.practicum.filmorate.dao.DirectorDao;
 import ru.yandex.practicum.filmorate.component.SearchCriteria;
 import ru.yandex.practicum.filmorate.dao.FilmDao;
+import ru.yandex.practicum.filmorate.dao.GenreDao;
 import ru.yandex.practicum.filmorate.dao.HasId;
 import ru.yandex.practicum.filmorate.exception.InternalServerException;
 import ru.yandex.practicum.filmorate.storage.interfaces.IFilmRepo;
+import ru.yandex.practicum.filmorate.storage.mapper.GenreMapper;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -21,35 +25,36 @@ public class FilmRepo extends BaseRepo<FilmDao> implements IFilmRepo {
 
     private static final String FIND_ALL_QUERY = "SELECT f.id as film_id, " +
             "f.name, " +
-            "d.id as director_id, " +
-            "d.name as director_name, " +
             "f.description, " +
             "f.release_date, " +
             "f.duration, " +
             "f.rating_id, " +
             "g.id as genre_id, " +
-            "g.name as genre_name " +
+            "g.name as genre_name, " +
+            "d.id as director_id, " +
+            "d.name as director_name " +
             "FROM films f " +
             "LEFT JOIN film_genres fg ON f.id = fg.film_id " +
             "LEFT JOIN genres g ON fg.genre_id = g.id " +
             "LEFT JOIN film_directors fd ON f.id = fd.film_id " +
-            "LEFT JOIN directors d ON d.id = fd.director_id";
+            "LEFT JOIN directors d ON fd.director_id = d.id";
+
 
     private static final String FIND_BY_ID_QUERY = "SELECT f.id as film_id, " +
             "f.name, " +
-            "d.id as director_id, " +
-            "d.name as director_name, " +
             "f.description, " +
             "f.release_date, " +
             "f.duration, " +
             "f.rating_id, " +
             "g.id as genre_id, " +
-            "g.name as genre_name " +
+            "g.name as genre_name, " +
+            "d.id as director_id, " +
+            "d.name as director_name " +
             "FROM films f " +
             "LEFT JOIN film_genres fg ON f.id = fg.film_id " +
             "LEFT JOIN genres g ON fg.genre_id = g.id " +
             "LEFT JOIN film_directors fd ON f.id = fd.film_id " +
-            "LEFT JOIN directors d ON d.id = fd.director_id " +
+            "LEFT JOIN directors d ON fd.director_id = d.id " +
             "WHERE f.id = ?";
 
     private static final String FIND_BY_SEARCH_QUERY = "SELECT f.id as film_id, " +
@@ -77,61 +82,78 @@ public class FilmRepo extends BaseRepo<FilmDao> implements IFilmRepo {
 
     private static final String DELETE_LIKE_QUERY = "DELETE FROM liked_films WHERE film_id = ? AND user_id = ?";
 
-    private static final String GET_N_POPULAR =
-            "SELECT f.id as film_id, f.name, d.id as director_id, d.name as director_name, f.description, f.release_date, " +
-                    "f.duration, f.rating_id, g.id as genre_id, g.name as genre_name " +
-                    "FROM ( " +
-                    "SELECT lf.film_id, COUNT(*) as count_likes  " +
-                    "FROM liked_films lf " +
-                    "GROUP BY lf.film_id " +
-                    "ORDER BY count_likes desc " +
-                    "LIMIT ? " +
-                    ") AS top_films " +
-                    "JOIN films f ON f.id = top_films.film_id " +
-                    "LEFT JOIN film_genres fg ON f.id = fg.film_id " +
-                    "LEFT JOIN genres g ON fg.genre_id = g.id " +
-                    "LEFT JOIN film_directors fd ON fd.film_id = f.id " +
-                    "LEFT JOIN directors d ON fd.director_id = d.id " +
-                    "ORDER BY top_films.count_likes DESC";
-
 
     private static final String UPDATE_QUERY = "UPDATE films " +
             "SET name = ?, description = ?, release_date = ?, duration = ?, rating_id = ? " +
             "WHERE id = ?";
+
+    private static final String SHOW_COMMON_FILMS_QUERY = "SELECT f.id AS film_id, f.name, f.description, f.release_date, f.duration, f.rating_id, g.id AS genre_id, " +
+            "g.name AS genre_name, d.id AS director_id, d.name AS director_name " +
+            "FROM films f " +
+            "JOIN liked_films lf1 ON f.id = lf1.film_id AND lf1.user_id =? " +
+            "JOIN liked_films lf2 ON f.id = lf2.film_id AND lf2.user_id =? " +
+            "LEFT JOIN film_genres fg ON f.id = fg.film_id " +
+            "LEFT JOIN genres g ON fg.genre_id = g.id " +
+            "LEFT JOIN film_directors fd ON f.id = fd.film_id " +
+            "LEFT JOIN directors d ON fd.director_id = d.id; ";
 
     public static final String INSERT_FILM_GENRE_QUERY = "INSERT INTO film_genres (film_id, genre_id) " +
             "VALUES (?, ?)";
 
     public static final String DELETE_ALL_FILM_GENRES_QUERY = "DELETE FROM film_genres WHERE film_id = ?";
 
-    private static final String FIND_BY_DIRECTOR_ID_QUERY = """
-            SELECT f.id as film_id,
-            f.name,
-            d.id as director_id,
-            d.name as director_name,
-            f.description,
-            f.release_date,
-            f.duration,
-            f.rating_id,
-            g.id as genre_id,
-            g.name as genre_name
-            FROM films f
-            LEFT JOIN film_genres fg ON f.id = fg.film_id
-            LEFT JOIN genres g ON fg.genre_id = g.id
-            LEFT JOIN film_directors fd ON f.id = fd.film_id
-            LEFT JOIN directors d ON d.id = fd.director_id
-            WHERE fd.director_id = ?
-            """;
 
-    public static final String DELETE_ALL_FILM_DIRECTORS_QUERY = """
-            DELETE FROM film_directors WHERE film_id = ?
-            """;
+    private static final String DELETE_FILM_QUERY = "DELETE FROM films WHERE id = ?";
 
-    private static final String INSERT_FILM_DIRECTOR_QUERY = """
-            INSERT INTO film_directors (film_id, director_id)
-            VALUES (?, ?)
-            """;
+    private static final String INSERT_FILM_DIRECTOR_QUERY =
+            "INSERT INTO film_directors (film_id, director_id) VALUES (?, ?)";
+
+    private static final String DELETE_ALL_FILM_DIRECTORS_QUERY =
+            "DELETE FROM film_directors WHERE film_id = ?";
+
+    private static final String FIND_FILMS_BY_DIRECTOR_QUERY =
+            "SELECT f.id as film_id, f.name, f.description, f.release_date, f.duration, " +
+                    "f.rating_id, COUNT(l.user_id) as likes_count, " +
+                    "d.id as director_id, d.name as director_name, " +
+                    "g.id as genre_id, g.name as genre_name " +
+                    "FROM films f " +
+                    "JOIN film_directors fd ON f.id = fd.film_id " +
+                    "LEFT JOIN liked_films l ON f.id = l.film_id " +
+                    "LEFT JOIN film_genres fg ON f.id = fg.film_id " +
+                    "LEFT JOIN genres g ON fg.genre_id = g.id " +
+                    "LEFT JOIN directors d ON fd.director_id = d.id " +
+                    "WHERE fd.director_id = ? " +
+                    "GROUP BY f.id, d.id, g.id " +
+                    "ORDER BY " +
+                    "CASE WHEN ? = 'year' THEN f.release_date end ASC, " +
+                    "CASE WHEN ? = 'likes' THEN COUNT(l.user_id) end DESC ";
+
+    public static final String GET_RECOMMENDATION_QUERY = "SELECT " +
+            "f.id AS film_id, f.name, f.description, f.release_date, f.duration, f.rating_id, " +
+            "g.id AS genre_id, " +
+            "g.name AS genre_name, " +
+            "d.id as director_id, d.name as director_name, " +
+            "COUNT(lf2.user_id) AS recommendation_weight " +
+            "FROM films f " +
+            "LEFT JOIN film_genres fg ON fg.film_id = f.id " +
+            "LEFT JOIN genres g ON g.id = fg.genre_id " +
+            "JOIN liked_films lf2 ON lf2.film_id = f.id " +
+            "LEFT JOIN film_directors fd ON f.id = fd.film_id " +
+            "LEFT JOIN directors d ON fd.director_id = d.id " +
+            "WHERE lf2.user_id IN ( " +
+            "SELECT DISTINCT lf.user_id " +
+            "FROM liked_films lf " +
+            "WHERE lf.user_id != ? " +
+            "AND lf.film_id IN (SELECT film_id FROM liked_films WHERE user_id = ?)) " +
+            "AND f.id NOT IN (SELECT film_id FROM liked_films WHERE user_id = ?) " +
+            "GROUP BY f.id, f.name, f.description, f.release_date, f.duration, f.rating_id, g.id, g.name, fd.director_id " +
+            "ORDER BY recommendation_weight DESC;";
+
+    public static final String LOAD_GENRES_FOR_FILM = "SELECT distinct g.id, g.name " +
+            "FROM genres g JOIN film_genres fg ON g.id = fg.genre_id WHERE fg.film_id = ?";
+
     public static final String GENRES_ISN_T_ADDED = "Genres isn't added";
+
     public static final String DIRECTORS_ISN_T_ADDED = "Directors isn't added";
 
     private final ResultSetExtractor<List<FilmDao>> extractor;
@@ -155,7 +177,7 @@ public class FilmRepo extends BaseRepo<FilmDao> implements IFilmRepo {
 
     @Override
     public FilmDao createFilm(FilmDao filmDao) {
-        log.trace("FilmRepo.createFilm: user {}", filmDao);
+        log.trace("FilmRepo.createFilm: film {}", filmDao);
 
         long id = insert(
                 INSERT_QUERY,
@@ -193,17 +215,6 @@ public class FilmRepo extends BaseRepo<FilmDao> implements IFilmRepo {
                 FIND_BY_SEARCH_QUERY + searchObj.getQuery(),
                 extractor,
                 searchObj.getParams()
-        );
-    }
-
-    @Override
-    public Collection<FilmDao> findByDirectorId(Long id, SearchCriteria criteria) {
-        log.trace("FilmDao.findByDirectorId: by id {}, sortBy {}", id, criteria);
-
-        return extract(
-                FIND_BY_DIRECTOR_ID_QUERY + criteria.getQuery(),
-                extractor,
-                id
         );
     }
 
@@ -252,13 +263,50 @@ public class FilmRepo extends BaseRepo<FilmDao> implements IFilmRepo {
         );
     }
 
+    private List<GenreDao> loadGenresForFilm(Long filmId) {
+        return jdbc.query(LOAD_GENRES_FOR_FILM, new GenreMapper(), filmId);
+    }
+
     @Override
-    public Collection<FilmDao> findNPopular(Long count) {
-        return extract(
-                GET_N_POPULAR,
-                extractor,
-                count
+    public Collection<FilmDao> findNPopular(Long count, Long genreId, Integer year) {
+        StringBuilder sqlBuilder = new StringBuilder();
+        List<Object> parameters = new ArrayList<>();
+
+        sqlBuilder.append(
+                """
+                        SELECT f.id, f.name, f.description, f.release_date, f.duration, f.rating_id
+                        FROM films f
+                        LEFT JOIN (
+                        SELECT lf.film_id, COUNT(*) as count_likes
+                        FROM liked_films lf
+                        JOIN films f ON lf.film_id = f.id
+                        WHERE 1=1\s"""
         );
+
+        if (genreId != null) {
+            sqlBuilder.append("AND EXISTS (SELECT * FROM film_genres fg WHERE fg.film_id = f.id AND fg.genre_id = ?) ");
+            parameters.add(genreId);
+        }
+
+        if (year != null) {
+            sqlBuilder.append("AND YEAR(f.release_date) = ? ");
+            parameters.add(year);
+        }
+
+        sqlBuilder.append(
+                """
+                        GROUP BY lf.film_id
+                        ) AS top_films ON f.id = top_films.film_id
+                        ORDER BY COALESCE(top_films.count_likes, 0) DESC
+                        LIMIT ?"""
+        );
+
+        parameters.add(count);
+        List<FilmDao> films = extract(sqlBuilder.toString(), extractor, parameters.toArray());
+        films.forEach(film -> {
+            film.setGenres(loadGenresForFilm(film.getId()));
+        });
+        return films;
     }
 
     private <T extends HasId> void addSubEntitiesToFilm(Long filmId, List<T> entities, String query, String errMsg) {
@@ -288,5 +336,52 @@ public class FilmRepo extends BaseRepo<FilmDao> implements IFilmRepo {
         delete(delQuery, filmId);
 
         addSubEntitiesToFilm(filmId, entities, insertQuery, errMsg);
+    }
+
+
+    @Override
+    public void deleteFilm(Long filmId) {
+        log.trace("FilmRepo.deleteFilm: by filmId {}", filmId);
+
+        delete(
+                DELETE_FILM_QUERY, filmId
+        );
+    }
+
+
+    public void addDirectorsToFilm(Long filmId, List<DirectorDao> directors) {
+        if (directors == null || directors.isEmpty()) {
+            return;
+        }
+
+        insertBatch(
+                INSERT_FILM_DIRECTOR_QUERY,
+                directors,
+                (ps, director) -> {
+                    try {
+                        ps.setLong(1, filmId);
+                        ps.setLong(2, director.getId());
+                    } catch (SQLException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+        );
+    }
+
+    @Override
+    public List<FilmDao> getFilmsByDirector(Long directorId, String sortBy) {
+        return extract(FIND_FILMS_BY_DIRECTOR_QUERY, extractor, directorId, sortBy, sortBy);
+    }
+
+    @Override
+    public Collection<FilmDao> getRecommendations(Long userId) {
+        return extract(GET_RECOMMENDATION_QUERY, extractor, userId, userId, userId);
+    }
+
+    @Override
+    public Collection<FilmDao> showCommonFilms(Long userId, Long friendId) {
+        log.trace("UserRepo.showCommonFilms: userId {}, friendId{}", userId, friendId);
+
+        return extract(SHOW_COMMON_FILMS_QUERY, extractor, userId, friendId);
     }
 }

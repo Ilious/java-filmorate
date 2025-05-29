@@ -39,11 +39,12 @@ public class UserRepo extends BaseRepo<UserDao> implements IUserRepo {
 
     private final RowMapper<UserDao> mapper;
 
+    private static final String DELETE_USER_QUERY = "DELETE FROM users WHERE id = ?";
+
     public UserRepo(JdbcTemplate jdbc, RowMapper<UserDao> mapper) {
         super(jdbc);
         this.mapper = mapper;
     }
-
 
     @Override
     public List<UserDao> findAll() {
@@ -112,6 +113,15 @@ public class UserRepo extends BaseRepo<UserDao> implements IUserRepo {
 
         delete(
                 DELETE_FRIEND_QUERY, userId, friendId
+        );
+    }
+
+    @Override
+    public void deleteUser(Long userId) {
+        log.trace("UserRepo.deleteUser: by userId {}", userId);
+
+        delete(
+                DELETE_USER_QUERY, userId
         );
     }
 }

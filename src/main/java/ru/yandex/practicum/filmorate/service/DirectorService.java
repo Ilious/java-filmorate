@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.dao.DirectorDao;
 import ru.yandex.practicum.filmorate.dto.DirectorRecord;
 import ru.yandex.practicum.filmorate.exception.EntityNotFoundException;
+import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.mapper.DirectorMapper;
 import ru.yandex.practicum.filmorate.service.interfaces.IDirectorService;
 import ru.yandex.practicum.filmorate.storage.interfaces.IDirectorRepo;
@@ -16,55 +17,56 @@ import java.util.List;
 @Service
 public class DirectorService implements IDirectorService {
 
-     private final IDirectorRepo directorRepo;
+    private final IDirectorRepo directorRepo;
 
     public DirectorService(IDirectorRepo directorRepo) {
         this.directorRepo = directorRepo;
     }
 
     @Override
-    public void deleteDirector(Long id) {
-        log.debug("deleteDirector: by id {}", id);
-
-        directorRepo.deleteById(id);
-    }
-
-    @Override
-    public DirectorDao getById(Long id) {
-        return directorRepo.findDirectorById(id)
-                .orElseThrow(() -> new EntityNotFoundException(
-                                "Entity Director not found", "Director", "Id", String.valueOf(id)
-                        )
-                );
-    }
-
-    @Override
-    public Collection<DirectorDao> getDirectors() {
-        Collection<DirectorDao> directorDaos = directorRepo.findAll();
-        log.debug("Get user collection {}", directorDaos.size());
-
-        return directorDaos;
-    }
-
-    @Override
-    public DirectorDao postDirector(DirectorRecord req) {
-        DirectorDao directorDao = DirectorMapper.toDirectorDao(req);
-
+    public DirectorDao postDirector(DirectorRecord directorRecord) {
+        DirectorDao directorDao = DirectorMapper.toDirectorDao(directorRecord);
         return directorRepo.createDirector(directorDao);
     }
 
     @Override
-    public DirectorDao putDirector(DirectorRecord req) {
-        DirectorDao directorDao = getById(req.id());
-        DirectorMapper.updateFields(directorDao, req);
+    public DirectorDao putDirector(DirectorRecord directorRecord) {
+        if (directorRecord.id() == null) {
+            log.warn("putDirector: ID must not be null");
+            throw new ValidationException("Director ID is required for update", "id", null);
+        }
+        DirectorDao directorById = getDirectorById(directorRecord.id());
+        DirectorMapper.updateFields(directorById, directorRecord);
+        return directorRepo.updateDirector(directorById);
+    }
 
-        log.debug("putDirector {} {}", req.id(), req.name());
+    @Override
+    public Collection<DirectorDao> getAllDirectors() {
+        Collection<DirectorDao> directors = directorRepo.findAll();
+        log.debug("Retrieved {} directors", directors.size());
+        return directors;
+    }
 
-        return directorRepo.updateDirector(directorDao);
+    @Override
+    public DirectorDao getDirectorById(Long id) {
+        return directorRepo.findDirectorById(id)
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "Director not found",
+                        "Director",
+                        "id",
+                        String.valueOf(id)
+                ));
+    }
+
+    @Override
+    public void deleteDirector(Long id) {
+        getDirectorById(id);
+        directorRepo.deleteDirector(id);
+        log.debug("Deleted director with id {}", id);
     }
 
     @Override
     public void validateIds(List<Long> listIds) {
-        listIds.forEach(this::getById);
+        listIds.forEach(this::getDirectorById);
     }
 }

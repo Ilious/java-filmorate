@@ -16,10 +16,9 @@ public record FilmRecord(
 
         @NotBlank(groups = {Validator.OnUpdate.class, Validator.OnCreate.class}) String name,
 
-        List<DirectorRecord> directors,
-
         @NotBlank(groups = Validator.OnCreate.class)
-        @Size(max = 200, groups = {Validator.OnUpdate.class, Validator.OnCreate.class}) String description,
+        @Size(max = 200, groups = {Validator.OnUpdate.class, Validator.OnCreate.class})
+        String description,
 
         MpaRecord mpa,
 
@@ -29,5 +28,7 @@ public record FilmRecord(
         @Positive(groups = {Validator.OnUpdate.class, Validator.OnCreate.class})
         int duration,
 
-        List<GenreRecord> genres) {
+        List<GenreRecord> genres,
+
+        List<DirectorRecord> directors) {
 }

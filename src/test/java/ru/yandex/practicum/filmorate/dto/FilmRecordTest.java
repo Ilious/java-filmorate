@@ -23,8 +23,8 @@ class FilmRecordTest {
 
     @Test
     void validate_NameIsNull_ShouldReturnError() {
-        filmRecord = new FilmRecord(1L, null, null, "description", null,
-                LocalDate.of(1905, 11, 1), 20, null);
+        filmRecord = new FilmRecord(1L, null, "description", null,
+                LocalDate.of(1905, 11, 1), 20, null, null);
 
         Set<ConstraintViolation<FilmRecord>> listOnCreate;
         Set<ConstraintViolation<FilmRecord>> listOnUpdate;
@@ -47,8 +47,8 @@ class FilmRecordTest {
 
     @Test
     void validate_NameIsBlank_ShouldReturnError() {
-        filmRecord = new FilmRecord(1L, "      ", null,"description", null,
-                LocalDate.of(1905, 11, 1), 20, null);
+        filmRecord = new FilmRecord(1L, "      ", "description", null,
+                LocalDate.of(1905, 11, 1), 20, null, null);
 
         Set<ConstraintViolation<FilmRecord>> listOnCreate;
         Set<ConstraintViolation<FilmRecord>> listOnUpdate;
@@ -71,8 +71,8 @@ class FilmRecordTest {
 
     @Test
     void validate_DescriptionIsNull_ShouldReturnError() {
-        filmRecord = new FilmRecord(1L, "name", null, null, null,
-                LocalDate.of(1905, 11, 1), 20, null);
+        filmRecord = new FilmRecord(1L, "name", null, null,
+                LocalDate.of(1905, 11, 1), 20, null, null);
 
         Set<ConstraintViolation<FilmRecord>> listOnCreate;
         try (ValidatorFactory factory = Validation.buildDefaultValidatorFactory()) {
@@ -88,8 +88,8 @@ class FilmRecordTest {
 
     @Test
     void validate_DescriptionIsBlank_ShouldReturnError() {
-        filmRecord = new FilmRecord(1L, "name", null, "        ", null,
-                LocalDate.of(1905, 11, 1), 20, null);
+        filmRecord = new FilmRecord(1L, "name", "        ", null,
+                LocalDate.of(1905, 11, 1), 20, null, null);
 
         Set<ConstraintViolation<FilmRecord>> listOnCreate;
         try (ValidatorFactory factory = Validation.buildDefaultValidatorFactory()) {
@@ -105,8 +105,8 @@ class FilmRecordTest {
 
     @Test
     void validate_DescriptionIsMoreThan200_ShouldReturnError() {
-        filmRecord = new FilmRecord(1L, "name", null, "n".repeat(201), null,
-                LocalDate.of(1905, 11, 1), 20, null);
+        filmRecord = new FilmRecord(1L, "name", "n".repeat(201), null,
+                LocalDate.of(1905, 11, 1), 20, null, null);
 
         Set<ConstraintViolation<FilmRecord>> listOnCreate;
         Set<ConstraintViolation<FilmRecord>> listOnUpdate;
@@ -129,8 +129,8 @@ class FilmRecordTest {
 
     @Test
     void validate_DateIsNotValid_ShouldReturnError() {
-        filmRecord = new FilmRecord(1L, "name", null, "desc", null,
-                LocalDate.of(1805, 11, 1), 20, null);
+        filmRecord = new FilmRecord(1L, "name", "desc", null,
+                LocalDate.of(1805, 11, 1), 20, null, null);
 
         Set<ConstraintViolation<FilmRecord>> listOnCreate;
         Set<ConstraintViolation<FilmRecord>> listOnUpdate;
@@ -153,8 +153,8 @@ class FilmRecordTest {
 
     @Test
     void validate_DurationIs0_ShouldReturnError() {
-        filmRecord = new FilmRecord(1L, "name", null, "desc", null,
-                LocalDate.of(1905, 11, 1), 0, null);
+        filmRecord = new FilmRecord(1L, "name", "desc", null,
+                LocalDate.of(1905, 11, 1), 0, null, null);
 
         Set<ConstraintViolation<FilmRecord>> listOnCreate;
         Set<ConstraintViolation<FilmRecord>> listOnUpdate;
@@ -177,8 +177,8 @@ class FilmRecordTest {
 
     @Test
     void validate_DurationIsNegative_ShouldReturnError() {
-        filmRecord = new FilmRecord(1L, "name", null, "desc", null,
-                LocalDate.of(1905, 11, 1), -100, null);
+        filmRecord = new FilmRecord(1L, "name", "desc", null,
+                LocalDate.of(1905, 11, 1), -100, null, null);
 
         Set<ConstraintViolation<FilmRecord>> listOnCreate;
         Set<ConstraintViolation<FilmRecord>> listOnUpdate;
@@ -201,8 +201,8 @@ class FilmRecordTest {
 
     @Test
     void validate_AllFieldsAreCorrect_ShouldNotReturnError() {
-        filmRecord = new FilmRecord(1L, "name", null, "desc", null,
-                LocalDate.of(1905, 11, 1), 20, null);
+        filmRecord = new FilmRecord(1L, "name", "desc", null,
+                LocalDate.of(1905, 11, 1), 20, null, null);
 
         Set<ConstraintViolation<FilmRecord>> listOnCreate;
         Set<ConstraintViolation<FilmRecord>> listOnUpdate;

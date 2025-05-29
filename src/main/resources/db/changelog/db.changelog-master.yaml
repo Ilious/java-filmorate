@@ -14,3 +14,15 @@ databaseChangeLog:
   - include:
       file: changes/filmorate_004_add_film_directors.sql
       relativeToChangelogFile: true
+
+  - include:
+      file: changes/filmorate_005_add_feed.sql
+      relativeToChangelogFile: true
+
+  - include:
+      file: changes/filmorate_006_add_review.sql
+      relativeToChangelogFile: true
+
+  - include:
+      file: changes/filmorate_007_init.sql
+      relativeToChangelogFile: true

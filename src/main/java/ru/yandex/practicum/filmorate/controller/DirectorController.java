@@ -23,31 +23,35 @@ public class DirectorController {
     }
 
     @GetMapping
-    public ResponseEntity<Collection<DirectorDao>> getAll() {
-        return ResponseEntity.status(HttpStatus.OK).body(directorService.getDirectors());
+    public ResponseEntity<Collection<DirectorDao>> getAllDirectors() {
+        Collection<DirectorDao> directors = directorService.getAllDirectors();
+        if (directors.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(directors);
+        }
+        return ResponseEntity.ok(directors);
     }
 
     @GetMapping("/{id}")
-    @ResponseStatus(HttpStatus.OK)
-    public DirectorDao getById(@PathVariable Long id) {
-        return directorService.getById(id);
+    public ResponseEntity<DirectorDao> getDirectorById(@PathVariable Long id) {
+        return ResponseEntity.ok(directorService.getDirectorById(id));
     }
 
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public DirectorDao createDirector(@RequestBody @Validated(Validator.OnCreate.class) DirectorRecord directorRecord) {
-        return directorService.postDirector(directorRecord);
+    public ResponseEntity<DirectorDao> createDirector(
+            @RequestBody @Validated(Validator.OnCreate.class) DirectorRecord directorRecord) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(directorService.postDirector(directorRecord));
     }
 
     @PutMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public DirectorDao updateDirector(@RequestBody @Validated(Validator.OnUpdate.class) DirectorRecord directorRecord) {
-        return directorService.putDirector(directorRecord);
+    public ResponseEntity<DirectorDao> updateDirector(
+            @RequestBody @Validated(Validator.OnUpdate.class) DirectorRecord directorRecord) {
+        return ResponseEntity.ok(directorService.putDirector(directorRecord));
     }
 
     @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.OK)
-    public void deleteById(@PathVariable Long id) {
-        directorService.getById(id);
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteDirector(@PathVariable Long id) {
+        directorService.deleteDirector(id);
     }
 }

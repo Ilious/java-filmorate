@@ -8,13 +8,13 @@ import java.util.List;
 
 public interface IDirectorService {
 
-    DirectorDao getById(Long id);
+    DirectorDao postDirector(DirectorRecord directorRecord);
 
-    Collection<DirectorDao> getDirectors();
+    DirectorDao putDirector(DirectorRecord directorRecord);
 
-    DirectorDao postDirector(DirectorRecord req);
+    Collection<DirectorDao> getAllDirectors();
 
-    DirectorDao putDirector(DirectorRecord req);
+    DirectorDao getDirectorById(Long id);
 
     void deleteDirector(Long id);
 

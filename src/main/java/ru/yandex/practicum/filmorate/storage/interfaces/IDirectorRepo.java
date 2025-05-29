@@ -15,5 +15,5 @@ public interface IDirectorRepo {
 
     Optional<DirectorDao> findDirectorById(Long id);
 
-    void deleteById(Long id);
+    void deleteDirector(Long id);
 }

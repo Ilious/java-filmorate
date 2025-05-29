@@ -8,6 +8,7 @@ import ru.yandex.practicum.filmorate.dao.DirectorDao;
 import ru.yandex.practicum.filmorate.dao.FilmDao;
 import ru.yandex.practicum.filmorate.dao.GenreDao;
 import ru.yandex.practicum.filmorate.dao.MpaDao;
+import ru.yandex.practicum.filmorate.dto.FeedRecord;
 import ru.yandex.practicum.filmorate.dto.FilmRecord;
 import ru.yandex.practicum.filmorate.dto.GenreRecord;
 import ru.yandex.practicum.filmorate.dto.MpaRecord;
@@ -16,6 +17,9 @@ import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.mapper.FilmMapper;
 import ru.yandex.practicum.filmorate.mapper.GenreMapper;
 import ru.yandex.practicum.filmorate.mapper.MpaMapper;
+import ru.yandex.practicum.filmorate.service.enums.EntityType;
+import ru.yandex.practicum.filmorate.service.enums.Operation;
+import ru.yandex.practicum.filmorate.service.interfaces.IFeedService;
 import ru.yandex.practicum.filmorate.service.interfaces.IDirectorService;
 import ru.yandex.practicum.filmorate.service.interfaces.IFilmService;
 import ru.yandex.practicum.filmorate.service.interfaces.IGenreService;
@@ -36,6 +40,8 @@ public class FilmService implements IFilmService {
     private final IGenreService genreService;
 
     private final IMpaService mpaService;
+
+    private final IFeedService feedService;
 
     private final IDirectorService directorService;
 
@@ -133,16 +139,43 @@ public class FilmService implements IFilmService {
     @Override
     public void setLikeOnFilm(Long userId, Long filmId) {
         filmRepo.setLikeOnFilm(filmId, userId);
+
+        feedService.postFeed(new FeedRecord(userId, filmId, EntityType.LIKE, Operation.ADD));
     }
 
     @Override
     public void deleteLikeOnFilm(Long userId, Long filmId) {
         filmRepo.deleteLikeFromFilm(filmId, userId);
+
+        feedService.postFeed(new FeedRecord(userId, filmId, EntityType.LIKE, Operation.REMOVE));
     }
 
     @Override
-    public Collection<FilmDao> getMostLikedFilms(Long count) {
-        return filmRepo.findNPopular(count);
+    public Collection<FilmDao> getMostLikedFilms(Long count, Long genreId, Integer year) {
+        return filmRepo.findNPopular(count, genreId, year);
+    }
+
+    @Override
+    public void deleteFilm(Long filmId) {
+        getById(filmId);
+
+        filmRepo.deleteFilm(filmId);
+    }
+
+
+    public List<FilmDao> getFilmsByDirector(Long directorId, String sortBy) {
+        return filmRepo.getFilmsByDirector(directorId, sortBy);
+    }
+
+    @Override
+
+    public Collection<FilmDao> getRecommendations(Long userId) {
+        return filmRepo.getRecommendations(userId);
+    }
+
+    @Override
+    public Collection<FilmDao> showCommonFilms(Long userId, Long friendId) {
+        return filmRepo.showCommonFilms(userId, friendId);
     }
 
     @Override
@@ -150,22 +183,6 @@ public class FilmService implements IFilmService {
         SearchCriteria searchObj = defineSearchBy(by, query);
 
         return filmRepo.findFilmsBySearchQuery(searchObj);
-    }
-
-    @Override
-    public Collection<FilmDao> getByDirectorId(Long id, String sortBy) {
-        directorService.validateIds(List.of(id));
-
-        SortBy sort = SortBy.fromValue(sortBy);
-
-        return switch (sort) {
-            case Year -> filmRepo.findByDirectorId(id, new SearchCriteria("ORDER BY f.release_date"));
-            case Likes -> getMostLikedFilms(Long.MAX_VALUE).stream()
-                    .filter(film -> film.getDirectors()
-                            .stream()
-                            .anyMatch(f -> f.getId().equals(id))
-                    ).toList();
-        };
     }
 
     private SearchCriteria defineSearchBy(String[] by, String query) {
