@@ -137,4 +137,9 @@ public class FilmService implements IFilmService {
     public Collection<FilmDao> getRecommendations(Long userId) {
         return filmRepo.getRecommendations(userId);
     }
+
+    @Override
+    public Collection<FilmDao> showCommonFilms(Long userId, Long friendId) {
+        return filmRepo.showCommonFilms(userId, friendId);
+    }
 }
