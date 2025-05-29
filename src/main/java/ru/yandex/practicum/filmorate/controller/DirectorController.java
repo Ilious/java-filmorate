@@ -24,11 +24,7 @@ public class DirectorController {
 
     @GetMapping
     public ResponseEntity<Collection<DirectorDao>> getAllDirectors() {
-        Collection<DirectorDao> directors = directorService.getAllDirectors();
-        if (directors.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(directors);
-        }
-        return ResponseEntity.ok(directors);
+        return ResponseEntity.ok(directorService.getAllDirectors());
     }
 
     @GetMapping("/{id}")

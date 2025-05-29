@@ -9,7 +9,7 @@ import ru.yandex.practicum.filmorate.validator.DateBefore;
 import ru.yandex.practicum.filmorate.validator.Validator;
 
 import java.time.LocalDate;
-import java.util.List;
+import java.util.Set;
 
 public record FilmRecord(
         @NotNull(groups = Validator.OnUpdate.class) Long id,
@@ -28,7 +28,7 @@ public record FilmRecord(
         @Positive(groups = {Validator.OnUpdate.class, Validator.OnCreate.class})
         int duration,
 
-        List<GenreRecord> genres,
+        Set<GenreRecord> genres,
 
-        List<DirectorRecord> directors) {
+        Set<DirectorRecord> directors) {
 }

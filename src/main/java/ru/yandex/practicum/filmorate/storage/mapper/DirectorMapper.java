@@ -9,6 +9,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Component
 public class DirectorMapper implements RowMapper<DirectorDao> {
@@ -21,7 +22,7 @@ public class DirectorMapper implements RowMapper<DirectorDao> {
         return new DirectorDao(id, name);
     }
 
-    public static List<DirectorDao> toDirectorsDaos(List<DirectorRecord> directorRecords) {
+    public static List<DirectorDao> toDirectorsDaos(Set<DirectorRecord> directorRecords) {
         List<DirectorDao> directors = new ArrayList<>();
         if (directorRecords != null) {
             directors = directorRecords.stream()

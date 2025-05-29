@@ -8,12 +8,13 @@ import ru.yandex.practicum.filmorate.dto.GenreRecord;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class GenreMapper {
 
-    public static List<GenreDao> toGenresDao(List<GenreRecord> req) {
+    public static List<GenreDao> toGenresDao(Set<GenreRecord> req) {
         List<GenreDao> genres = new ArrayList<>();
         if (req != null) {
             genres = req

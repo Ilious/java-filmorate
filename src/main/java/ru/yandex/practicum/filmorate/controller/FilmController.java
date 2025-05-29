@@ -29,10 +29,7 @@ public class FilmController {
 
     @GetMapping
     public ResponseEntity<Collection<FilmDao>> getFilms() {
-        Collection<FilmDao> filmDaos = filmService.getAll();
-        if (filmDaos.isEmpty())
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(filmDaos);
-        return ResponseEntity.status(HttpStatus.OK).body(filmDaos);
+        return ResponseEntity.status(HttpStatus.OK).body(filmService.getAll());
     }
 
     @GetMapping("/{filmId}")
@@ -56,15 +53,15 @@ public class FilmController {
 
     @ResponseStatus(HttpStatus.OK)
     @PutMapping("/{id}/like/{userId}")
-    public void putLikeOnFilm(@PathVariable Long id,
-                              @PathVariable Long userId) {
+    public void putLikeOnFilm(@PathVariable @Positive Long id,
+                              @PathVariable @Positive Long userId) {
         filmService.setLikeOnFilm(userId, id);
     }
 
     @ResponseStatus(HttpStatus.OK)
     @DeleteMapping("/{id}/like/{userId}")
-    public void deleteLikeOnFilm(@PathVariable Long id,
-                                 @PathVariable Long userId) {
+    public void deleteLikeOnFilm(@PathVariable @Positive Long id,
+                                 @PathVariable @Positive Long userId) {
         filmService.deleteLikeOnFilm(userId, id);
     }
 
