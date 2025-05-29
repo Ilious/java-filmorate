@@ -89,4 +89,9 @@ public class FilmController {
             String sortBy) {
         return ResponseEntity.ok(filmService.getFilmsByDirector(directorId, sortBy));
     }
+
+    @GetMapping("/common")
+    public ResponseEntity<Collection<FilmDao>> showCommonFilms(@RequestParam(name = "userId") Long userId, @RequestParam(name = "friendId") Long friendId) {
+        return ResponseEntity.status(HttpStatus.OK).body(filmService.showCommonFilms(userId, friendId));
+    }
 }

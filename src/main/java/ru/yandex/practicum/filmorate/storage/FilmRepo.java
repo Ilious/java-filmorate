@@ -67,6 +67,16 @@ public class FilmRepo extends BaseRepo<FilmDao> implements IFilmRepo {
     private static final String UPDATE_QUERY = "UPDATE films " +
             "SET name = ?, description = ?, release_date = ?, duration = ?, rating_id = ? WHERE id = ?";
 
+    private static final String SHOW_COMMON_FILMS_QUERY = "SELECT f.id AS film_id, f.name, f.description, f.release_date, f.duration, f.rating_id, g.id AS genre_id, " +
+            "g.name AS genre_name, d.id AS director_id, d.name AS director_name " +
+            "FROM films f " +
+            "JOIN liked_films lf1 ON f.id = lf1.film_id AND lf1.user_id =? " +
+            "JOIN liked_films lf2 ON f.id = lf2.film_id AND lf2.user_id =? " +
+            "LEFT JOIN film_genres fg ON f.id = fg.film_id " +
+            "LEFT JOIN genres g ON fg.genre_id = g.id " +
+            "LEFT JOIN film_directors fd ON f.id = fd.film_id " +
+            "LEFT JOIN directors d ON fd.director_id = d.id; ";
+
     public static final String INSERT_FILM_GENRE_QUERY = "INSERT INTO film_genres (film_id, genre_id) " +
             "VALUES (?, ?)";
 
@@ -180,7 +190,6 @@ public class FilmRepo extends BaseRepo<FilmDao> implements IFilmRepo {
         );
 
         updateFilmGenres(filmDao.getId(), filmDao.getGenres());
-        updateFilmDirectors(filmDao.getId(), filmDao.getDirectors());
 
         return filmDao;
     }
@@ -309,5 +318,12 @@ public class FilmRepo extends BaseRepo<FilmDao> implements IFilmRepo {
     @Override
     public Collection<FilmDao> getRecommendations(Long userId) {
         return extract(GET_RECOMMENDATION_QUERY, extractor, userId, userId, userId);
+    }
+
+    @Override
+    public Collection<FilmDao> showCommonFilms(Long userId, Long friendId) {
+        log.trace("UserRepo.showCommonFilms: userId {}, friendId{}", userId, friendId);
+
+        return extract(SHOW_COMMON_FILMS_QUERY, extractor, userId, friendId);
     }
 }

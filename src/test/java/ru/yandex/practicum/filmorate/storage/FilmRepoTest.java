@@ -632,4 +632,139 @@ class FilmRepoTest {
         System.out.println(recommendations);
         assertTrue(recommendations.isEmpty());
     }
+
+    @Test
+    void getCommonFilmsTest() {
+        MpaDao mpaDao = new MpaDao(1L, AgeRating.fromValue("G"));
+        FilmDao film = FilmDao.builder()
+                .name("film1")
+                .description("super-film1")
+                .releaseDate(LocalDate.now())
+                .duration(120)
+                .genres(new ArrayList<>())
+                .mpa(mpaDao)
+                .build();
+        FilmDao film2 = FilmDao.builder()
+                .name("film2")
+                .description("super-film2")
+                .releaseDate(LocalDate.now())
+                .duration(120)
+                .genres(new ArrayList<>())
+                .mpa(mpaDao)
+                .build();
+        FilmDao film3 = FilmDao.builder()
+                .name("film3")
+                .description("super-film3")
+                .releaseDate(LocalDate.now())
+                .duration(120)
+                .genres(new ArrayList<>())
+                .mpa(mpaDao)
+                .build();
+
+        filmRepo.createFilm(film);
+        filmRepo.createFilm(film2);
+        filmRepo.createFilm(film3);
+
+        UserDao user = UserDao.builder()
+                .email("email@email.ru")
+                .login("login")
+                .name("user")
+                .birthday(LocalDate.of(2000, 2, 20))
+                .build();
+        UserDao user2 = UserDao.builder()
+                .email("imail@email.ru")
+                .login("user2")
+                .name("friend")
+                .birthday(LocalDate.of(2000, 2, 20))
+                .build();
+        UserDao user3 = UserDao.builder()
+                .email("ya@email.ru")
+                .login("user3")
+                .name("anotherFriend")
+                .birthday(LocalDate.of(2000, 2, 20))
+                .build();
+
+        userRepo.createUser(user);
+        userRepo.createUser(user2);
+        userRepo.createUser(user3);
+
+        filmRepo.setLikeOnFilm(film.getId(), user.getId());
+
+        filmRepo.setLikeOnFilm(film2.getId(), user.getId());
+        filmRepo.setLikeOnFilm(film2.getId(), user2.getId());
+
+        filmRepo.setLikeOnFilm(film3.getId(), user.getId());
+        filmRepo.setLikeOnFilm(film3.getId(), user2.getId());
+        filmRepo.setLikeOnFilm(film3.getId(), user3.getId());
+
+        List<FilmDao> films = new ArrayList<>(filmRepo.showCommonFilms(user.getId(), user2.getId()));
+
+        assertEquals(2, films.size());
+    }
+
+    @Test
+    void getCommonFilmsWhenAllLikesAreDifferentTest() {
+        MpaDao mpaDao = new MpaDao(1L, AgeRating.fromValue("G"));
+        FilmDao film = FilmDao.builder()
+                .name("film1")
+                .description("super-film1")
+                .releaseDate(LocalDate.now())
+                .duration(120)
+                .genres(new ArrayList<>())
+                .mpa(mpaDao)
+                .build();
+        FilmDao film2 = FilmDao.builder()
+                .name("film2")
+                .description("super-film2")
+                .releaseDate(LocalDate.now())
+                .duration(120)
+                .genres(new ArrayList<>())
+                .mpa(mpaDao)
+                .build();
+        FilmDao film3 = FilmDao.builder()
+                .name("film3")
+                .description("super-film3")
+                .releaseDate(LocalDate.now())
+                .duration(120)
+                .genres(new ArrayList<>())
+                .mpa(mpaDao)
+                .build();
+
+        filmRepo.createFilm(film);
+        filmRepo.createFilm(film2);
+        filmRepo.createFilm(film3);
+
+        UserDao user = UserDao.builder()
+                .email("email@email.ru")
+                .login("login")
+                .name("user")
+                .birthday(LocalDate.of(2000, 2, 20))
+                .build();
+        UserDao user2 = UserDao.builder()
+                .email("imail@email.ru")
+                .login("user2")
+                .name("friend")
+                .birthday(LocalDate.of(2000, 2, 20))
+                .build();
+        UserDao user3 = UserDao.builder()
+                .email("ya@email.ru")
+                .login("user3")
+                .name("anotherFriend")
+                .birthday(LocalDate.of(2000, 2, 20))
+                .build();
+
+        userRepo.createUser(user);
+        userRepo.createUser(user2);
+        userRepo.createUser(user3);
+
+        filmRepo.setLikeOnFilm(film.getId(), user.getId());
+
+        filmRepo.setLikeOnFilm(film2.getId(), user2.getId());
+
+        filmRepo.setLikeOnFilm(film3.getId(), user3.getId());
+
+        List<FilmDao> films = new ArrayList<>(filmRepo.showCommonFilms(user.getId(), user2.getId()));
+
+        assertTrue(films.isEmpty());
+    }
 }
