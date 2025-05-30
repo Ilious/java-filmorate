@@ -74,7 +74,7 @@ ALTER TABLE user_friends
     ADD FOREIGN KEY (friend_id) REFERENCES users (id) ON DELETE CASCADE;
 
 ALTER TABLE films
-    ADD FOREIGN KEY (rating_id) REFERENCES ratings (id);
+    ADD FOREIGN KEY (rating_id) REFERENCES ratings (id) ON DELETE CASCADE;
 
 ALTER TABLE film_genres
     ADD FOREIGN KEY (film_id) REFERENCES films (id) ON DELETE CASCADE;
