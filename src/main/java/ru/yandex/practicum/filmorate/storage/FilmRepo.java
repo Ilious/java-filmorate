@@ -296,7 +296,7 @@ public class FilmRepo extends BaseRepo<FilmDao> implements IFilmRepo {
         List<Object> parameters = new ArrayList<>();
 
         sqlBuilder.append("""
-                    SELECT 
+                    SELECT
                         f.id as film_id, 
                         f.name, 
                         f.description, 
