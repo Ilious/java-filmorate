@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.dao;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -16,6 +17,7 @@ import java.time.Instant;
 @NoArgsConstructor
 public class FeedDao {
 
+    @JsonProperty("eventId")
     private Long id;
 
     private EntityType eventType;
