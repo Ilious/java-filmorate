@@ -90,8 +90,8 @@ public class FilmService implements IFilmService {
         if (filmRecord.genres() != null) {
             List<Long> ids = filmRecord.genres()
                     .stream()
-                    .map(GenreRecord::id)
-                    .toList();
+                    .map(GenreRecord::id).distinct()
+                    .collect(Collectors.toList());
             List<GenreDao> genresDao = GenreMapper.toGenresDao(filmRecord.genres());
 
             genreService.validateIds(ids);
