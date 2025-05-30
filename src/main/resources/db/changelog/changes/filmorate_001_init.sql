@@ -80,7 +80,7 @@ ALTER TABLE film_genres
     ADD FOREIGN KEY (film_id) REFERENCES films (id) ON DELETE CASCADE;
 
 ALTER TABLE film_genres
-    ADD FOREIGN KEY (genre_id) REFERENCES genres (id);
+    ADD FOREIGN KEY (genre_id) REFERENCES genres  ON DELETE CASCADE;
 
 ALTER TABLE liked_films
     ADD FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE;
