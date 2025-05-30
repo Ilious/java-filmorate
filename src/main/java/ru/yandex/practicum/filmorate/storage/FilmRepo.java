@@ -296,12 +296,12 @@ public class FilmRepo extends BaseRepo<FilmDao> implements IFilmRepo {
         List<Object> parameters = new ArrayList<>();
 
         sqlBuilder.append("""
-                    SELECT 
-                        f.id as film_id, 
-                        f.name, 
-                        f.description, 
-                        f.release_date, 
-                        f.duration, 
+                    SELECT
+                        f.id as film_id,
+                        f.name,
+                        f.description,
+                        f.release_date,
+                        f.duration,
                         f.rating_id,
                         d.id AS director_id,
                         d.name AS director_name,
@@ -313,7 +313,7 @@ public class FilmRepo extends BaseRepo<FilmDao> implements IFilmRepo {
                     LEFT JOIN film_directors fd ON f.id = fd.film_id
                     LEFT JOIN directors d ON d.id = fd.director_id
                     LEFT JOIN liked_films lf ON f.id = lf.film_id
-                    WHERE 1=1 
+                    WHERE 1=1
                 """);
 
         if (genreId != null) {
