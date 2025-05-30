@@ -46,7 +46,7 @@ public class ReviewService implements IReviewService {
         ReviewDao postedReview = reviewRepo.postReview(reviewDao);
 
         feedService.postFeed(
-                new FeedRecord(reviewRecord.userId(), postedReview.getReviewId(), EntityType.REVIEW, Operation.UPDATE)
+                new FeedRecord(reviewRecord.userId(), postedReview.getReviewId(), EntityType.REVIEW, Operation.ADD)
         );
 
         return postedReview;
@@ -71,7 +71,7 @@ public class ReviewService implements IReviewService {
         ReviewDao updReviewDao = reviewRepo.putReview(reviewDao);
 
         feedService.postFeed(
-                new FeedRecord(reviewRecord.userId(), updReviewDao.getReviewId(), EntityType.REVIEW, Operation.ADD)
+                new FeedRecord(reviewRecord.userId(), updReviewDao.getReviewId(), EntityType.REVIEW, Operation.UPDATE)
         );
 
         return updReviewDao;
