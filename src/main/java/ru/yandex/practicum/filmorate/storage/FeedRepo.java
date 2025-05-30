@@ -31,7 +31,7 @@ public class FeedRepo extends BaseRepo<FeedDao> implements IFeedRepo {
             f.user_id,
             FROM feeds f
             WHERE f.user_id = ?
-            ORDER BY event_id ASC
+            ORDER BY event_id ASC, f.id ASC
             """;
 
 
