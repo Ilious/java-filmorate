@@ -164,6 +164,7 @@ public class FilmService implements IFilmService {
 
 
     public List<FilmDao> getFilmsByDirector(Long directorId, String sortBy) {
+        directorService.getDirectorById(directorId);
         return filmRepo.getFilmsByDirector(directorId, sortBy);
     }
 
