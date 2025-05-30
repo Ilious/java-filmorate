@@ -4,10 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.component.SearchCriteria;
-import ru.yandex.practicum.filmorate.dao.DirectorDao;
-import ru.yandex.practicum.filmorate.dao.FilmDao;
-import ru.yandex.practicum.filmorate.dao.GenreDao;
-import ru.yandex.practicum.filmorate.dao.MpaDao;
+import ru.yandex.practicum.filmorate.dao.*;
 import ru.yandex.practicum.filmorate.dto.FeedRecord;
 import ru.yandex.practicum.filmorate.dto.FilmRecord;
 import ru.yandex.practicum.filmorate.dto.GenreRecord;
@@ -25,6 +22,7 @@ import ru.yandex.practicum.filmorate.service.interfaces.IFilmService;
 import ru.yandex.practicum.filmorate.service.interfaces.IGenreService;
 import ru.yandex.practicum.filmorate.service.interfaces.IMpaService;
 import ru.yandex.practicum.filmorate.storage.interfaces.IFilmRepo;
+import ru.yandex.practicum.filmorate.storage.interfaces.IUserRepo;
 import ru.yandex.practicum.filmorate.storage.mapper.DirectorMapper;
 
 import java.util.*;
@@ -44,6 +42,8 @@ public class FilmService implements IFilmService {
     private final IFeedService feedService;
 
     private final IDirectorService directorService;
+
+    private final IUserRepo userRepo;
 
     @Override
     public FilmDao postFilm(FilmRecord filmRecord) {
@@ -138,6 +138,8 @@ public class FilmService implements IFilmService {
 
     @Override
     public void setLikeOnFilm(Long userId, Long filmId) {
+        getById(filmId);
+        validateUserId(userId);
         filmRepo.setLikeOnFilm(filmId, userId);
 
         feedService.postFeed(new FeedRecord(userId, filmId, EntityType.LIKE, Operation.ADD));
@@ -145,6 +147,8 @@ public class FilmService implements IFilmService {
 
     @Override
     public void deleteLikeOnFilm(Long userId, Long filmId) {
+        getById(filmId);
+        validateUserId(userId);
         filmRepo.deleteLikeFromFilm(filmId, userId);
 
         feedService.postFeed(new FeedRecord(userId, filmId, EntityType.LIKE, Operation.REMOVE));
@@ -202,5 +206,13 @@ public class FilmService implements IFilmService {
             return new SearchCriteria(" WHERE LOWER(d.name) LIKE LOWER(?)", queryParam);
 
         throw new ValidationException("Search query is not valid", "search", Arrays.toString(by));
+    }
+
+    private void validateUserId(Long id) {
+        userRepo.findUserById(id)
+                .orElseThrow(() -> new EntityNotFoundException(
+                                "Entity user not found", "User", "id", String.valueOf(id)
+                        )
+                );
     }
 }
