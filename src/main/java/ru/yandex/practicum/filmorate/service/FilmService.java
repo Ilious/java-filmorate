@@ -51,16 +51,11 @@ public class FilmService implements IFilmService {
         mpaService.validateId(mpaReq.id());
         MpaDao mpa = MpaMapper.toMpaDao(mpaReq);
 
-        List<GenreDao> genreDaos = GenreMapper.toGenresDao(filmRecord.genres());
-        List<Long> listGenresIds = genreDaos.stream()
+        Set<GenreDao> uniqueGenres = new HashSet<>(GenreMapper.toGenresDao(filmRecord.genres()));
+        List<Long> listGenresIds = uniqueGenres.stream()
                 .map(GenreDao::getId)
                 .toList();
         genreService.validateIds(listGenresIds);
-
-        Set<GenreDao> uniqueGenres = new TreeSet<>(
-                Comparator.comparing(GenreDao::getId)
-        );
-        uniqueGenres.addAll(genreDaos);
 
         List<DirectorDao> directors = DirectorMapper.toDirectorsDaos(filmRecord.directors());
         List<Long> listDirectors = directors.stream()
@@ -92,11 +87,11 @@ public class FilmService implements IFilmService {
                     .stream()
                     .map(GenreRecord::id).distinct()
                     .collect(Collectors.toList());
-            List<GenreDao> genresDao = GenreMapper.toGenresDao(filmRecord.genres());
+            Set<GenreDao> genresDao = new HashSet<>(GenreMapper.toGenresDao(filmRecord.genres()));
 
             genreService.validateIds(ids);
 
-            dao.setGenres(genresDao);
+            dao.setGenres(new ArrayList<>(genresDao));
         }
 
         if (filmRecord.directors() != null) {
