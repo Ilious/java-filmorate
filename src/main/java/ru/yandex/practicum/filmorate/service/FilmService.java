@@ -60,6 +60,7 @@ public class FilmService implements IFilmService {
         List<DirectorDao> directors = DirectorMapper.toDirectorsDaos(filmRecord.directors());
         List<Long> listDirectors = directors.stream()
                 .map(DirectorDao::getId)
+                .sorted()
                 .toList();
         directorService.validateIds(listDirectors);
 
