@@ -71,8 +71,10 @@ public class ReviewService implements IReviewService {
         ReviewDao updReviewDao = reviewRepo.putReview(reviewDao);
 
         feedService.postFeed(
-                new FeedRecord(reviewRecord.userId(), updReviewDao.getReviewId(), EntityType.REVIEW, Operation.UPDATE)
+                new FeedRecord(rd.getUserId(), updReviewDao.getReviewId(), EntityType.REVIEW, Operation.UPDATE)
         );
+
+        System.out.println("FEED POSTED");
 
         return updReviewDao;
     }
