@@ -258,6 +258,8 @@ public class FilmRepo extends BaseRepo<FilmDao> implements IFilmRepo {
 
     @Override
     public void setLikeOnFilm(Long filmId, Long userId) {
+        deleteLikeFromFilm(filmId, userId);
+
         insertNoKey(
                 INSERT_LIKE_QUERY,
                 filmId,

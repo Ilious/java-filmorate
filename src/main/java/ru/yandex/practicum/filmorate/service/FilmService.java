@@ -65,7 +65,12 @@ public class FilmService implements IFilmService {
         directorService.validateIds(listDirectors);
 
         FilmDao filmDao = FilmMapper.toFilmDao(filmRecord);
-        filmDao.setGenres(new ArrayList<>(uniqueGenres));
+        filmDao.setGenres(
+                new ArrayList<>(
+                uniqueGenres.stream().toList()
+                        .stream().sorted(Comparator.comparing(GenreDao::getId)).toList()
+                )
+        );
         filmDao.setDirectors(new ArrayList<>(directors));
         filmDao.setMpa(mpa);
 
