@@ -344,17 +344,10 @@ public class FilmRepo extends BaseRepo<FilmDao> implements IFilmRepo {
     private <T extends HasId> void updateSubEntities(
             Long filmId, List<T> entities, String delQuery, String insertQuery, String errMsg
     ) {
-        //if (entities == null || entities.isEmpty())
-         //   return;
+        if (entities == null || entities.isEmpty())
+            return;
 
         delete(delQuery, filmId);
-
-        Map<Long, T> uniqueEntities = new HashMap<>();
-        for (T entity : entities) {
-            if (entity.getId() != null) {
-                uniqueEntities.put(entity.getId(), entity);
-            }
-        }
 
         addSubEntitiesToFilm(filmId, entities, insertQuery, errMsg);
     }
