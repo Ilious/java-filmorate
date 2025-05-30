@@ -229,10 +229,22 @@ public class FilmRepo extends BaseRepo<FilmDao> implements IFilmRepo {
                 filmDao.getId()
         );
 
-        updateSubEntities(
-                filmDao.getId(), filmDao.getGenres(),
-                DELETE_ALL_FILM_GENRES_QUERY, INSERT_FILM_GENRE_QUERY, GENRES_ISN_T_ADDED
-        );
+        if (filmDao.getGenres().isEmpty()) {
+            int count = jdbc.queryForObject("SELECT COUNT(genre_id) FROM film_genres WHERE film_id = ?",
+                    Integer.class, filmDao.getId());
+
+                if (count > 0) {
+                    update(
+                            DELETE_ALL_FILM_GENRES_QUERY, filmDao.getId()
+                    );
+                }
+
+        } else {
+           updateSubEntities(
+                    filmDao.getId(), filmDao.getGenres(),
+                    DELETE_ALL_FILM_GENRES_QUERY, INSERT_FILM_GENRE_QUERY, GENRES_ISN_T_ADDED
+            );
+        }
 
         updateSubEntities(
                 filmDao.getId(), filmDao.getDirectors(),
