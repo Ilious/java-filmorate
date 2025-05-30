@@ -31,9 +31,8 @@ public class FeedRepo extends BaseRepo<FeedDao> implements IFeedRepo {
             f.user_id,
             FROM feeds f
             WHERE f.user_id = ?
-            ORDER BY f.id ASC
+            ORDER BY event_id ASC
             """;
-
 
     private static final String INSERT_QUERY = """
             INSERT INTO feeds(timestamp, event_type, operation, user_id,  entity_id)
