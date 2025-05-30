@@ -208,8 +208,19 @@ public class FilmRepo extends BaseRepo<FilmDao> implements IFilmRepo {
     public Collection<FilmDao> findFilmsBySearchQuery(SearchCriteria searchObj) {
         log.trace("UserRepo.findFilmBySearchQuery: by search query {}", searchObj);
 
+        String sortQuery = """
+         LEFT JOIN (
+            SELECT lf.film_id, COUNT(*) AS count_likes
+            FROM liked_films lf
+            GROUP BY lf.film_id
+        ) AS top_films ON f.id = top_films.film_id
+        %s
+        ORDER BY COALESCE(top_films.count_likes, 0) DESC
+        """;
+
+
         return extract(
-                FIND_BY_SEARCH_QUERY + searchObj.getQuery(),
+                FIND_BY_SEARCH_QUERY + String.format(sortQuery, searchObj.getQuery()),
                 extractor,
                 searchObj.getParams()
         );
