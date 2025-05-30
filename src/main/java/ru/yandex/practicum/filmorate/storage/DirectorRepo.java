@@ -20,8 +20,6 @@ public class DirectorRepo extends BaseRepo<DirectorDao> implements IDirectorRepo
     private static final String UPDATE_QUERY = "UPDATE directors SET name = ? WHERE id = ?";
     private static final String DELETE_QUERY = "DELETE FROM directors WHERE id = ?";
 
-    private static final String DELETE_DIRECTOR_FILMS_QUERY =
-            "DELETE FROM film_directors WHERE director_id = ?";
 
     private final RowMapper<DirectorDao> mapper;
 
@@ -71,8 +69,6 @@ public class DirectorRepo extends BaseRepo<DirectorDao> implements IDirectorRepo
     @Override
     public void deleteDirector(Long id) {
         log.trace("DirectorDao.deleteById: by id {}", id);
-
-        delete(DELETE_DIRECTOR_FILMS_QUERY, id);
 
         delete(DELETE_QUERY, id);
     }
