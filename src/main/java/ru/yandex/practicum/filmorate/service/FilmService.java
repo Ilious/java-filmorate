@@ -60,6 +60,7 @@ public class FilmService implements IFilmService {
         List<DirectorDao> directors = DirectorMapper.toDirectorsDaos(filmRecord.directors());
         List<Long> listDirectors = directors.stream()
                 .map(DirectorDao::getId)
+                .sorted()
                 .toList();
         directorService.validateIds(listDirectors);
 
@@ -91,9 +92,12 @@ public class FilmService implements IFilmService {
 
             genreService.validateIds(ids);
 
-            dao.setGenres(new ArrayList<>(genresDao));
+            List<GenreDao> genres = new ArrayList<>(genresDao);
+            Collections.sort(genres, Comparator.comparing(GenreDao::getId));
+            dao.setGenres(genres);
         }
 
+        dao.setDirectors(new ArrayList<>());
         if (filmRecord.directors() != null) {
             List<DirectorDao> directors = DirectorMapper.toDirectorsDaos(filmRecord.directors());
             List<Long> listDirectors = directors.stream()
