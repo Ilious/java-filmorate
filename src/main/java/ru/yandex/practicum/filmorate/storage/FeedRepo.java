@@ -18,7 +18,7 @@ public class FeedRepo extends BaseRepo<FeedDao> implements IFeedRepo {
             f.event_type,
             f.entity_id,
             f.operation,
-            f.user_id,
+            f.user_id
             FROM feeds f
             """;
 
@@ -28,10 +28,10 @@ public class FeedRepo extends BaseRepo<FeedDao> implements IFeedRepo {
             f.event_type,
             f.entity_id,
             f.operation,
-            f.user_id,
+            f.user_id
             FROM feeds f
             WHERE f.user_id = ?
-            ORDER BY event_id ASC
+            ORDER BY f.timestamp DESC, f.id DESC
             """;
 
 
