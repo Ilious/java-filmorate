@@ -86,17 +86,15 @@ public class FilmService implements IFilmService {
         FilmDao dao = getById(filmRecord.id());
         log.debug("updateFilm {} {}", filmRecord.id(), filmRecord.name());
 
-        if (filmRecord.genres() != null) {
-            List<Long> ids = filmRecord.genres()
-                    .stream()
-                    .map(GenreRecord::id)
-                    .toList();
-            List<GenreDao> genresDao = GenreMapper.toGenresDao(filmRecord.genres());
+        List<Long> ids = filmRecord.genres()
+                .stream()
+                .map(GenreRecord::id)
+                .toList();
+        List<GenreDao> genresDao = GenreMapper.toGenresDao(filmRecord.genres());
 
-            genreService.validateIds(ids);
+        genreService.validateIds(ids);
 
-            dao.setGenres(genresDao);
-        }
+        dao.setGenres(genresDao);
 
         if (filmRecord.directors() != null) {
             List<DirectorDao> directors = DirectorMapper.toDirectorsDaos(filmRecord.directors());
