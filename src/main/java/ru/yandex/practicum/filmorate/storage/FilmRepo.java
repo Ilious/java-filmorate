@@ -239,12 +239,12 @@ public class FilmRepo extends BaseRepo<FilmDao> implements IFilmRepo {
                 filmDao.getDirectors() : new ArrayList<>();
 
         updateSubEntities(
-                filmDao.getId(), filmDao.getGenres(),
+                filmDao.getId(), genresToUpdate,
                 DELETE_ALL_FILM_GENRES_QUERY, INSERT_FILM_GENRE_QUERY, GENRES_ISN_T_ADDED
         );
 
         updateSubEntities(
-                filmDao.getId(), filmDao.getDirectors(),
+                filmDao.getId(), directorsToUpdate,
                 DELETE_ALL_FILM_DIRECTORS_QUERY, INSERT_FILM_DIRECTOR_QUERY, DIRECTORS_ISN_T_ADDED
         );
 
