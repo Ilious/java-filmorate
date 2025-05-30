@@ -53,15 +53,15 @@ public class FilmController {
 
     @ResponseStatus(HttpStatus.OK)
     @PutMapping("/{id}/like/{userId}")
-    public void putLikeOnFilm(@PathVariable Long id,
-                              @PathVariable Long userId) {
+    public void putLikeOnFilm(@PathVariable @Positive Long id,
+                              @PathVariable @Positive Long userId) {
         filmService.setLikeOnFilm(userId, id);
     }
 
     @ResponseStatus(HttpStatus.OK)
     @DeleteMapping("/{id}/like/{userId}")
-    public void deleteLikeOnFilm(@PathVariable Long id,
-                                 @PathVariable Long userId) {
+    public void deleteLikeOnFilm(@PathVariable @Positive Long id,
+                                 @PathVariable @Positive Long userId) {
         filmService.deleteLikeOnFilm(userId, id);
     }
 
@@ -80,13 +80,13 @@ public class FilmController {
 
     @ResponseStatus(HttpStatus.OK)
     @DeleteMapping("{filmId}")
-    public void deleteFilm(@PathVariable Long filmId) {
+    public void deleteFilm(@PathVariable @Positive Long filmId) {
         filmService.deleteFilm(filmId);
     }
 
     @GetMapping("/director/{directorId}")
     public ResponseEntity<List<FilmDao>> getFilmsByDirector(
-            @PathVariable Long directorId,
+            @PathVariable @Positive Long directorId,
             @RequestParam(defaultValue = "year")
             @Pattern(regexp = "year|likes", message = "Invalid sortBy parameter")
             String sortBy) {
