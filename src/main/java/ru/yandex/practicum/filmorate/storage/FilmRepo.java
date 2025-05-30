@@ -14,7 +14,10 @@ import ru.yandex.practicum.filmorate.storage.interfaces.IFilmRepo;
 import ru.yandex.practicum.filmorate.storage.mapper.GenreMapper;
 
 import java.sql.SQLException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Component
@@ -209,14 +212,14 @@ public class FilmRepo extends BaseRepo<FilmDao> implements IFilmRepo {
         log.trace("UserRepo.findFilmBySearchQuery: by search query {}", searchObj);
 
         String sortQuery = """
-         LEFT JOIN (
-            SELECT lf.film_id, COUNT(*) AS count_likes
-            FROM liked_films lf
-            GROUP BY lf.film_id
-        ) AS top_films ON f.id = top_films.film_id
-        %s
-        ORDER BY COALESCE(top_films.count_likes, 0) DESC
-        """;
+                 LEFT JOIN (
+                    SELECT lf.film_id, COUNT(*) AS count_likes
+                    FROM liked_films lf
+                    GROUP BY lf.film_id
+                ) AS top_films ON f.id = top_films.film_id
+                %s
+                ORDER BY COALESCE(top_films.count_likes, 0) DESC
+                """;
 
 
         return extract(
@@ -244,14 +247,14 @@ public class FilmRepo extends BaseRepo<FilmDao> implements IFilmRepo {
             int count = jdbc.queryForObject("SELECT COUNT(genre_id) FROM film_genres WHERE film_id = ?",
                     Integer.class, filmDao.getId());
 
-                if (count > 0) {
-                    update(
-                            DELETE_ALL_FILM_GENRES_QUERY, filmDao.getId()
-                    );
-                }
+            if (count > 0) {
+                update(
+                        DELETE_ALL_FILM_GENRES_QUERY, filmDao.getId()
+                );
+            }
 
         } else {
-           updateSubEntities(
+            updateSubEntities(
                     filmDao.getId(), filmDao.getGenres(),
                     DELETE_ALL_FILM_GENRES_QUERY, INSERT_FILM_GENRE_QUERY, GENRES_ISN_T_ADDED
             );
@@ -293,46 +296,39 @@ public class FilmRepo extends BaseRepo<FilmDao> implements IFilmRepo {
         List<Object> parameters = new ArrayList<>();
 
         sqlBuilder.append("""
-                    SELECT f.id as film_id, f.name, f.description, f.release_date, f.duration, f.rating_id,
-                           d.id AS director_id,
-                           d.name AS director_name,
-                           g.id AS genre_id,
-                           g.name AS genre_name
+                    SELECT 
+                        f.id as film_id, 
+                        f.name, 
+                        f.description, 
+                        f.release_date, 
+                        f.duration, 
+                        f.rating_id,
+                        d.id AS director_id,
+                        d.name AS director_name,
+                        g.id AS genre_id,
+                        g.name AS genre_name
                     FROM films f
-                    LEFT JOIN (
-                        SELECT lf.film_id, COUNT(*) AS count_likes
-                        FROM liked_films lf
-                        WHERE 1=1
-                """);
-
-        if (genreId != null) {
-            sqlBuilder.append("""
-                            AND EXISTS (
-                                SELECT 1 FROM film_genres fg
-                                WHERE fg.film_id = lf.film_id AND fg.genre_id = ?
-                            )
-                    """);
-            parameters.add(genreId);
-        }
-
-        if (year != null) {
-            sqlBuilder.append("""
-                            AND EXISTS (
-                                SELECT 1 FROM films f2
-                                WHERE f2.id = lf.film_id AND YEAR(f2.release_date) = ?
-                            )
-                    """);
-            parameters.add(year);
-        }
-
-        sqlBuilder.append("""
-                        GROUP BY lf.film_id
-                    ) AS top_films ON f.id = top_films.film_id
                     LEFT JOIN film_genres fg ON f.id = fg.film_id
                     LEFT JOIN genres g ON fg.genre_id = g.id
                     LEFT JOIN film_directors fd ON f.id = fd.film_id
                     LEFT JOIN directors d ON d.id = fd.director_id
-                    ORDER BY COALESCE(top_films.count_likes, 0) DESC
+                    LEFT JOIN liked_films lf ON f.id = lf.film_id
+                    WHERE 1=1 
+                """);
+
+        if (genreId != null) {
+            sqlBuilder.append("AND EXISTS (SELECT 1 FROM film_genres fg2 WHERE fg2.film_id = f.id AND fg2.genre_id = ?) ");
+            parameters.add(genreId);
+        }
+
+        if (year != null) {
+            sqlBuilder.append("AND EXTRACT(YEAR FROM f.release_date) = ? ");
+            parameters.add(year);
+        }
+
+        sqlBuilder.append("""
+                    GROUP BY f.id, g.id, d.id
+                    ORDER BY COUNT(lf.user_id) DESC
                     LIMIT ?
                 """);
 
