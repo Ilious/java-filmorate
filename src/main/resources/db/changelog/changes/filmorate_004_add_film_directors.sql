@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS film_directors (
 );
 
 ALTER TABLE film_directors
-    ADD FOREIGN KEY (film_id) REFERENCES films(id);
+    ADD FOREIGN KEY (film_id) REFERENCES films(id) ON DELETE CASCADE;
 
 ALTER TABLE film_directors
-    ADD FOREIGN KEY (director_id) REFERENCES directors(id);
+    ADD FOREIGN KEY (director_id) REFERENCES directors(id) ON DELETE CASCADE;
