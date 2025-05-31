@@ -12,6 +12,8 @@ import ru.yandex.practicum.filmorate.storage.interfaces.IDirectorRepo;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -67,6 +69,12 @@ public class DirectorService implements IDirectorService {
 
     @Override
     public void validateIds(List<Long> listIds) {
-        listIds.forEach(this::getDirectorById);
+        Set<Long> allDirectorsIds = getAllDirectors().stream()
+                .map(DirectorDao::getId)
+                .collect(Collectors.toSet());
+        allDirectorsIds.forEach(directorId -> {
+            if (!allDirectorsIds.contains(directorId))
+                throw new EntityNotFoundException("Director not found", "Director", "id", String.valueOf(directorId));
+                });
     }
 }

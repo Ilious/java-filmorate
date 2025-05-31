@@ -3,21 +3,20 @@ package ru.yandex.practicum.filmorate.storage;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.ResultSetExtractor;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.component.SearchCriteria;
 import ru.yandex.practicum.filmorate.dao.DirectorDao;
 import ru.yandex.practicum.filmorate.dao.FilmDao;
 import ru.yandex.practicum.filmorate.dao.GenreDao;
 import ru.yandex.practicum.filmorate.dao.HasId;
+import ru.yandex.practicum.filmorate.dao.enums.Genre;
 import ru.yandex.practicum.filmorate.exception.InternalServerException;
 import ru.yandex.practicum.filmorate.storage.interfaces.IFilmRepo;
-import ru.yandex.practicum.filmorate.storage.mapper.GenreMapper;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Component
@@ -149,8 +148,11 @@ public class FilmRepo extends BaseRepo<FilmDao> implements IFilmRepo {
             "GROUP BY f.id, f.name, f.description, f.release_date, f.duration, f.rating_id, g.id, g.name, fd.director_id " +
             "ORDER BY recommendation_weight DESC;";
 
-    public static final String LOAD_GENRES_FOR_FILM = "SELECT distinct g.id, g.name " +
-            "FROM genres g JOIN film_genres fg ON g.id = fg.genre_id WHERE fg.film_id = ?";
+    public static final String LOAD_GENRES_FOR_FILMS = """
+                SELECT fg.film_id, fg.genre_id, g.name FROM film_genres fg
+                LEFT JOIN genres g ON fg.genre_id = g.id
+                WHERE fg.film_id IN (%s)
+                """;
 
     public static final String GENRES_ISN_T_ADDED = "Genres isn't added";
 
@@ -159,6 +161,7 @@ public class FilmRepo extends BaseRepo<FilmDao> implements IFilmRepo {
     private final ResultSetExtractor<List<FilmDao>> extractor;
 
     private final ResultSetExtractor<FilmDao> singleExtractor;
+
 
     public FilmRepo(JdbcTemplate jdbc,
                     ResultSetExtractor<List<FilmDao>> extractor,
@@ -276,8 +279,26 @@ public class FilmRepo extends BaseRepo<FilmDao> implements IFilmRepo {
         );
     }
 
-    private List<GenreDao> loadGenresForFilm(Long filmId) {
-        return jdbc.query(LOAD_GENRES_FOR_FILM, new GenreMapper(), filmId);
+    private void loadGenresForFilms(List<Long> filmIds, List<FilmDao> films) {
+        if (filmIds.isEmpty()) return;
+        String filmParams = filmIds.stream().map(id -> "?")
+                .collect(Collectors.joining(", "));
+
+        Map<Long, List<GenreDao>> filmIdsToGenres = new HashMap<>();
+
+        jdbc.query(LOAD_GENRES_FOR_FILMS.formatted(filmParams), rs -> {
+            long filmId = rs.getLong("film_id");
+            long genreId = rs.getLong("genre_id");
+            String name = rs.getString("name");
+            filmIdsToGenres.putIfAbsent(filmId, new ArrayList<>());
+            filmIdsToGenres.get(filmId)
+                    .add(new GenreDao(genreId, Genre.fromValue(name)));
+        }, filmIds.toArray());
+
+
+        films.forEach(
+                film -> film.setGenres(filmIdsToGenres.getOrDefault(film.getId(), new ArrayList<>()))
+        );
     }
 
     @Override
@@ -324,9 +345,11 @@ public class FilmRepo extends BaseRepo<FilmDao> implements IFilmRepo {
 
         parameters.add(count);
         List<FilmDao> films = extract(sqlBuilder.toString(), extractor, parameters.toArray());
-        films.forEach(film -> {
-            film.setGenres(loadGenresForFilm(film.getId()));
-        });
+
+        loadGenresForFilms(
+                films.stream().map(FilmDao::getId).toList(), films
+                );
+
         return films;
     }
 
