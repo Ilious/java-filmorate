@@ -15,7 +15,7 @@ public class ReviewMapper {
                 .isPositive(req.isPositive())
                 .filmId(req.filmId())
                 .userId(req.userId())
-                .reviewId(req.reviewId())
+                .id(req.reviewId())
                 .build();
 
 

@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.dao;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -9,9 +10,10 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ReviewDao {
+public class ReviewDao implements HasId {
 
-    private Long reviewId;
+    @JsonProperty("reviewId")
+    private Long id;
 
     private String content;
 

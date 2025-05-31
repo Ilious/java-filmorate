@@ -15,7 +15,7 @@ import java.time.Instant;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class FeedDao {
+public class FeedDao implements HasId {
 
     @JsonProperty("eventId")
     private Long id;

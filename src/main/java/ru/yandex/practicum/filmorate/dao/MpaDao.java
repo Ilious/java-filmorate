@@ -8,7 +8,7 @@ import ru.yandex.practicum.filmorate.dao.enums.AgeRating;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class MpaDao {
+public class MpaDao implements HasId {
 
     private Long id;
 

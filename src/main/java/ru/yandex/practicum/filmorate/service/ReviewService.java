@@ -18,6 +18,7 @@ import ru.yandex.practicum.filmorate.storage.ReviewRepo;
 import ru.yandex.practicum.filmorate.storage.UserRepo;
 
 import java.util.Collection;
+import java.util.Objects;
 
 
 @Slf4j
@@ -46,7 +47,7 @@ public class ReviewService implements IReviewService {
         ReviewDao postedReview = reviewRepo.postReview(reviewDao);
 
         feedService.postFeed(
-                new FeedRecord(reviewRecord.userId(), postedReview.getReviewId(), EntityType.REVIEW, Operation.ADD)
+                new FeedRecord(reviewRecord.userId(), postedReview.getId(), EntityType.REVIEW, Operation.ADD)
         );
 
         return postedReview;
@@ -64,14 +65,14 @@ public class ReviewService implements IReviewService {
 
         ReviewDao reviewDao = ReviewMapper.updateFields(reviewRecord);
 
-        reviewDao.setReviewId(reviewRecord.reviewId());
+        reviewDao.setId(reviewRecord.reviewId());
         reviewDao.setUserId(rd.getUserId());
         reviewDao.setFilmId(rd.getFilmId());
 
         ReviewDao updReviewDao = reviewRepo.putReview(reviewDao);
 
         feedService.postFeed(
-                new FeedRecord(reviewRecord.userId(), updReviewDao.getReviewId(), EntityType.REVIEW, Operation.UPDATE)
+                new FeedRecord(reviewRecord.userId(), updReviewDao.getId(), EntityType.REVIEW, Operation.UPDATE)
         );
 
         return updReviewDao;

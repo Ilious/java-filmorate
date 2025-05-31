@@ -13,7 +13,7 @@ public class ReviewMapper implements RowMapper<ReviewDao> {
     @Override
     public ReviewDao mapRow(ResultSet rs, int rowNum) throws SQLException {
         ReviewDao review = new ReviewDao();
-        review.setReviewId(rs.getLong("review_id"));
+        review.setId(rs.getLong("review_id"));
         review.setContent(rs.getString("content"));
         review.setIsPositive(rs.getBoolean("is_positive"));
         review.setUserId(rs.getLong("user_id"));

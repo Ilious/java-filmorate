@@ -60,7 +60,7 @@ public class ReviewRepo extends BaseRepo<ReviewDao> implements IReviewRepo {
                 review.getFilmId(),
                 0
         );
-        review.setReviewId(id);
+        review.setId(id);
 
         return review;
     }
@@ -87,7 +87,7 @@ public class ReviewRepo extends BaseRepo<ReviewDao> implements IReviewRepo {
                 UPDATE_QUERY,
                 review.getContent(),
                 review.getIsPositive(),
-                review.getReviewId()
+                review.getId()
         );
 
         return review;
