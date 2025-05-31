@@ -8,7 +8,7 @@ import ru.yandex.practicum.filmorate.dao.enums.Genre;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class GenreDao {
+public class GenreDao implements HasId {
 
     private Long id;
 

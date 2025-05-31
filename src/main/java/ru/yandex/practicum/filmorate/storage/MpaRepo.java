@@ -16,17 +16,20 @@ public class MpaRepo extends BaseRepo<MpaDao> implements IMpaRepo {
 
     public static final String FIND_ALL_QUERY = "SELECT * FROM ratings ORDER BY id";
 
+    private final RowMapper<MpaDao> mapper;
+
     public MpaRepo(JdbcTemplate jdbc, RowMapper<MpaDao> mapper) {
-        super(jdbc, mapper);
+        super(jdbc);
+        this.mapper = mapper;
     }
 
     @Override
     public Optional<MpaDao> findById(Long id) {
-        return findOne(FIND_BY_ID_QUERY, id);
+        return findOne(FIND_BY_ID_QUERY, mapper, id);
     }
 
     @Override
     public List<MpaDao> findAll() {
-        return findMany(FIND_ALL_QUERY);
+        return findMany(FIND_ALL_QUERY, mapper);
     }
 }

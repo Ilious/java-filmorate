@@ -1,7 +1,5 @@
 package ru.yandex.practicum.filmorate.controller;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,13 +20,13 @@ public class GenreController {
     }
 
     @GetMapping
-    public ResponseEntity<Collection<GenreDao>> getAll() {
-        return ResponseEntity.status(HttpStatus.OK).body(genreService.getAll());
+    public Collection<GenreDao> getAll() {
+        return genreService.getAll();
     }
 
     @GetMapping("/{genreId}")
-    public ResponseEntity<GenreDao> getById(@PathVariable Long genreId) {
-        return ResponseEntity.status(HttpStatus.OK).body(genreService.getById(genreId));
+    public GenreDao getById(@PathVariable Long genreId) {
+        return genreService.getById(genreId);
     }
 }
 

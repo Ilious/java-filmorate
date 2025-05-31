@@ -22,9 +22,7 @@ public abstract class BaseRepo<T> {
 
     protected final JdbcTemplate jdbc;
 
-    protected final RowMapper<T> mapper;
-
-    protected Optional<T> findOne(String query, Object... params) {
+    protected Optional<T> findOne(String query, RowMapper<T> mapper, Object... params) {
         try {
             T result = jdbc.queryForObject(query, mapper, params);
             return Optional.ofNullable(result);
@@ -34,7 +32,7 @@ public abstract class BaseRepo<T> {
         }
     }
 
-    protected List<T> findMany(String query, Object... params) {
+    protected List<T> findMany(String query, RowMapper<T> mapper, Object... params) {
         return jdbc.query(query, mapper, params);
     }
 
