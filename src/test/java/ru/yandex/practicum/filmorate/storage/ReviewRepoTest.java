@@ -115,8 +115,8 @@ public class ReviewRepoTest {
                 .build();
 
         assertDoesNotThrow(() -> reviewRepo.postReview(reviewDao));
-        Assertions.assertTrue(reviewRepo.getReviewById(reviewDao.getReviewId()).isPresent());
-        Assertions.assertEquals(reviewDao, reviewRepo.getReviewById(reviewDao.getReviewId()).get());
+        Assertions.assertTrue(reviewRepo.getReviewById(reviewDao.getId()).isPresent());
+        Assertions.assertEquals(reviewDao, reviewRepo.getReviewById(reviewDao.getId()).get());
         assertAll(() -> {
             assertEquals("Test content", reviewDao.getContent());
             assertEquals(true, reviewDao.getIsPositive());
@@ -143,8 +143,8 @@ public class ReviewRepoTest {
                 .userId(user.getId())
                 .filmId(film.getId())
                 .build();
-        Long id = reviewRepo.postReview(reviewDao).getReviewId();
-        reviewDao1.setReviewId(id);
+        Long id = reviewRepo.postReview(reviewDao).getId();
+        reviewDao1.setId(id);
 
         assertDoesNotThrow(() -> reviewRepo.putReview(reviewDao1));
         Optional<ReviewDao> reviews = reviewRepo.getReviewById(id);
@@ -153,7 +153,7 @@ public class ReviewRepoTest {
         ReviewDao reviewFirst = reviews.get();
 
         Assertions.assertAll(() -> {
-            assertEquals(reviewFirst.getReviewId(), reviewDao1.getReviewId());
+            assertEquals(reviewFirst.getId(), reviewDao1.getId());
             assertEquals(reviewFirst.getContent(), reviewDao1.getContent());
             assertEquals(reviewFirst.getIsPositive(), reviewDao1.getIsPositive());
             assertEquals(reviewFirst.getUserId(), reviewDao1.getUserId());
@@ -211,7 +211,7 @@ public class ReviewRepoTest {
                 .userId(user.getId())
                 .filmId(film.getId())
                 .build();
-        Long id = reviewRepo.postReview(review2).getReviewId();
+        Long id = reviewRepo.postReview(review2).getId();
 
         List<ReviewDao> reviews = new ArrayList<>(reviewRepo.getReviewByFilmId(film.getId(), 10));
         assertEquals(2, reviews.size());
@@ -239,7 +239,7 @@ public class ReviewRepoTest {
                 .userId(user.getId())
                 .filmId(film.getId())
                 .build();
-        Long reviewId = reviewRepo.postReview(review).getReviewId();
+        Long reviewId = reviewRepo.postReview(review).getId();
 
         assertDoesNotThrow(() -> reviewRepo.reviewActions(reviewId, userId, LikeOnReviewActions.ADD_LIKE));
 
@@ -269,7 +269,7 @@ public class ReviewRepoTest {
                 .userId(user.getId())
                 .filmId(film.getId())
                 .build();
-        Long reviewId = reviewRepo.postReview(review).getReviewId();
+        Long reviewId = reviewRepo.postReview(review).getId();
 
         assertDoesNotThrow(() -> reviewRepo.reviewActions(reviewId, userId, LikeOnReviewActions.ADD_LIKE));
 
@@ -307,7 +307,7 @@ public class ReviewRepoTest {
                 .userId(user.getId())
                 .filmId(film.getId())
                 .build();
-        Long reviewId = reviewRepo.postReview(review).getReviewId();
+        Long reviewId = reviewRepo.postReview(review).getId();
 
         assertDoesNotThrow(() -> reviewRepo.reviewActions(reviewId, userId, LikeOnReviewActions.ADD_DISLIKE));
 
@@ -338,7 +338,7 @@ public class ReviewRepoTest {
                 .userId(user.getId())
                 .filmId(film.getId())
                 .build();
-        Long reviewId = reviewRepo.postReview(review).getReviewId();
+        Long reviewId = reviewRepo.postReview(review).getId();
 
         assertDoesNotThrow(() -> reviewRepo.reviewActions(reviewId, userId, LikeOnReviewActions.ADD_DISLIKE));
 
