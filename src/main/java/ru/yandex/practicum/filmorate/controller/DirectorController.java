@@ -1,7 +1,6 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.dao.DirectorDao;
@@ -23,26 +22,26 @@ public class DirectorController {
     }
 
     @GetMapping
-    public ResponseEntity<Collection<DirectorDao>> getAllDirectors() {
-        return ResponseEntity.ok(directorService.getAllDirectors());
+    public Collection<DirectorDao> getAllDirectors() {
+        return directorService.getAllDirectors();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<DirectorDao> getDirectorById(@PathVariable Long id) {
-        return ResponseEntity.ok(directorService.getDirectorById(id));
+    public DirectorDao getDirectorById(@PathVariable Long id) {
+        return directorService.getDirectorById(id);
     }
 
     @PostMapping
-    public ResponseEntity<DirectorDao> createDirector(
+    @ResponseStatus(HttpStatus.CREATED)
+    public DirectorDao createDirector(
             @RequestBody @Validated(Validator.OnCreate.class) DirectorRecord directorRecord) {
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(directorService.postDirector(directorRecord));
+        return directorService.postDirector(directorRecord);
     }
 
     @PutMapping
-    public ResponseEntity<DirectorDao> updateDirector(
+    public DirectorDao updateDirector(
             @RequestBody @Validated(Validator.OnUpdate.class) DirectorRecord directorRecord) {
-        return ResponseEntity.ok(directorService.putDirector(directorRecord));
+        return directorService.putDirector(directorRecord);
     }
 
     @DeleteMapping("/{id}")

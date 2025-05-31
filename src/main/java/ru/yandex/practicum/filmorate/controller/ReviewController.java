@@ -3,7 +3,6 @@ package ru.yandex.practicum.filmorate.controller;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.dao.ReviewDao;
@@ -26,63 +25,61 @@ public class ReviewController {
     }
 
     @PostMapping
-    public ResponseEntity<ReviewDao> createReview(
+    @ResponseStatus(HttpStatus.CREATED)
+    public ReviewDao createReview(
             @RequestBody @NotNull @Validated(Validator.OnCreate.class) ReviewRecord reviewRecord) {
 
-        return ResponseEntity.status(HttpStatus.OK).body(reviewService.postReview(reviewRecord));
+        return reviewService.postReview(reviewRecord);
     }
 
     @PutMapping
-    public ResponseEntity<ReviewDao> updateReview(
+    public ReviewDao updateReview(
             @RequestBody @NotNull @Validated(Validator.OnUpdate.class) ReviewRecord reviewRecord) {
 
-        return ResponseEntity.status(HttpStatus.OK).body(reviewService.putReview(reviewRecord));
+        return reviewService.putReview(reviewRecord);
     }
 
     @GetMapping
-    public ResponseEntity<Collection<ReviewDao>> getAllReviews() {
-        return ResponseEntity.status(HttpStatus.OK).body(reviewService.getAll());
+    public Collection<ReviewDao> getAllReviews() {
+        return reviewService.getAll();
     }
 
-    @ResponseStatus(HttpStatus.OK)
     @DeleteMapping("/{id}")
     public void deleteReview(@PathVariable Long id) {
         reviewService.deleteReview(id);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ReviewDao> getReviewById(@PathVariable Long id) {
-        return ResponseEntity.status(HttpStatus.OK).body(reviewService.getReviewById(id));
+    public ReviewDao getReviewById(@PathVariable Long id) {
+        return reviewService.getReviewById(id);
     }
 
     @GetMapping(params = "filmId")
-    public ResponseEntity<Collection<ReviewDao>> getReviewByFilmId(
+    public Collection<ReviewDao> getReviewByFilmId(
             @RequestParam Long filmId, @RequestParam(required = false, defaultValue = "10")
             @Positive(message = "Count should be greater than 0") Integer count) {
 
-        return ResponseEntity.status(HttpStatus.OK).body(reviewService.getReviewByFilmId(filmId, count));
+        return reviewService.getReviewByFilmId(filmId, count);
     }
 
-    @ResponseStatus(HttpStatus.OK)
     @PutMapping("/{id}/like/{userId}")
     public void addLikeReview(@PathVariable Long id, @PathVariable Long userId) {
         reviewService.reviewActions(id, userId, LikeOnReviewActions.ADD_LIKE);
     }
 
-    @ResponseStatus(HttpStatus.OK)
     @PutMapping("/{id}/dislike/{userId}")
     public void addDislikeReview(@PathVariable Long id, @PathVariable Long userId) {
        reviewService.reviewActions(id, userId, LikeOnReviewActions.ADD_DISLIKE);
     }
 
-    @ResponseStatus(HttpStatus.OK)
     @DeleteMapping("/{id}/like/{userId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteLikeReview(@PathVariable Long id, @PathVariable Long userId) {
         reviewService.reviewActions(id, userId, LikeOnReviewActions.DELETE_LIKE);
     }
 
-    @ResponseStatus(HttpStatus.OK)
     @DeleteMapping("/{id}/dislike/{userId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteDislikeReview(@PathVariable Long id, @PathVariable Long userId) {
         reviewService.reviewActions(id, userId, LikeOnReviewActions.DELETE_DISLIKE);
     }
