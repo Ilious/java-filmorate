@@ -4,5 +4,5 @@ databaseChangeLog:
       relativeToChangelogFile: true
 
   - include:
-      file: changes/filmorate_002_insert_genres_and_mpa.yaml
+      file: changes/filmorate_002_insert_genres.yaml
       relativeToChangelogFile: true
