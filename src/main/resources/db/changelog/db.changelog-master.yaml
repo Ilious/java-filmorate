@@ -4,21 +4,5 @@ databaseChangeLog:
       relativeToChangelogFile: true
 
   - include:
-      file: changes/filmorate_002_insert_genres.yaml
-      relativeToChangelogFile: true
-
-  - include:
-      file: changes/filmorate_003_insert_ratings.yaml
-      relativeToChangelogFile: true
-
-  - include:
-      file: changes/filmorate_005_add_feed.sql
-      relativeToChangelogFile: true
-
-  - include:
-      file: changes/filmorate_006_add_review.sql
-      relativeToChangelogFile: true
-
-  - include:
-      file: changes/filmorate_007_init.sql
+      file: changes/filmorate_002_insert_genres_and_mpa.yaml
       relativeToChangelogFile: true

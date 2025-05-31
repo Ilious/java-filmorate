@@ -1,5 +1,26 @@
 databaseChangeLog:
   - changeSet:
+      id: insert-ratings-init
+      author: Ilious
+      runOnChange: true
+      changes:
+        - sql:
+            sql: |
+              MERGE INTO ratings r 
+              USING (VALUES
+              (1, 'G'),
+              (2, 'PG'),
+              (3, 'PG-13'),
+              (4, 'R'),
+              (5, 'NC-17')
+              ) AS src (id, name)
+              ON r.id = src.id
+              WHEN MATCHED THEN 
+                UPDATE SET r.name = src.name
+              WHEN NOT MATCHED THEN
+                INSERT (id, name) VALUES (src.id, src.name);
+
+  - changeSet:
       id: insert-genres-init
       author: Ilious
       runOnChange: true
@@ -17,6 +38,6 @@ databaseChangeLog:
               ) AS source(id, name)
               ON g.id = source.id
               WHEN MATCHED THEN
-                UPDATE SET name = source.name
+                UPDATE SET g.name = source.name
               WHEN NOT MATCHED THEN
                 INSERT (id, name) VALUES (source.id, source.name);
