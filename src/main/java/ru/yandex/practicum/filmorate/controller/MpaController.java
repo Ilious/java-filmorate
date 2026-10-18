@@ -1,7 +1,5 @@
 package ru.yandex.practicum.filmorate.controller;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -10,7 +8,6 @@ import ru.yandex.practicum.filmorate.dao.MpaDao;
 import ru.yandex.practicum.filmorate.service.interfaces.IMpaService;
 
 import java.util.Collection;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/mpa")
@@ -23,14 +20,13 @@ public class MpaController {
     }
 
     @GetMapping
-    public ResponseEntity<Collection<MpaDao>> getMpas(@PathVariable Optional<Long> mpaId) {
-        return ResponseEntity.status(HttpStatus.OK).body(mpaService.getMpas());
+    public Collection<MpaDao> getMpas() {
+        return mpaService.getMpas();
     }
 
     @GetMapping("/{mpaId}")
-    public ResponseEntity<MpaDao> getMpaById(@PathVariable Long mpaId) {
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(mpaService.getById(mpaId));
+    public MpaDao getMpaById(@PathVariable Long mpaId) {
+        return mpaService.getById(mpaId);
     }
 }
 

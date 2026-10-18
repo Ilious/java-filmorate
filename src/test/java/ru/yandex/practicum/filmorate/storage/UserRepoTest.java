@@ -51,7 +51,7 @@ class UserRepoTest {
                 .email("email@email.ru")
                 .login("login")
                 .name("user")
-                .birthday(LocalDate.of(2000,  2, 20))
+                .birthday(LocalDate.of(2000, 2, 20))
                 .build();
 
         assertDoesNotThrow(() -> userRepo.createUser(dao));
@@ -63,19 +63,19 @@ class UserRepoTest {
                 .email("email@email.ru")
                 .login("login")
                 .name("user")
-                .birthday(LocalDate.of(2000,  2, 20))
+                .birthday(LocalDate.of(2000, 2, 20))
                 .build();
         UserDao dao2 = UserDao.builder()
                 .email("imail@email.ru")
                 .login("login2")
                 .name("user2")
-                .birthday(LocalDate.of(2000,  2, 20))
+                .birthday(LocalDate.of(2000, 2, 20))
                 .build();
         UserDao dao3 = UserDao.builder()
                 .email("eimail@email.ru")
                 .login("login3")
                 .name("user3")
-                .birthday(LocalDate.of(2000,  2, 20))
+                .birthday(LocalDate.of(2000, 2, 20))
                 .build();
 
         userRepo.createUser(dao);
@@ -94,7 +94,7 @@ class UserRepoTest {
                 .email("email@email.ru")
                 .login("login")
                 .name("user")
-                .birthday(LocalDate.of(2000,  2, 20))
+                .birthday(LocalDate.of(2000, 2, 20))
                 .build();
         UserDao upd = UserDao.builder()
                 .email("updated@email.ru")
@@ -125,7 +125,7 @@ class UserRepoTest {
                 .email("email@email.ru")
                 .login("login")
                 .name("user")
-                .birthday(LocalDate.of(2000,  2, 20))
+                .birthday(LocalDate.of(2000, 2, 20))
                 .build();
 
         Long id = userRepo.createUser(dao).getId();
@@ -144,13 +144,13 @@ class UserRepoTest {
                 .email("email@email.ru")
                 .login("login")
                 .name("user")
-                .birthday(LocalDate.of(2000,  2, 20))
+                .birthday(LocalDate.of(2000, 2, 20))
                 .build();
         UserDao friend = UserDao.builder()
                 .email("imail@email.ru")
                 .login("login2")
                 .name("friend")
-                .birthday(LocalDate.of(2000,  2, 20))
+                .birthday(LocalDate.of(2000, 2, 20))
                 .build();
 
         userRepo.createUser(user);
@@ -172,13 +172,13 @@ class UserRepoTest {
                 .email("email@email.ru")
                 .login("login")
                 .name("user")
-                .birthday(LocalDate.of(2000,  2, 20))
+                .birthday(LocalDate.of(2000, 2, 20))
                 .build();
         UserDao friend = UserDao.builder()
                 .email("imail@email.ru")
                 .login("login2")
                 .name("friend")
-                .birthday(LocalDate.of(2000,  2, 20))
+                .birthday(LocalDate.of(2000, 2, 20))
                 .build();
 
         userRepo.createUser(user);
@@ -197,19 +197,19 @@ class UserRepoTest {
                 .email("email@email.ru")
                 .login("login")
                 .name("user")
-                .birthday(LocalDate.of(2000,  2, 20))
+                .birthday(LocalDate.of(2000, 2, 20))
                 .build();
         UserDao friend = UserDao.builder()
                 .email("imail@email.ru")
                 .login("login2")
                 .name("friend")
-                .birthday(LocalDate.of(2000,  2, 20))
+                .birthday(LocalDate.of(2000, 2, 20))
                 .build();
         UserDao friend2 = UserDao.builder()
                 .email("ya@email.ru")
                 .login("login3")
                 .name("anotherFriend")
-                .birthday(LocalDate.of(2000,  2, 20))
+                .birthday(LocalDate.of(2000, 2, 20))
                 .build();
 
         userRepo.createUser(user);
@@ -224,5 +224,66 @@ class UserRepoTest {
             assertFalse(userFriends.isEmpty());
             assertEquals(2, userFriends.size());
         });
+    }
+
+    @Test
+    void deleteUserTest() {
+        UserDao user = UserDao.builder()
+                .email("email@email.ru")
+                .login("login")
+                .name("user")
+                .birthday(LocalDate.of(2000, 2, 20))
+                .build();
+        UserDao user1 = UserDao.builder()
+                .email("imail@email.ru")
+                .login("login2")
+                .name("friend")
+                .birthday(LocalDate.of(2000, 2, 20))
+                .build();
+        UserDao user2 = UserDao.builder()
+                .email("ya@email.ru")
+                .login("login3")
+                .name("anotherFriend")
+                .birthday(LocalDate.of(2000, 2, 20))
+                .build();
+
+        userRepo.createUser(user);
+        userRepo.createUser(user1);
+        userRepo.createUser(user2);
+
+        assertEquals(3, userRepo.findAll().size());
+        userRepo.deleteUser(user.getId());
+        assertEquals(2, userRepo.findAll().size());
+    }
+
+    @Test
+    void userShouldBeRemovedFromUserFriendsAfterDelete() {
+        UserDao user = UserDao.builder()
+                .email("email@email.ru")
+                .login("login")
+                .name("user")
+                .birthday(LocalDate.of(2000, 2, 20))
+                .build();
+        UserDao friend = UserDao.builder()
+                .email("imail@email.ru")
+                .login("login2")
+                .name("friend")
+                .birthday(LocalDate.of(2000, 2, 20))
+                .build();
+
+        userRepo.createUser(user);
+        userRepo.createUser(friend);
+
+        assertEquals(2, userRepo.findAll().size());
+
+        userRepo.addFriend(user.getId(), friend.getId());
+        List<UserDao> friends = new ArrayList<>(userRepo.findFriends(user.getId()));
+
+        assertEquals(1, friends.size());
+
+        userRepo.deleteUser(friend.getId());
+        List<UserDao> friends1 = new ArrayList<>(userRepo.findFriends(user.getId()));
+
+        assertEquals(0, friends1.size());
     }
 }

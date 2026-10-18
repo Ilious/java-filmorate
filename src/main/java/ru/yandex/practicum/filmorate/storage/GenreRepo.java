@@ -16,17 +16,20 @@ public class GenreRepo extends BaseRepo<GenreDao> implements IGenreRepo {
 
     public static final String GET_ALL_QUERY = "SELECT * FROM genres ORDER BY id";
 
+    private final RowMapper<GenreDao> mapper;
+
     public GenreRepo(JdbcTemplate jdbc, RowMapper<GenreDao> mapper) {
-        super(jdbc, mapper);
+        super(jdbc);
+        this.mapper = mapper;
     }
 
     @Override
     public Optional<GenreDao> findById(Long id) {
-        return findOne(GET_BY_ID_QUERY, id);
+        return findOne(GET_BY_ID_QUERY, mapper, id);
     }
 
     @Override
     public Collection<GenreDao> findAll() {
-        return findMany(GET_ALL_QUERY);
+        return findMany(GET_ALL_QUERY, mapper);
     }
 }

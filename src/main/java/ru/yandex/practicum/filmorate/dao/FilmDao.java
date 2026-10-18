@@ -12,11 +12,13 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class FilmDao {
+public class FilmDao implements HasId {
 
     private Long id;
 
     private String name;
+
+    private List<DirectorDao> directors;
 
     private String description;
 

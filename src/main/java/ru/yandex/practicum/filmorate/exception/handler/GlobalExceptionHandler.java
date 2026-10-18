@@ -30,7 +30,7 @@ public class GlobalExceptionHandler {
         );
         log.warn("{}:\n {}", errMessage, exception.getMessage());
         return ResponseError.builder()
-                .description(errMessage)
+                .error(errMessage)
                 .code(HttpStatus.NOT_FOUND.value()).build();
     }
 
@@ -45,7 +45,7 @@ public class GlobalExceptionHandler {
 
         log.warn("{}\n {}", errMessage, exception.getMessage());
         return ResponseError.builder()
-                .description(errMessage.toString())
+                .error(errMessage.toString())
                 .code(HttpStatus.BAD_REQUEST.value()).build();
     }
 
@@ -56,7 +56,7 @@ public class GlobalExceptionHandler {
 
         log.warn("{}\n {}", errMessage, exception.getMessage());
         return ResponseError.builder()
-                .description(errMessage)
+                .error(errMessage)
                 .code(HttpStatus.BAD_REQUEST.value()).build();
     }
 
@@ -71,7 +71,7 @@ public class GlobalExceptionHandler {
 
         log.warn("{}\n {}", errMessage, exception.getMessage());
         return ResponseError.builder()
-                .description(errMessage.toString())
+                .error(errMessage.toString())
                 .code(HttpStatus.BAD_REQUEST.value()).build();
     }
 
@@ -83,7 +83,7 @@ public class GlobalExceptionHandler {
 
         log.warn("{}\n {}", errMessage, exception.getMessage());
         return ResponseError.builder()
-                .description(errMessage.toString())
+                .error(errMessage.toString())
                 .code(HttpStatus.BAD_REQUEST.value()).build();
     }
 
@@ -93,7 +93,7 @@ public class GlobalExceptionHandler {
         String errMessage = "Error on server";
         log.warn("{}:\n {}", errMessage, exception.getMessage());
         return ResponseError.builder()
-                .description(errMessage)
+                .error(errMessage)
                 .code(HttpStatus.INTERNAL_SERVER_ERROR.value()).build();
     }
 
@@ -103,7 +103,7 @@ public class GlobalExceptionHandler {
         String errMessage = "Error on server";
         log.warn("{}:\n {}", errMessage, exception.getMessage());
         return ResponseError.builder()
-                .description(errMessage)
+                .error(errMessage)
                 .code(HttpStatus.INTERNAL_SERVER_ERROR.value()).build();
     }
 }

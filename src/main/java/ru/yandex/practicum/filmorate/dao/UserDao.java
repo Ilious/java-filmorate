@@ -11,7 +11,7 @@ import java.time.LocalDate;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserDao {
+public class UserDao implements HasId {
 
     private Long id;
 
